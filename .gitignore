@@ -226,3 +226,17 @@ portlets/LiferayJSONWebservices-portlet.rar
 portlets/LiferayJSONWebservices-portlet/
 
 portlets/opencps-portlet/*.log
+
+portlets/opencps-integrate-portlet/.settings/
+
+portlets/opencps-integrate-portlet/.settings
+
+build.binhth.properties
+
+portlets/opencps-integrate-portlet/.classpath
+
+portlets/opencps-integrate-portlet/test/
+portlets/opencps-integrate-portlet/test
+
+!opencps-integrate-portlet/docroot/WEB-INF/src/
+!opencps-integrate-portlet/docroot/WEB-INF/src
