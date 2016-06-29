@@ -240,3 +240,7 @@ portlets/opencps-integrate-portlet/test
 
 !opencps-integrate-portlet/docroot/WEB-INF/src/
 !opencps-integrate-portlet/docroot/WEB-INF/src
+
+portlets/opencps-portlet/ivy.xml
+
+portlets/opencps-portlet/build.xml
