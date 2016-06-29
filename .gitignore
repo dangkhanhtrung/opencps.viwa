@@ -241,3 +241,15 @@ portlets/opencps-integrate-portlet/.classpath
 portlets/opencps-portlet/ivy.xml
 
 portlets/opencps-portlet/build.xml
+
+hooks/opencps-hook/build.xml
+
+hooks/opencps-hook/ivy.xml
+
+hooks/opencps-hook/.settings
+
+hooks/opencps-hook/.settings/
+
+hooks/opencps-hook/build.xml
+
+*build.xml*
