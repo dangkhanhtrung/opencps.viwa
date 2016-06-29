@@ -249,3 +249,7 @@ hooks/opencps-hook/ivy.xml
 hooks/opencps-hook/.settings
 
 hooks/opencps-hook/.settings/
+
+hooks/opencps-hook/build.xml
+
+*build.xml*
