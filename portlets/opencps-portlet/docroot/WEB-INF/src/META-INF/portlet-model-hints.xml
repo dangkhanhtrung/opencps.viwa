@@ -489,6 +489,7 @@
 		<field name="original" type="int" />
 		<field name="syncStatus" type="int" />
 		<field name="version" type="int" />
+		<field name="signed" type="boolean" />
 	</model>
 	<model name="org.opencps.dossiermgt.model.DossierLog">
 		<field name="dossierLogId" type="long" />
@@ -683,5 +684,6 @@
 		<field name="invoiceTemplateNo" type="String" />
 		<field name="invoiceIssueNo" type="String" />
 		<field name="invoiceNo" type="String" />
+		<field name="syncStatus" type="int" />
 	</model>
 </model-hints>
