@@ -244,6 +244,9 @@
             <finder-column name="groupId"></finder-column>
             <finder-column name="userId"></finder-column>
         </finder>
+        <finder name="oid" return-type="Dossier" unique="true">
+            <finder-column name="oid"></finder-column>
+        </finder>
         <reference entity="DLFileEntry" package-path="com.liferay.portlet.documentlibrary"/>
         <reference package-path="com.liferay.portlet.documentlibrary" entity="DLFolder" />
         <reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />

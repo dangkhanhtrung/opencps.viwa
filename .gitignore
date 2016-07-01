@@ -258,3 +258,5 @@ portlets/opencps-integrate-portlet/docroot/WEB-INF/classes
 portlets/opencps-integrate-portlet/docroot/WEB-INF/classes/
 portlets/opencps-integrate-portlet/docroot/css/.sass-cache/
 portlets/opencps-integrate-portlet/docroot/css/.sass-cache
+
+build.binhth.properties

@@ -19,7 +19,18 @@
 
 package org.opencps.dossiermgt.service.impl;
 
+import java.util.List;
+import java.util.Locale;
+
+import org.opencps.datamgt.model.DictItem;
+import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.service.base.DossierServiceBaseImpl;
+
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
+import com.liferay.portal.security.ac.AccessControlled;
 
 /**
  * The implementation of the dossier remote service.
@@ -41,4 +52,17 @@ public class DossierServiceImpl extends DossierServiceBaseImpl {
 	 *
 	 * Never reference this interface directly. Always use {@link org.opencps.dossiermgt.service.DossierServiceUtil} to access the dossier remote service.
 	 */
+	
+	public JSONObject getByoid(
+	    String oid)
+	    throws SystemException {
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+		Dossier dossier =
+				dossierLocalService.getByoid(oid);
+			jsonObject.put(
+			    "subjectName",
+			    dossier.getSubjectName());
+		return jsonObject;
+	}
 }

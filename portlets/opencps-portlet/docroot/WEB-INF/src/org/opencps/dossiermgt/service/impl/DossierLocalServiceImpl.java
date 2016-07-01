@@ -1024,4 +1024,8 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 				2, actionInfo, messageInfo, new Date(), 1);
 	}
 
+	public Dossier getByoid(String oid) throws SystemException {
+		return dossierPersistence.fetchByoid(oid);
+	}
+	
 }
