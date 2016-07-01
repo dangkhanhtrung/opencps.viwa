@@ -253,3 +253,8 @@ hooks/opencps-hook/.settings/
 hooks/opencps-hook/build.xml
 
 *build.xml*
+
+portlets/opencps-integrate-portlet/docroot/WEB-INF/classes
+portlets/opencps-integrate-portlet/docroot/WEB-INF/classes/
+portlets/opencps-integrate-portlet/docroot/css/.sass-cache/
+portlets/opencps-integrate-portlet/docroot/css/.sass-cache

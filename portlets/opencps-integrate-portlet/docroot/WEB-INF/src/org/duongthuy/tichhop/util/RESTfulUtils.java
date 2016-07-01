@@ -1,56 +1,71 @@
 package org.duongthuy.tichhop.util;
 
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.filter.LoggingFilter;
+
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import com.liferay.portal.util.PortalUtil;
+import com.liferay.util.portlet.PortletProps;
 
 public class RESTfulUtils {
 
-	private static String responseGETAPI(String urlAPI){
+	final static String portalURL = PortletProps.get("PORTAL_URL");
+	public static String responseGETAPI(String urlAPI){
 		String result = StringPool.BLANK;
 		
-		Client client = Client.create();
-
-		WebResource webResource = client.resource(urlAPI);
+		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("admin.qa@fds.vn", "fds@2016");
+		 
 		
-		ClientResponse response = webResource.accept("application/json")
-				.get(ClientResponse.class);
+		Client client = ClientBuilder.newClient( new ClientConfig().register( LoggingFilter.class ) );
+
+		client.register(feature);
+		 
+		WebTarget webTarget = client.target(portalURL + urlAPI);
+		
+		
+		Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+		Response response = invocationBuilder.get();
 
 		if (response.getStatus() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ response.getStatus());
 		}
-
-		result = response.getEntity(String.class);
 		
-		_log.info("responseGETAPI "+ result);
+		result = response.readEntity(String.class);
 		
 		return Validator.isNotNull(result)?result:"{}";
 	}
 	
-	private static String responsePOSTAPI(String urlAPI, String input){
+	public static String responsePOSTAPI(String urlAPI, String input){
 		String result = StringPool.BLANK;
 		
-		Client client = Client.create();
-
-		WebResource webResource = client.resource(urlAPI);
+		Client client = ClientBuilder.newClient( new ClientConfig().register( LoggingFilter.class ) );
 		
-		ClientResponse response = webResource.type("application/json")
-				.post(ClientResponse.class, input);
+		WebTarget webTarget = client.target(portalURL + urlAPI);
+		
+		Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+		Response response = invocationBuilder.post(Entity.entity(input, MediaType.APPLICATION_JSON));
 		
 		if (response.getStatus() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ response.getStatus());
 		}
 
-		result = response.getEntity(String.class);
-		
-		_log.info("responsePOSTAPI "+ result);
+		result = response.readEntity(String.class);
 		
 		return Validator.isNotNull(result)?result:"{}";
 	}
