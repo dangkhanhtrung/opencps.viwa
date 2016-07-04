@@ -144,11 +144,6 @@ public class SyncFromFrontOffice implements MessageListener{
 
 						msgToEngine.put("msgToEngine", engineMsg);
 
-						// Send message to ...engine/destination
-						MessageBusUtil.sendMessage(
-						    "opencps/backoffice/engine/destination",
-						    msgToEngine);
-						
 						//add data packages to tich hop duongthuy
 						DateFormat dateFormat = DateFormatFactoryUtil
 								.getSimpleDateFormat("YYYY-MM-DD HH:mm:ss");
@@ -282,6 +277,11 @@ public class SyncFromFrontOffice implements MessageListener{
 						param.put("sendDate", currentDate);
 						String inputPOST = param.toString();
 						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/addMessageFunctionData", inputPOST);
+						
+						// Send message to ...engine/destination
+						MessageBusUtil.sendMessage(
+						    "opencps/backoffice/engine/destination",
+						    msgToEngine);
 						
 					}
 

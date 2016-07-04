@@ -184,9 +184,9 @@ public class DuongThuyAPI {
 	@POST
 	@Path("/addMessageFunctionData")
 	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
-	public Response addMessageFunctionData(String input) {
+	public Response addMessageFunctionData(String input){
 		String output = StringPool.BLANK;
-		InputStream inputStream = null;
+		InputStream fileInputStream = null;
 		try {
 			_log.info("************** input: "+input);
 			//(\\w+)
@@ -229,7 +229,7 @@ public class DuongThuyAPI {
 					PortletProps.get("opencps.file.system.temp.dir")+"INTEGRATE/"+inputJsonObject.getString("messageFunction")+"_"+inputJsonObject.getString("messageId");
 			title = inputJsonObject.getString("messageFunction")+"_"+inputJsonObject.getString("messageId");
 			
-			InputStream fileInputStream = new ByteArrayInputStream(inputJsonObject.getJSONObject("messageFileIdData").toString().getBytes("UTF-8"));
+			fileInputStream = new ByteArrayInputStream(inputJsonObject.getJSONObject("messageFileIdData").toString().getBytes("UTF-8"));
 //			
 			FileEntry fileEntry = DLAppLocalServiceUtil.addFileEntry(serviceContext.getUserId(), 
 					repositoryId, 
@@ -244,6 +244,9 @@ public class DuongThuyAPI {
 			
 			MessageFunctionData meData =MessageFunctionDataLocalServiceUtil.addMessageFunctionData(userId, userName, messageFunction, messageId, fileEntry.getFileEntryId(),version,dateSend);
 			_log.info("************** output - fileEntry *******************: "+fileEntry.getFileEntryId());
+			JSONObject responeJson = JSONFactoryUtil.createJSONObject();
+			responeJson.put("ReceiveDate", dateFormat.format(new Date()));
+			output = responeJson.toString();
 			_log.info("************** output - addMessageFunctionData *******************: "+output);
 			String oid = StringPool.BLANK;
 			if(Validator.isNotNull(meData) && meData.getMessageId().contains("_")){
@@ -261,6 +264,15 @@ public class DuongThuyAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			
+		}finally{
+			if(fileInputStream != null || Validator.isNotNull(fileInputStream)){
+				try {
+					fileInputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 		return Response.status(201).entity(output).build();
 	}
