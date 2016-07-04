@@ -59,6 +59,7 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 		attributes.put("messageId", getMessageId());
 		attributes.put("messageFileIdData", getMessageFileIdData());
 		attributes.put("sendDate", getSendDate());
+		attributes.put("version", getVersion());
 
 		return attributes;
 	}
@@ -117,6 +118,12 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 
 		if (sendDate != null) {
 			setSendDate(sendDate);
+		}
+
+		String version = (String)attributes.get("version");
+
+		if (version != null) {
+			setVersion(version);
 		}
 	}
 
@@ -340,6 +347,26 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 	@Override
 	public void setSendDate(java.util.Date sendDate) {
 		_messageFunctionData.setSendDate(sendDate);
+	}
+
+	/**
+	* Returns the version of this message function data.
+	*
+	* @return the version of this message function data
+	*/
+	@Override
+	public java.lang.String getVersion() {
+		return _messageFunctionData.getVersion();
+	}
+
+	/**
+	* Sets the version of this message function data.
+	*
+	* @param version the version of this message function data
+	*/
+	@Override
+	public void setVersion(java.lang.String version) {
+		_messageFunctionData.setVersion(version);
 	}
 
 	@Override

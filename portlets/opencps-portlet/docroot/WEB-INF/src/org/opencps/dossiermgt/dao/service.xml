@@ -114,6 +114,12 @@
             <finder-column name="parentId"></finder-column>
             <finder-column name="partType"></finder-column>
         </finder>
+        
+        <finder return-type="DossierPart" name="F_FORM_ONLINE" where=" ( formScript is not null and partType = 1 ) " unique="true" >
+			<finder-column name="dossierTemplateId" />
+			<finder-column name="parentId" />
+			<finder-column name="groupId" />
+		</finder>
 	</entity>
 
 	<entity name="ServiceConfig" local-service="true"

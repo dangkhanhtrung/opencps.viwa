@@ -262,6 +262,7 @@ public interface MessageFunctionDataLocalService extends BaseLocalService,
 	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData addMessageFunctionData(
 		java.lang.String userId, java.lang.String userName,
 		java.lang.String messageFunction, java.lang.String messageId,
-		long messageFileIdData)
+		long messageFileIdData, java.lang.String version,
+		java.util.Date sendDate)
 		throws com.liferay.portal.kernel.exception.SystemException;
 }

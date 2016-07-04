@@ -715,6 +715,7 @@ public class MessageFunctionDataPersistenceImpl extends BasePersistenceImpl<Mess
 		messageFunctionDataImpl.setMessageId(messageFunctionData.getMessageId());
 		messageFunctionDataImpl.setMessageFileIdData(messageFunctionData.getMessageFileIdData());
 		messageFunctionDataImpl.setSendDate(messageFunctionData.getSendDate());
+		messageFunctionDataImpl.setVersion(messageFunctionData.getVersion());
 
 		return messageFunctionDataImpl;
 	}

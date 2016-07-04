@@ -38,7 +38,7 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 	Externalizable {
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("{messagePackagesId=");
 		sb.append(messagePackagesId);
@@ -58,6 +58,8 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 		sb.append(messageFileIdData);
 		sb.append(", sendDate=");
 		sb.append(sendDate);
+		sb.append(", version=");
+		sb.append(version);
 		sb.append("}");
 
 		return sb.toString();
@@ -114,6 +116,13 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 			messageFunctionDataImpl.setSendDate(new Date(sendDate));
 		}
 
+		if (version == null) {
+			messageFunctionDataImpl.setVersion(StringPool.BLANK);
+		}
+		else {
+			messageFunctionDataImpl.setVersion(version);
+		}
+
 		messageFunctionDataImpl.resetOriginalValues();
 
 		return messageFunctionDataImpl;
@@ -130,6 +139,7 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 		messageId = objectInput.readUTF();
 		messageFileIdData = objectInput.readLong();
 		sendDate = objectInput.readLong();
+		version = objectInput.readUTF();
 	}
 
 	@Override
@@ -164,6 +174,13 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 
 		objectOutput.writeLong(messageFileIdData);
 		objectOutput.writeLong(sendDate);
+
+		if (version == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(version);
+		}
 	}
 
 	public long messagePackagesId;
@@ -175,4 +192,5 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 	public String messageId;
 	public long messageFileIdData;
 	public long sendDate;
+	public String version;
 }

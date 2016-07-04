@@ -126,7 +126,7 @@ public class MessageFunctionDataLocalServiceClp
 
 		_methodParameterTypes20 = new String[] {
 				"java.lang.String", "java.lang.String", "java.lang.String",
-				"java.lang.String", "long"
+				"java.lang.String", "long", "java.lang.String", "java.util.Date"
 			};
 	}
 
@@ -724,7 +724,8 @@ public class MessageFunctionDataLocalServiceClp
 	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData addMessageFunctionData(
 		java.lang.String userId, java.lang.String userName,
 		java.lang.String messageFunction, java.lang.String messageId,
-		long messageFileIdData)
+		long messageFileIdData, java.lang.String version,
+		java.util.Date sendDate)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		Object returnObj = null;
 
@@ -740,7 +741,11 @@ public class MessageFunctionDataLocalServiceClp
 						
 					ClpSerializer.translateInput(messageId),
 						
-					messageFileIdData
+					messageFileIdData,
+						
+					ClpSerializer.translateInput(version),
+						
+					ClpSerializer.translateInput(sendDate)
 					});
 		}
 		catch (Throwable t) {

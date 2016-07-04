@@ -84,6 +84,7 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 		attributes.put("messageId", getMessageId());
 		attributes.put("messageFileIdData", getMessageFileIdData());
 		attributes.put("sendDate", getSendDate());
+		attributes.put("version", getVersion());
 
 		return attributes;
 	}
@@ -142,6 +143,12 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 
 		if (sendDate != null) {
 			setSendDate(sendDate);
+		}
+
+		String version = (String)attributes.get("version");
+
+		if (version != null) {
+			setVersion(version);
 		}
 	}
 
@@ -365,6 +372,29 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 		}
 	}
 
+	@Override
+	public String getVersion() {
+		return _version;
+	}
+
+	@Override
+	public void setVersion(String version) {
+		_version = version;
+
+		if (_messageFunctionDataRemoteModel != null) {
+			try {
+				Class<?> clazz = _messageFunctionDataRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setVersion", String.class);
+
+				method.invoke(_messageFunctionDataRemoteModel, version);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
 	public BaseModel<?> getMessageFunctionDataRemoteModel() {
 		return _messageFunctionDataRemoteModel;
 	}
@@ -445,6 +475,7 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 		clone.setMessageId(getMessageId());
 		clone.setMessageFileIdData(getMessageFileIdData());
 		clone.setSendDate(getSendDate());
+		clone.setVersion(getVersion());
 
 		return clone;
 	}
@@ -496,7 +527,7 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("{messagePackagesId=");
 		sb.append(getMessagePackagesId());
@@ -516,6 +547,8 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 		sb.append(getMessageFileIdData());
 		sb.append(", sendDate=");
 		sb.append(getSendDate());
+		sb.append(", version=");
+		sb.append(getVersion());
 		sb.append("}");
 
 		return sb.toString();
@@ -523,7 +556,7 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(31);
+		StringBundler sb = new StringBundler(34);
 
 		sb.append("<model><model-name>");
 		sb.append("org.duongthuy.tichhop.api.dao.model.MessageFunctionData");
@@ -565,6 +598,10 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 			"<column><column-name>sendDate</column-name><column-value><![CDATA[");
 		sb.append(getSendDate());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>version</column-name><column-value><![CDATA[");
+		sb.append(getVersion());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -581,6 +618,7 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 	private String _messageId;
 	private long _messageFileIdData;
 	private Date _sendDate;
+	private String _version;
 	private BaseModel<?> _messageFunctionDataRemoteModel;
 	private Class<?> _clpSerializerClass = org.duongthuy.tichhop.api.dao.service.ClpSerializer.class;
 }

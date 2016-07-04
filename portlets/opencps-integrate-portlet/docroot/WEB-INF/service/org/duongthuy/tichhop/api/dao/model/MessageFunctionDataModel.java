@@ -204,6 +204,21 @@ public interface MessageFunctionDataModel extends BaseModel<MessageFunctionData>
 	 */
 	public void setSendDate(Date sendDate);
 
+	/**
+	 * Returns the version of this message function data.
+	 *
+	 * @return the version of this message function data
+	 */
+	@AutoEscape
+	public String getVersion();
+
+	/**
+	 * Sets the version of this message function data.
+	 *
+	 * @param version the version of this message function data
+	 */
+	public void setVersion(String version);
+
 	@Override
 	public boolean isNew();
 

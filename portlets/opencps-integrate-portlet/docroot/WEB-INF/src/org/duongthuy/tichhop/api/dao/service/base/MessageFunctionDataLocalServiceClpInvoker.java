@@ -124,7 +124,7 @@ public class MessageFunctionDataLocalServiceClpInvoker {
 
 		_methodParameterTypes39 = new String[] {
 				"java.lang.String", "java.lang.String", "java.lang.String",
-				"java.lang.String", "long"
+				"java.lang.String", "long", "java.lang.String", "java.util.Date"
 			};
 	}
 
@@ -239,7 +239,9 @@ public class MessageFunctionDataLocalServiceClpInvoker {
 				Arrays.deepEquals(_methodParameterTypes39, parameterTypes)) {
 			return MessageFunctionDataLocalServiceUtil.addMessageFunctionData((java.lang.String)arguments[0],
 				(java.lang.String)arguments[1], (java.lang.String)arguments[2],
-				(java.lang.String)arguments[3], ((Long)arguments[4]).longValue());
+				(java.lang.String)arguments[3],
+				((Long)arguments[4]).longValue(),
+				(java.lang.String)arguments[5], (java.util.Date)arguments[6]);
 		}
 
 		throw new UnsupportedOperationException();

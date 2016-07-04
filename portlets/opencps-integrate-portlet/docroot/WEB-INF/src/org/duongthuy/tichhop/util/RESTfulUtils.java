@@ -74,7 +74,11 @@ public class RESTfulUtils {
 	public static String responsePOSTAPI(String urlAPI, String input){
 		String result = StringPool.BLANK;
 		
+		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(accountLiferay, accountLiferayPass);
+		
 		Client client = ClientBuilder.newClient( new ClientConfig().register( LoggingFilter.class ) );
+		
+		client.register(feature);
 		
 		WebTarget webTarget = client.target(urlAPI);
 		
@@ -88,6 +92,30 @@ public class RESTfulUtils {
 		}
 
 		result = response.readEntity(String.class);
+		
+		return Validator.isNotNull(result)?result:"{}";
+	}
+	
+	public static String responsePOSTAPI_Notification(String urlAPI, String input, String acc, String pass){
+		String result = StringPool.BLANK;
+		
+		HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(acc, pass);
+		
+		Client client = ClientBuilder.newClient( new ClientConfig().register( LoggingFilter.class ) );
+		
+		client.register(feature);
+		
+		WebTarget webTarget = client.target(urlAPI);
+		
+		Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+		
+		Response response = invocationBuilder.post(Entity.entity(input, MediaType.APPLICATION_JSON));
+		
+		_log.info(response.getStatus());
+		
+		result = response.readEntity(String.class);
+		
+		_log.info(result);
 		
 		return Validator.isNotNull(result)?result:"{}";
 	}

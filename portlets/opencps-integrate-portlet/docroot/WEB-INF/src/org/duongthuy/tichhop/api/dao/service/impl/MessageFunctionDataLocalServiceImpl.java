@@ -49,7 +49,7 @@ public class MessageFunctionDataLocalServiceImpl
 	
 	public MessageFunctionData addMessageFunctionData(String userId, String userName, 
 			String messageFunction, String messageId,
-			long messageFileIdData) throws SystemException {
+			long messageFileIdData, String version, Date sendDate) throws SystemException {
 		
 		MessageFunctionData messageFunctionData = null;
 		
@@ -69,6 +69,10 @@ public class MessageFunctionDataLocalServiceImpl
 		messageFunctionData.setMessageId(messageId);
 		
 		messageFunctionData.setMessageFileIdData(messageFileIdData);
+		
+		messageFunctionData.setVersion(version);
+		
+		messageFunctionData.setSendDate(sendDate);
 		
 		messageFunctionDataPersistence.update(messageFunctionData);
 		return messageFunctionData;

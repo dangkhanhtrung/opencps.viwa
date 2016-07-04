@@ -69,9 +69,10 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 			{ "messageFunction", Types.VARCHAR },
 			{ "messageId", Types.VARCHAR },
 			{ "messageFileIdData", Types.BIGINT },
-			{ "sendDate", Types.TIMESTAMP }
+			{ "sendDate", Types.TIMESTAMP },
+			{ "version", Types.VARCHAR }
 		};
-	public static final String TABLE_SQL_CREATE = "create table duongthuy_message_packages (messagePackagesId LONG not null primary key,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,messageFunction VARCHAR(75) null,messageId VARCHAR(75) null,messageFileIdData LONG,sendDate DATE null)";
+	public static final String TABLE_SQL_CREATE = "create table duongthuy_message_packages (messagePackagesId LONG not null primary key,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,messageFunction VARCHAR(75) null,messageId VARCHAR(75) null,messageFileIdData LONG,sendDate DATE null,version VARCHAR(75) null)";
 	public static final String TABLE_SQL_DROP = "drop table duongthuy_message_packages";
 	public static final String ORDER_BY_JPQL = " ORDER BY messageFunctionData.messageFunction ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY duongthuy_message_packages.messageFunction ASC";
@@ -138,6 +139,7 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 		attributes.put("messageId", getMessageId());
 		attributes.put("messageFileIdData", getMessageFileIdData());
 		attributes.put("sendDate", getSendDate());
+		attributes.put("version", getVersion());
 
 		return attributes;
 	}
@@ -196,6 +198,12 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 
 		if (sendDate != null) {
 			setSendDate(sendDate);
+		}
+
+		String version = (String)attributes.get("version");
+
+		if (version != null) {
+			setVersion(version);
 		}
 	}
 
@@ -334,6 +342,21 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 		_sendDate = sendDate;
 	}
 
+	@Override
+	public String getVersion() {
+		if (_version == null) {
+			return StringPool.BLANK;
+		}
+		else {
+			return _version;
+		}
+	}
+
+	@Override
+	public void setVersion(String version) {
+		_version = version;
+	}
+
 	public long getColumnBitmask() {
 		return _columnBitmask;
 	}
@@ -374,6 +397,7 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 		messageFunctionDataImpl.setMessageId(getMessageId());
 		messageFunctionDataImpl.setMessageFileIdData(getMessageFileIdData());
 		messageFunctionDataImpl.setSendDate(getSendDate());
+		messageFunctionDataImpl.setVersion(getVersion());
 
 		messageFunctionDataImpl.resetOriginalValues();
 
@@ -493,12 +517,20 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 			messageFunctionDataCacheModel.sendDate = Long.MIN_VALUE;
 		}
 
+		messageFunctionDataCacheModel.version = getVersion();
+
+		String version = messageFunctionDataCacheModel.version;
+
+		if ((version != null) && (version.length() == 0)) {
+			messageFunctionDataCacheModel.version = null;
+		}
+
 		return messageFunctionDataCacheModel;
 	}
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("{messagePackagesId=");
 		sb.append(getMessagePackagesId());
@@ -518,6 +550,8 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 		sb.append(getMessageFileIdData());
 		sb.append(", sendDate=");
 		sb.append(getSendDate());
+		sb.append(", version=");
+		sb.append(getVersion());
 		sb.append("}");
 
 		return sb.toString();
@@ -525,7 +559,7 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(31);
+		StringBundler sb = new StringBundler(34);
 
 		sb.append("<model><model-name>");
 		sb.append("org.duongthuy.tichhop.api.dao.model.MessageFunctionData");
@@ -567,6 +601,10 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 			"<column><column-name>sendDate</column-name><column-value><![CDATA[");
 		sb.append(getSendDate());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>version</column-name><column-value><![CDATA[");
+		sb.append(getVersion());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -589,6 +627,7 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 	private String _originalMessageId;
 	private long _messageFileIdData;
 	private Date _sendDate;
+	private String _version;
 	private long _columnBitmask;
 	private MessageFunctionData _escapedModel;
 }

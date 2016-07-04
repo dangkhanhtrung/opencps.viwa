@@ -17,19 +17,37 @@
 
 package org.opencps.backend.sync;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+import org.opencps.accountmgt.model.Business;
+import org.opencps.accountmgt.model.Citizen;
+import org.opencps.accountmgt.service.BusinessLocalServiceUtil;
+import org.opencps.accountmgt.service.CitizenLocalServiceUtil;
 import org.opencps.backend.message.SendToEngineMsg;
 import org.opencps.backend.message.UserActionMsg;
+import org.opencps.backend.util.AutoFillFormData;
 import org.opencps.backend.util.BackendUtils;
 import org.opencps.dossiermgt.model.Dossier;
+import org.opencps.dossiermgt.model.DossierFile;
+import org.opencps.dossiermgt.model.DossierPart;
 import org.opencps.dossiermgt.model.DossierStatus;
+import org.opencps.dossiermgt.service.DossierFileLocalServiceUtil;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
+import org.opencps.dossiermgt.service.DossierPartLocalServiceUtil;
 import org.opencps.dossiermgt.service.DossierStatusLocalServiceUtil;
+import org.opencps.servicemgt.model.ServiceInfo;
+import org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.RESTfulUtils;
 import org.opencps.util.WebKeys;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -39,7 +57,15 @@ import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.MessageListenerException;
+import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.Base64;
+import com.liferay.portal.kernel.util.CalendarUtil;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.GroupThreadLocal;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.util.portlet.PortletProps;
 
 
@@ -124,7 +150,11 @@ public class SyncFromFrontOffice implements MessageListener{
 						    msgToEngine);
 						
 						//add data packages to tich hop duongthuy
-
+						DateFormat dateFormat = DateFormatFactoryUtil
+								.getSimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+						Date date = new Date();
+						String currentDate = dateFormat.format(date);
+						
 						String integrateURL = PortletProps.get("INTEGRATE_URL");
 						JSONObject objLv1 = JSONFactoryUtil.createJSONObject();
 						JSONObject objLv2 = JSONFactoryUtil.createJSONObject();
@@ -137,26 +167,29 @@ public class SyncFromFrontOffice implements MessageListener{
 						JSONObject objLv4HeaderSubject = JSONFactoryUtil.createJSONObject();
 						JSONObject objLv4BodyContent = JSONFactoryUtil.createJSONObject();
 						JSONObject objLv4BodySignature = JSONFactoryUtil.createJSONObject();
-						objLv4HeaderReference.put("version", "version");
-						objLv4HeaderReference.put("messageId", "messageId");
-						objLv4HeaderFrom.put("name", "name");
-						objLv4HeaderFrom.put("identity", "identity");
-						objLv4HeaderFrom.put("countryCode", "countryCode");
-						objLv4HeaderFrom.put("ministryCode", "ministryCode");
-						objLv4HeaderFrom.put("organizationCode", "organizationCode");
-						objLv4HeaderFrom.put("unitCode", "unitCode");
-						objLv4HeaderTo.put("name", "name");
-						objLv4HeaderTo.put("identity", "identity");
-						objLv4HeaderTo.put("countryCode", "countryCode");
-						objLv4HeaderTo.put("ministryCode", "ministryCode");
-						objLv4HeaderTo.put("organizationCode", "organizationCode");
-						objLv4HeaderTo.put("unitCode", "unitCode");
-						objLv4HeaderSubject.put("documentType", "documentType");
-						objLv4HeaderSubject.put("function", "function");
-						objLv4HeaderSubject.put("reference", "reference");
-						objLv4HeaderSubject.put("preReference", "preReference");
-						objLv4HeaderSubject.put("documentYear", "documentYear");
-						objLv4HeaderSubject.put("sendDate", "sendDate");
+						objLv4HeaderReference.put("version", "1.0");
+						objLv4HeaderReference.put("messageId", dossier.getOid()+"_"+System.nanoTime());
+						objLv4HeaderFrom.put("name", dossier.getContactName());
+						objLv4HeaderFrom.put("identity", "CDTNDVN");
+						objLv4HeaderFrom.put("countryCode", "VN");
+						objLv4HeaderFrom.put("ministryCode", "BGTVT");
+						objLv4HeaderFrom.put("organizationCode", "CDTNDVN");
+						objLv4HeaderFrom.put("unitCode", "");
+						objLv4HeaderTo.put("name", dossier.getGovAgencyName());
+						objLv4HeaderTo.put("identity", "BGTVT");
+						objLv4HeaderTo.put("countryCode", "VN");
+						objLv4HeaderTo.put("ministryCode", "BGTVT");
+						objLv4HeaderTo.put("organizationCode", "CDTNDVN");
+						objLv4HeaderTo.put("unitCode", "");
+						ServiceInfo serviceInfo = ServiceInfoLocalServiceUtil.fetchServiceInfo(dossier.getServiceInfoId());
+						objLv4HeaderSubject.put("documentType", serviceInfo.getServiceNo());
+						objLv4HeaderSubject.put("function", "01");
+						objLv4HeaderSubject.put("reference", dossier.getOid());
+						objLv4HeaderSubject.put("preReference", dossier.getOid());
+						Calendar calendar = Calendar.getInstance();
+						calendar.setTime(date);
+						objLv4HeaderSubject.put("documentYear", calendar.get(Calendar.YEAR));
+						objLv4HeaderSubject.put("sendDate", dateFormat.format(date));
 						//
 						objLv3Header.put("Reference", objLv4HeaderReference);
 						objLv3Header.put("From", objLv4HeaderFrom);
@@ -168,19 +201,67 @@ public class SyncFromFrontOffice implements MessageListener{
 						JSONArray contentAttachedFiles = JSONFactoryUtil.createJSONArray();
 						JSONObject contentAttachedFile = JSONFactoryUtil.createJSONObject();
 						//
-						contentAttachedFiles.put(contentAttachedFile);
+						List<DossierFile> listDossierFiles = DossierFileLocalServiceUtil.getDossierFileByDossierId(dossier.getDossierId());
+						
+						for (DossierFile dossierFile : listDossierFiles) {
+							contentAttachedFile.put("AttachedTypeCode", dossierFile.getTemplateFileNo());
+							contentAttachedFile.put("AttachedTypeName", dossierFile.getDossierFileType());
+							contentAttachedFile.put("AttachedDocName", dossierFile.getDisplayName());
+							contentAttachedFile.put("AttachedNote", StringPool.BLANK);
+							contentAttachedFile.put("AttachedSequenceNo", dossierFile.getDossierPartId());
+							contentAttachedFile.put("FullFileName", dossierFile.getDisplayName());
+							String base64File = StringPool.BLANK;
+							
+							FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(dossierFile.getFileEntryId());
+							base64File = new String(Base64.encode(FileUtil.getBytes(fileEntry.getContentStream())));
+							_log.info("lengbase64File"+base64File.length());		
+							contentAttachedFile.put("Base64FileContent", base64File);
+							
+							contentAttachedFiles.put(contentAttachedFile);
+						}
+						
 						contentLv1.put("AttachedFile", contentAttachedFiles);
 						//
-						contentLv1.put("FromOrganization", "FromOrganization");
-						contentLv1.put("Division", "Division");
-						contentLv1.put("ToOrganization", "ToOrganization");
-						contentLv1.put("DocNumber", "DocNumber");
-						contentLv1.put("BriefContent", "BriefContent");
-						contentLv1.put("DocContent", "DocContent");
-						contentLv1.put("SignName", "SignName");
-						contentLv1.put("SignTitle", "SignTitle");
-						contentLv1.put("SignPlace", "SignPlace");
-						contentLv1.put("SignDate", "SignDate");
+						DossierPart dossierPartOnline = DossierPartLocalServiceUtil.getByF_FORM_ONLINE(dossier.getDossierTemplateId(), 0, GroupThreadLocal.getGroupId());
+						DossierFile dossierFileOnline = null;
+						if(Validator.isNotNull(dossierPartOnline)){
+							dossierFileOnline = DossierFileLocalServiceUtil.getDossierFileInUse(dossier.getDossierId(), dossierPartOnline.getDossierpartId());
+						}
+						
+						String sampleData="{}";
+						if(Validator.isNotNull(dossierFileOnline)){
+							
+						sampleData = "{\"FromOrganization\":\"#FromOrganization@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"Division\":\"#Division@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"ToOrganization\":\"#ToOrganization@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"DocNumber\":\"#DocNumber@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"BriefContent\":\"#BriefContent@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"DocContent\":\"#DocContent@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"SignName\":\"#SignName@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"SignTitle\":\"#SignTitle@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"SignPlace\":\"#SignPlace@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"SignDate\":\"#SignDate@"+dossierFileOnline.getTemplateFileNo()+"\"}";
+						}
+						Citizen ownerCitizen = null;
+						Business ownerBusiness = null;
+						
+						if(dossier.getOwnerOrganizationId() <= 0){
+							ownerCitizen = CitizenLocalServiceUtil.getByMappingUserId(dossier.getUserId());
+						}else{
+							ownerBusiness = BusinessLocalServiceUtil.getBymappingOrganizationId(dossier.getOwnerOrganizationId());
+						}
+						String resultBilding = AutoFillFormData.dataBinding(sampleData, ownerCitizen, ownerBusiness, dossier.getDossierId());
+						JSONObject resultBildingJson = JSONFactoryUtil.createJSONObject(resultBilding);
+						contentLv1.put("FromOrganization", resultBildingJson.getString("FromOrganization"));
+						contentLv1.put("Division", resultBildingJson.getString("Division"));
+						contentLv1.put("ToOrganization", resultBildingJson.getString("ToOrganization"));
+						contentLv1.put("DocNumber", resultBildingJson.getString("DocNumber"));
+						contentLv1.put("BriefContent", resultBildingJson.getString("BriefContent"));
+						contentLv1.put("DocContent", resultBildingJson.getString("DocContent"));
+						contentLv1.put("SignName", resultBildingJson.getString("SignName"));
+						contentLv1.put("SignTitle", resultBildingJson.getString("SignTitle"));
+						contentLv1.put("SignPlace", resultBildingJson.getString("SignPlace"));
+						contentLv1.put("SignDate", resultBildingJson.getString("SignDate"));
 						//
 						objLv4BodyContent.put("Declaration", contentLv1);
 						objLv3Body.put("Content", objLv4BodyContent);
@@ -195,11 +276,13 @@ public class SyncFromFrontOffice implements MessageListener{
 						param.put("userId", dossier.getUserId());
 						param.put("userName", dossier.getContactName());
 						param.put("messageFunction", "01");
-						param.put("messageId", dossier.getOid());
+						param.put("messageId", dossier.getOid()+"_"+System.nanoTime());
 						param.put("messageFileIdData", objLv1);
-						
+						param.put("version", "1.0");
+						param.put("sendDate", currentDate);
 						String inputPOST = param.toString();
 						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/addMessageFunctionData", inputPOST);
+						
 					}
 
 				}

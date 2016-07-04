@@ -1,8 +1,11 @@
 package org.duongthuy.tichhop.api;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
@@ -22,6 +25,9 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.CalendarUtil;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
@@ -47,6 +53,9 @@ public class DuongThuyAPI {
 			_log.info("************** messageid: "+messageid);
 			
 			//(\\w+)
+			if(Validator.isNotNull(messageid) && messageid.contains("_")){
+				messageid = messageid.substring(0, messageid.lastIndexOf("_"));
+			}
 			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
 			long fileId = 0;
@@ -82,7 +91,8 @@ public class DuongThuyAPI {
 			}
 			
 			_log.info("************** output - new *******************: "+output);
-			
+			File file = FileUtil.createTempFile(dlFileEntry.getContentStream());
+			_log.info("****************"+file.length() );
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,7 +121,9 @@ public class DuongThuyAPI {
 		try {
 			_log.info("************** messagefunction: "+messagefunction);
 			_log.info("************** messageid: "+messageid);
-			
+			if(Validator.isNotNull(messageid) && messageid.contains("_")){
+				messageid = messageid.substring(0, messageid.lastIndexOf("_"));
+			}
 			//(\\w+)
 			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
@@ -184,13 +196,20 @@ public class DuongThuyAPI {
 			JSONObject inputJsonObject = JSONFactoryUtil.createJSONObject(input);
 			_log.info(inputJsonObject.getString("messageFunction").toString());
 			_log.info(inputJsonObject.getString("messageId").toString());
-			_log.info(inputJsonObject.getJSONObject("messageFileIdData").toString());
+			_log.info(inputJsonObject.getJSONObject("messageFileIdData").toString().getBytes());
 
 			String userId = inputJsonObject.getString("userId");
 			String userName = inputJsonObject.getString("userName");
 			String messageFunction = inputJsonObject.getString("messageFunction");
 			String messageId = inputJsonObject.getString("messageId");
-			
+			String version = inputJsonObject.getString("version");
+			String sendDate = inputJsonObject.getString("sendDate");
+			DateFormat dateFormat = DateFormatFactoryUtil
+					.getSimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+			Date dateSend = null;
+			if(Validator.isNotNull(sendDate)){
+				dateSend = dateFormat.parse(sendDate);
+			}
 			ServiceContext serviceContext = RESTfulUtils.getServiceContextIntegrate();
 			
 			DLFolder dlFolderOPENCPS = DLFolderLocalServiceUtil.getFolder(serviceContext.getScopeGroupId(), 0, PortletProps.get("OPENCPS")) ;
@@ -223,10 +242,21 @@ public class DuongThuyAPI {
 					RESTfulUtils.getBytes(fileInputStream), 
 					serviceContext);
 			
-			MessageFunctionDataLocalServiceUtil.addMessageFunctionData(userId, userName, messageFunction, messageId, fileEntry.getFileEntryId());
+			MessageFunctionData meData =MessageFunctionDataLocalServiceUtil.addMessageFunctionData(userId, userName, messageFunction, messageId, fileEntry.getFileEntryId(),version,dateSend);
 			_log.info("************** output - fileEntry *******************: "+fileEntry.getFileEntryId());
 			_log.info("************** output - addMessageFunctionData *******************: "+output);
+			String oid = StringPool.BLANK;
+			if(Validator.isNotNull(meData) && meData.getMessageId().contains("_")){
+				oid = meData.getMessageId().substring(0, meData.getMessageId().lastIndexOf("_"));
 			
+				JSONObject paramNotification = JSONFactoryUtil.createJSONObject();
+				paramNotification.put("messagefunction", meData.getMessageFunction());
+				paramNotification.put("messageid", meData.getMessageId());
+				paramNotification.put("messagecontent", "Call responsePOSTAPI_Notification");
+				paramNotification.put("reference", oid);
+				String inputPOSTNotification = paramNotification.toString();
+			RESTfulUtils.responsePOSTAPI_Notification("http://daotao.viwa.gov.vn/notifications/instance", inputPOSTNotification, "dvcviwa","dvc2016");
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
