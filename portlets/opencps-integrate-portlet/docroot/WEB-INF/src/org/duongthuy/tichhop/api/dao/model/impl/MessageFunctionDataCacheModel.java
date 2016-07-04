@@ -107,7 +107,12 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 			messageFunctionDataImpl.setMessageId(messageId);
 		}
 
-		messageFunctionDataImpl.setMessageFileIdData(messageFileIdData);
+		if (messageFileIdData == null) {
+			messageFunctionDataImpl.setMessageFileIdData(StringPool.BLANK);
+		}
+		else {
+			messageFunctionDataImpl.setMessageFileIdData(messageFileIdData);
+		}
 
 		if (sendDate == Long.MIN_VALUE) {
 			messageFunctionDataImpl.setSendDate(null);
@@ -137,7 +142,7 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 		modifiedDate = objectInput.readLong();
 		messageFunction = objectInput.readUTF();
 		messageId = objectInput.readUTF();
-		messageFileIdData = objectInput.readLong();
+		messageFileIdData = objectInput.readUTF();
 		sendDate = objectInput.readLong();
 		version = objectInput.readUTF();
 	}
@@ -172,7 +177,13 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 			objectOutput.writeUTF(messageId);
 		}
 
-		objectOutput.writeLong(messageFileIdData);
+		if (messageFileIdData == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(messageFileIdData);
+		}
+
 		objectOutput.writeLong(sendDate);
 
 		if (version == null) {
@@ -190,7 +201,7 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 	public long modifiedDate;
 	public String messageFunction;
 	public String messageId;
-	public long messageFileIdData;
+	public String messageFileIdData;
 	public long sendDate;
 	public String version;
 }

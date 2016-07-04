@@ -181,14 +181,15 @@ public interface MessageFunctionDataModel extends BaseModel<MessageFunctionData>
 	 *
 	 * @return the message file ID data of this message function data
 	 */
-	public long getMessageFileIdData();
+	@AutoEscape
+	public String getMessageFileIdData();
 
 	/**
 	 * Sets the message file ID data of this message function data.
 	 *
 	 * @param messageFileIdData the message file ID data of this message function data
 	 */
-	public void setMessageFileIdData(long messageFileIdData);
+	public void setMessageFileIdData(String messageFileIdData);
 
 	/**
 	 * Returns the send date of this message function data.

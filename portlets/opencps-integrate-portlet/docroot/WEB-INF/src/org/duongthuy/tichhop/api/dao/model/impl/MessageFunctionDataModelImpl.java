@@ -68,11 +68,11 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 			{ "modifiedDate", Types.TIMESTAMP },
 			{ "messageFunction", Types.VARCHAR },
 			{ "messageId", Types.VARCHAR },
-			{ "messageFileIdData", Types.BIGINT },
+			{ "messageFileIdData", Types.VARCHAR },
 			{ "sendDate", Types.TIMESTAMP },
 			{ "version", Types.VARCHAR }
 		};
-	public static final String TABLE_SQL_CREATE = "create table duongthuy_message_packages (messagePackagesId LONG not null primary key,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,messageFunction VARCHAR(75) null,messageId VARCHAR(75) null,messageFileIdData LONG,sendDate DATE null,version VARCHAR(75) null)";
+	public static final String TABLE_SQL_CREATE = "create table duongthuy_message_packages (messagePackagesId LONG not null primary key,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,messageFunction VARCHAR(75) null,messageId VARCHAR(75) null,messageFileIdData VARCHAR(75) null,sendDate DATE null,version VARCHAR(75) null)";
 	public static final String TABLE_SQL_DROP = "drop table duongthuy_message_packages";
 	public static final String ORDER_BY_JPQL = " ORDER BY messageFunctionData.messageFunction ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY duongthuy_message_packages.messageFunction ASC";
@@ -188,7 +188,7 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 			setMessageId(messageId);
 		}
 
-		Long messageFileIdData = (Long)attributes.get("messageFileIdData");
+		String messageFileIdData = (String)attributes.get("messageFileIdData");
 
 		if (messageFileIdData != null) {
 			setMessageFileIdData(messageFileIdData);
@@ -323,12 +323,17 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 	}
 
 	@Override
-	public long getMessageFileIdData() {
-		return _messageFileIdData;
+	public String getMessageFileIdData() {
+		if (_messageFileIdData == null) {
+			return StringPool.BLANK;
+		}
+		else {
+			return _messageFileIdData;
+		}
 	}
 
 	@Override
-	public void setMessageFileIdData(long messageFileIdData) {
+	public void setMessageFileIdData(String messageFileIdData) {
 		_messageFileIdData = messageFileIdData;
 	}
 
@@ -508,6 +513,12 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 
 		messageFunctionDataCacheModel.messageFileIdData = getMessageFileIdData();
 
+		String messageFileIdData = messageFunctionDataCacheModel.messageFileIdData;
+
+		if ((messageFileIdData != null) && (messageFileIdData.length() == 0)) {
+			messageFunctionDataCacheModel.messageFileIdData = null;
+		}
+
 		Date sendDate = getSendDate();
 
 		if (sendDate != null) {
@@ -625,7 +636,7 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 	private String _originalMessageFunction;
 	private String _messageId;
 	private String _originalMessageId;
-	private long _messageFileIdData;
+	private String _messageFileIdData;
 	private Date _sendDate;
 	private String _version;
 	private long _columnBitmask;

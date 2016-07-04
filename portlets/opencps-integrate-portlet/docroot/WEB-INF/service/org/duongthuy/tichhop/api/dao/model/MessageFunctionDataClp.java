@@ -133,7 +133,7 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 			setMessageId(messageId);
 		}
 
-		Long messageFileIdData = (Long)attributes.get("messageFileIdData");
+		String messageFileIdData = (String)attributes.get("messageFileIdData");
 
 		if (messageFileIdData != null) {
 			setMessageFileIdData(messageFileIdData);
@@ -326,12 +326,12 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 	}
 
 	@Override
-	public long getMessageFileIdData() {
+	public String getMessageFileIdData() {
 		return _messageFileIdData;
 	}
 
 	@Override
-	public void setMessageFileIdData(long messageFileIdData) {
+	public void setMessageFileIdData(String messageFileIdData) {
 		_messageFileIdData = messageFileIdData;
 
 		if (_messageFunctionDataRemoteModel != null) {
@@ -339,7 +339,7 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 				Class<?> clazz = _messageFunctionDataRemoteModel.getClass();
 
 				Method method = clazz.getMethod("setMessageFileIdData",
-						long.class);
+						String.class);
 
 				method.invoke(_messageFunctionDataRemoteModel, messageFileIdData);
 			}
@@ -616,7 +616,7 @@ public class MessageFunctionDataClp extends BaseModelImpl<MessageFunctionData>
 	private Date _modifiedDate;
 	private String _messageFunction;
 	private String _messageId;
-	private long _messageFileIdData;
+	private String _messageFileIdData;
 	private Date _sendDate;
 	private String _version;
 	private BaseModel<?> _messageFunctionDataRemoteModel;

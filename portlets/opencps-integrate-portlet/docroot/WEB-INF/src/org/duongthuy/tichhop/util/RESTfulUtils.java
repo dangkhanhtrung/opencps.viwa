@@ -138,7 +138,6 @@ public class RESTfulUtils {
 		Company company = CompanyLocalServiceUtil.getCompanyByVirtualHost(virtualHOST);
 		Group group = GroupLocalServiceUtil.getGroup(company.getCompanyId(), groupNAME);
 		User user = UserLocalServiceUtil.getUserByEmailAddress(company.getCompanyId(), accountLiferay);
-		_log.info(group);
 		ServiceContext serviceContext = new ServiceContext();
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);

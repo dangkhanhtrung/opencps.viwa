@@ -14,7 +14,7 @@
 		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
 		<property name="messageFunction" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="messageId" type="com.liferay.portal.dao.orm.hibernate.StringType" />
-		<property name="messageFileIdData" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="messageFileIdData" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="sendDate" type="org.hibernate.type.TimestampType" />
 		<property name="version" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>

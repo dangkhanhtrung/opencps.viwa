@@ -53,46 +53,45 @@ public class DuongThuyAPI {
 			_log.info("************** messageid: "+messageid);
 			
 			//(\\w+)
-			if(Validator.isNotNull(messageid) && messageid.contains("_")){
-				messageid = messageid.substring(0, messageid.lastIndexOf("_"));
-			}
 			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
-			long fileId = 0;
+			output = messageFunctionData.getMessageFileIdData();
 			
-			if(Validator.isNotNull(messageFunctionData)){
-				
-				fileId = messageFunctionData.getMessageFileIdData();
-				
-			}
-			
-			DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(fileId);
-			
-			_log.info(dlFileEntry);
-			
-			if(Validator.isNotNull(dlFileEntry)){
-				
-				RESTfulUtils.acceptReadFile();
-				
-				inputStream = dlFileEntry.getContentStream();
-				
-				int i;
-			    
-				char c;
-			    
-			    while((i=inputStream.read())!=-1)
-			    {
-			    	c=(char)i;
-			            
-			    	output += c;
-			            
-			    }
-				
-			}
+//			long fileId = 0;
+//			
+//			if(Validator.isNotNull(messageFunctionData)){
+//				
+//				fileId = messageFunctionData.getMessageFileIdData();
+//				
+//			}
+//			
+//			DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(fileId);
+//			
+//			_log.info(dlFileEntry);
+//			
+//			if(Validator.isNotNull(dlFileEntry)){
+//				
+//				//RESTfulUtils.acceptReadFile();
+//				
+//				inputStream = DLFileEntryLocalServiceUtil.getFileAsStream(dlFileEntry.getFileEntryId(), dlFileEntry.getVersion());
+//				
+//				int i;
+//			    
+//				char c;
+//			    
+//			    while((i=inputStream.read())!=-1)
+//			    {
+//			    	c=(char)i;
+//			            
+//			    	output += c;
+//			            
+//			    }
+//				
+//			}
 			
 			_log.info("************** output - new *******************: "+output);
-			File file = FileUtil.createTempFile(dlFileEntry.getContentStream());
-			_log.info("****************"+file.length() );
+//			File file = FileUtil.createTempFile(dlFileEntry.getContentStream());
+//			_log.info("****************"+file.length() );
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,43 +120,42 @@ public class DuongThuyAPI {
 		try {
 			_log.info("************** messagefunction: "+messagefunction);
 			_log.info("************** messageid: "+messageid);
-			if(Validator.isNotNull(messageid) && messageid.contains("_")){
-				messageid = messageid.substring(0, messageid.lastIndexOf("_"));
-			}
 			//(\\w+)
 			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
-			long fileId = 0;
+			output = messageFunctionData.getMessageFileIdData();
 			
-			if(Validator.isNotNull(messageFunctionData)){
-				
-				fileId = messageFunctionData.getMessageFileIdData();
-				
-			}
-
-			DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(fileId);
-
-			_log.info(dlFileEntry);
-			
-			if(Validator.isNotNull(dlFileEntry)){
-				
-				RESTfulUtils.acceptReadFile();
-				
-				inputStream = dlFileEntry.getContentStream();
-				
-				int i;
-			    
-				char c;
-			    
-			    while((i=inputStream.read())!=-1)
-			    {
-			    	c=(char)i;
-			            
-			    	output += c;
-			            
-			    }
-				
-			}
+//			long fileId = 0;
+//			
+//			if(Validator.isNotNull(messageFunctionData)){
+//				
+//				fileId = messageFunctionData.getMessageFileIdData();
+//				
+//			}
+//
+//			DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(fileId);
+//
+//			_log.info(dlFileEntry);
+//			
+//			if(Validator.isNotNull(dlFileEntry)){
+//				
+//				RESTfulUtils.acceptReadFile();
+//				
+//				inputStream = dlFileEntry.getContentStream();
+//				
+//				int i;
+//			    
+//				char c;
+//			    
+//			    while((i=inputStream.read())!=-1)
+//			    {
+//			    	c=(char)i;
+//			            
+//			    	output += c;
+//			            
+//			    }
+//				
+//			}
 			
 			_log.info("************** output - update *******************: "+output);
 			
@@ -188,20 +186,23 @@ public class DuongThuyAPI {
 		String output = StringPool.BLANK;
 		InputStream fileInputStream = null;
 		try {
-			_log.info("************** input: "+input);
 			//(\\w+)
 			if(Validator.isNull(input)){
 		        return Response.status(400).entity("Create packages fail!").build();
 		    }
 			JSONObject inputJsonObject = JSONFactoryUtil.createJSONObject(input);
-			_log.info(inputJsonObject.getString("messageFunction").toString());
-			_log.info(inputJsonObject.getString("messageId").toString());
-			_log.info(inputJsonObject.getJSONObject("messageFileIdData").toString().getBytes());
+			_log.info("userId: "+inputJsonObject.getString("userId").toString());
+			_log.info("userName: "+inputJsonObject.getString("userName").toString());
+			_log.info("messageFunction: "+inputJsonObject.getString("messageFunction").toString());
+			_log.info("messageId: "+inputJsonObject.getString("messageId").toString());
+			_log.info("version: "+inputJsonObject.getString("version").toString());
+			_log.info("sendDate: "+inputJsonObject.getString("sendDate").toString());
 
 			String userId = inputJsonObject.getString("userId");
 			String userName = inputJsonObject.getString("userName");
 			String messageFunction = inputJsonObject.getString("messageFunction");
 			String messageId = inputJsonObject.getString("messageId");
+			String messageFileIdData = inputJsonObject.getString("messageFileIdData");
 			String version = inputJsonObject.getString("version");
 			String sendDate = inputJsonObject.getString("sendDate");
 			DateFormat dateFormat = DateFormatFactoryUtil
@@ -210,40 +211,41 @@ public class DuongThuyAPI {
 			if(Validator.isNotNull(sendDate)){
 				dateSend = dateFormat.parse(sendDate);
 			}
-			ServiceContext serviceContext = RESTfulUtils.getServiceContextIntegrate();
-			
-			DLFolder dlFolderOPENCPS = DLFolderLocalServiceUtil.getFolder(serviceContext.getScopeGroupId(), 0, PortletProps.get("OPENCPS")) ;
-			DLFolder dlFolderINTEGRATE = DLFolderLocalServiceUtil.getFolder(serviceContext.getScopeGroupId(), dlFolderOPENCPS.getFolderId(), PortletProps.get("INTEGRATE")) ;
-			
-			long repositoryId = 0;
-			long folderId = 0;
-			String sourceFileName = "";
-			String mimeType = "";
-			String title = "";
-			byte[] bytes = null;
-			
-			repositoryId = dlFolderINTEGRATE.getRepositoryId();
-			folderId = dlFolderINTEGRATE.getFolderId();
-			mimeType = "text/html";
-			sourceFileName =
-					PortletProps.get("opencps.file.system.temp.dir")+"INTEGRATE/"+inputJsonObject.getString("messageFunction")+"_"+inputJsonObject.getString("messageId");
-			title = inputJsonObject.getString("messageFunction")+"_"+inputJsonObject.getString("messageId");
-			
-			fileInputStream = new ByteArrayInputStream(inputJsonObject.getJSONObject("messageFileIdData").toString().getBytes("UTF-8"));
+//			ServiceContext serviceContext = RESTfulUtils.getServiceContextIntegrate();
 //			
-			FileEntry fileEntry = DLAppLocalServiceUtil.addFileEntry(serviceContext.getUserId(), 
-					repositoryId, 
-					folderId, 
-					sourceFileName, 
-					mimeType, 
-					title, 
-					"Integrate", 
-					"Integrate ChangeLog", 
-					RESTfulUtils.getBytes(fileInputStream), 
-					serviceContext);
+//			
+//			DLFolder dlFolderOPENCPS = DLFolderLocalServiceUtil.getFolder(serviceContext.getScopeGroupId(), 0, PortletProps.get("OPENCPS")) ;
+//			DLFolder dlFolderINTEGRATE = DLFolderLocalServiceUtil.getFolder(serviceContext.getScopeGroupId(), dlFolderOPENCPS.getFolderId(), PortletProps.get("INTEGRATE")) ;
+//			
+//			long repositoryId = 0;
+//			long folderId = 0;
+//			String sourceFileName = "";
+//			String mimeType = "";
+//			String title = "";
+//			byte[] bytes = null;
+//			
+//			repositoryId = dlFolderINTEGRATE.getRepositoryId();
+//			folderId = dlFolderINTEGRATE.getFolderId();
+//			mimeType = "text/html";
+//			sourceFileName =
+//					PortletProps.get("opencps.file.system.temp.dir")+"INTEGRATE/"+inputJsonObject.getString("messageFunction")+"_"+inputJsonObject.getString("messageId");
+//			title = inputJsonObject.getString("messageFunction")+"_"+inputJsonObject.getString("messageId");
+//			
+//			fileInputStream = new ByteArrayInputStream(inputJsonObject.getJSONObject("messageFileIdData").toString().getBytes("UTF-8"));
+////			
+//			FileEntry fileEntry = DLAppLocalServiceUtil.addFileEntry(serviceContext.getUserId(), 
+//					repositoryId, 
+//					folderId, 
+//					sourceFileName, 
+//					mimeType, 
+//					title, 
+//					"Integrate", 
+//					"Integrate ChangeLog", 
+//					RESTfulUtils.getBytes(fileInputStream), 
+//					serviceContext);
 			
-			MessageFunctionData meData =MessageFunctionDataLocalServiceUtil.addMessageFunctionData(userId, userName, messageFunction, messageId, fileEntry.getFileEntryId(),version,dateSend);
-			_log.info("************** output - fileEntry *******************: "+fileEntry.getFileEntryId());
+			MessageFunctionData meData =MessageFunctionDataLocalServiceUtil.addMessageFunctionData(userId, userName, messageFunction, messageId, messageFileIdData,version,dateSend);
+//			_log.info("************** output - fileEntry *******************: "+fileEntry.getFileEntryId());
 			JSONObject responeJson = JSONFactoryUtil.createJSONObject();
 			responeJson.put("ReceiveDate", dateFormat.format(new Date()));
 			output = responeJson.toString();

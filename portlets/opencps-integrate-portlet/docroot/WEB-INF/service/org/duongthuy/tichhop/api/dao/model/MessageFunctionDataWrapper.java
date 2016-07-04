@@ -108,7 +108,7 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 			setMessageId(messageId);
 		}
 
-		Long messageFileIdData = (Long)attributes.get("messageFileIdData");
+		String messageFileIdData = (String)attributes.get("messageFileIdData");
 
 		if (messageFileIdData != null) {
 			setMessageFileIdData(messageFileIdData);
@@ -315,7 +315,7 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 	* @return the message file ID data of this message function data
 	*/
 	@Override
-	public long getMessageFileIdData() {
+	public java.lang.String getMessageFileIdData() {
 		return _messageFunctionData.getMessageFileIdData();
 	}
 
@@ -325,7 +325,7 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 	* @param messageFileIdData the message file ID data of this message function data
 	*/
 	@Override
-	public void setMessageFileIdData(long messageFileIdData) {
+	public void setMessageFileIdData(java.lang.String messageFileIdData) {
 		_messageFunctionData.setMessageFileIdData(messageFileIdData);
 	}
 

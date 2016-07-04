@@ -6,7 +6,7 @@ create table duongthuy_message_packages (
 	modifiedDate DATE null,
 	messageFunction VARCHAR(75) null,
 	messageId VARCHAR(75) null,
-	messageFileIdData LONG,
+	messageFileIdData VARCHAR(75) null,
 	sendDate DATE null,
 	version VARCHAR(75) null
 );
