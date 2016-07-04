@@ -56,13 +56,45 @@ public class DossierServiceImpl extends DossierServiceBaseImpl {
 	public JSONObject getByoid(
 	    String oid)
 	    throws SystemException {
-
+		System.out.println("DossierServiceImpl.oid()"+oid);
+		JSONObject declaration = JSONFactoryUtil.createJSONObject();
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+		JSONObject attachedFile = JSONFactoryUtil.createJSONObject();
 		Dossier dossier =
 				dossierLocalService.getByoid(oid);
-			jsonObject.put(
-			    "subjectName",
-			    dossier.getSubjectName());
+		attachedFile.put(
+				    "AttachedTypeCode",
+				    dossier.getSubjectName());
+		attachedFile.put(
+				    "AttachedTypeName",
+				    dossier.getSubjectName());
+		attachedFile.put(
+				    "AttachedDocName",
+				    dossier.getSubjectName());
+		attachedFile.put(
+				    "AttachedNote",
+				    dossier.getSubjectName());
+		attachedFile.put(
+				    "AttachedSequenceNo",
+				    dossier.getSubjectName());
+		attachedFile.put(
+				    "FullFileName",
+				    dossier.getSubjectName());
+		attachedFile.put(
+				    "Base64FileContent",
+				    dossier.getSubjectName());
+		jsonObject.put("AttachedFile", attachedFile);
+		jsonObject.put("FromOrganization", dossier.getSubjectName());
+		jsonObject.put("Division", dossier.getSubjectName());
+		jsonObject.put("ToOrganization", dossier.getSubjectName());
+		jsonObject.put("DocNumber", dossier.getSubjectName());
+		jsonObject.put("BriefContent", dossier.getSubjectName());
+		jsonObject.put("DocContent", dossier.getSubjectName());
+		jsonObject.put("SignName", dossier.getSubjectName());
+		jsonObject.put("SignTitle", dossier.getSubjectName());
+		jsonObject.put("SignPlace", dossier.getSubjectName());
+		jsonObject.put("SignDate", dossier.getSubjectName());
+		declaration.put("Declaration", jsonObject);
 		return jsonObject;
 	}
 }

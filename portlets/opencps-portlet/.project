@@ -42,4 +42,11 @@
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 		<nature>net.sourceforge.metrics.nature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src</name>
+			<type>2</type>
+			<location>/home/binhth/MEGAsync/SDK/git/viwa/opencps.viwa/portlets/opencps-integrate-portlet/docroot/WEB-INF/src</location>
+		</link>
+	</linkedResources>
 </projectDescription>

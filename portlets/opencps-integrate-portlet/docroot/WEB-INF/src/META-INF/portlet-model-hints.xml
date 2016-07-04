@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="org.duongthuy.tichhop.api.dao.model.MessageFunctionData">
+		<field name="messagePackagesId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="messageFunction" type="String" />
+		<field name="messageId" type="String" />
+		<field name="messageFileIdData" type="long" />
+		<field name="sendDate" type="Date" />
+	</model>
+</model-hints>
