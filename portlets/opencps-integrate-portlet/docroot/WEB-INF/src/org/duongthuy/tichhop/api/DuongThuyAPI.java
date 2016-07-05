@@ -3,25 +3,34 @@ package org.duongthuy.tichhop.api;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.duongthuy.tichhop.api.bean.ResponseBean;
 import org.duongthuy.tichhop.api.dao.model.MessageFunctionData;
 import org.duongthuy.tichhop.api.dao.service.MessageFunctionDataLocalServiceUtil;
+import org.duongthuy.tichhop.util.DateTimeUtil;
 import org.duongthuy.tichhop.util.RESTfulUtils;
 
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
@@ -233,6 +242,61 @@ public class DuongThuyAPI {
 			
 		}
 		return Response.status(201).entity(output).build();
+	}
+	
+	@GET
+	@Path("/instance/messagefunction/{messagefunction}/messageid/{messageid}")
+	@Produces("application/json")
+	public Response dossierInstance(@PathParam("messagefunction") String messagefunction, @PathParam("messageid") String messageid/*, @QueryParam("messagecontent") @DefaultValue("") String messagecontent*/) {
+		String output = StringPool.BLANK;
+		switch (messagefunction) {
+		case "01":
+			break;
+		case "02":
+			break;
+		case "03":
+			break;
+		case "11":
+			break;
+		case "20":
+			break;
+		case "21":
+			break;
+		case "22":
+			break;
+		case "23":
+			break;
+		case "24":
+			break;
+		default:
+			break;
+		}
+		JSONObject inputJsonObject = JSONFactoryUtil.createJSONObject();
+		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+		inputJsonObject.put("ReceiveDate", df.format(new Date()));
+		
+		ResponseBean bean = new ResponseBean();
+		bean.setReceiveDate(df.format(new Date()));
+		
+		return Response.status(200).entity(inputJsonObject.toString()).build();
+		//return bean;
+	}
+	
+	private String cancelDossier(String messageid) {
+		JSONObject resultObject = JSONFactoryUtil.createJSONObject();
+		
+		MessageFunctionData data = null;
+		try {
+			data = MessageFunctionDataLocalServiceUtil.getByF_O("03", messageid);			
+		}
+		catch (SystemException e) {
+			
+		}
+		if (data != null) {
+			
+		}
+		
+		return resultObject.toString();
 	}
 	private static Log _log = LogFactoryUtil.getLog(DuongThuyAPI.class);
 }
