@@ -699,7 +699,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						
 						String inputPOST = param.toString();
 						
-						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/addMessageFunctionData", inputPOST);
+						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/cancelMessageFunctionData", inputPOST);
 				}
 			}
 			catch (Exception e) {

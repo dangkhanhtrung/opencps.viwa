@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
@@ -59,7 +60,7 @@ public class DuongThuyAPI {
 			//(\\w+)
 			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
-			output = messageFunctionData.getMessageFileIdData();
+			//output = messageFunctionData.getMessageFileIdData();
 			
 //			long fileId = 0;
 //			
@@ -127,7 +128,7 @@ public class DuongThuyAPI {
 			//(\\w+)
 			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
-			output = messageFunctionData.getMessageFileIdData();
+			//output = messageFunctionData.getMessageFileIdData();
 			
 //			long fileId = 0;
 //			
@@ -294,6 +295,7 @@ public class DuongThuyAPI {
 		case "02":
 			break;
 		case "03":
+			
 			break;
 		case "11":
 			break;
@@ -321,21 +323,90 @@ public class DuongThuyAPI {
 		//return bean;
 	}
 	
-	private String cancelDossier(String messageid) {
-		JSONObject resultObject = JSONFactoryUtil.createJSONObject();
-		
-		MessageFunctionData data = null;
+	//POST insert messageId
+	@POST
+	@Path("/cancelMessageFunctionData")
+	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	public Response cancelMessageFunctionData(String input){
+		String output = StringPool.BLANK;
+		InputStream fileInputStream = null;
 		try {
-			data = MessageFunctionDataLocalServiceUtil.getByF_O("03", messageid);			
-		}
-		catch (SystemException e) {
+			//(\\w+)
+			if(Validator.isNull(input)){
+		        return Response.status(400).entity("Create packages fail!").build();
+		    }
+			JSONObject inputJsonObject = JSONFactoryUtil.createJSONObject(input);
+			_log.info("userId: "+inputJsonObject.getString("userId").toString());
+			_log.info("userName: "+inputJsonObject.getString("userName").toString());
+			_log.info("messageFunction: "+inputJsonObject.getString("messageFunction").toString());
+			_log.info("messageId: "+inputJsonObject.getString("messageId").toString());
+			_log.info("version: "+inputJsonObject.getString("version").toString());
+			_log.info("sendDate: "+inputJsonObject.getString("sendDate").toString());
+
+			String userId = inputJsonObject.getString("userId");
+			String userName = inputJsonObject.getString("userName");
+			String messageFunction = inputJsonObject.getString("messageFunction");
+			String messageId = inputJsonObject.getString("messageId");
+			String messageFileIdData = inputJsonObject.getString("messageFileIdData");
+			String version = inputJsonObject.getString("version");
+			String sendDate = inputJsonObject.getString("sendDate");
+			DateFormat dateFormat = DateFormatFactoryUtil
+					.getSimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+			Date dateSend = null;
+			if(Validator.isNotNull(sendDate)){
+				dateSend = dateFormat.parse(sendDate);
+			}
 			
-		}
-		if (data != null) {
+			MessageFunctionData meData =MessageFunctionDataLocalServiceUtil.addMessageFunctionData(userId, userName, messageFunction, messageId, messageFileIdData,version,dateSend);
+//			_log.info("************** output - fileEntry *******************: "+fileEntry.getFileEntryId());
+			JSONObject responeJson = JSONFactoryUtil.createJSONObject();
+			responeJson.put("ReceiveDate", dateFormat.format(new Date()));
+			output = responeJson.toString();
+			_log.info("************** output - addMessageFunctionData *******************: "+output);
+			String oid = StringPool.BLANK;
+			if(Validator.isNotNull(meData) && meData.getMessageId().contains("_")){
+				oid = meData.getMessageId().substring(0, meData.getMessageId().lastIndexOf("_"));
 			
+				JSONObject paramNotification = JSONFactoryUtil.createJSONObject();
+				paramNotification.put("messagefunction", meData.getMessageFunction());
+				paramNotification.put("messageid", meData.getMessageId());
+				paramNotification.put("messagecontent", "Call responsePOSTAPI_Notification");
+				paramNotification.put("reference", oid);
+				String inputPOSTNotification = paramNotification.toString();
+			RESTfulUtils.responsePOSTAPI_Notification("http://daotao.viwa.gov.vn/notifications/instance", inputPOSTNotification, "dvcviwa","dvc2016");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}finally{
+			if(fileInputStream != null || Validator.isNotNull(fileInputStream)){
+				try {
+					fileInputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
-		
-		return resultObject.toString();
+		return Response.status(201).entity(output).build();
 	}
+	
+	@GET
+	@Path("/dossiertype/{dossiertype}/organizationcode/{organizationcode}/status/{status}/fromdate/{fromdate}/todate/{todate}/documentyear/{documentyear}/customername/{customername}")
+	@Produces("application/json")
+	public Response searchDossier(
+			@PathParam("dossiertype") String dossiertype, 
+			@PathParam("organizationcode") String organizationcode, 
+			@PathParam("status") @DefaultValue("-1") String status, 
+			@PathParam("fromdate") @DefaultValue("") String fromdate,
+			@PathParam("todate") @DefaultValue("") String todate,
+			@PathParam("documentyear") @DefaultValue("") String documentyear,
+			@PathParam("customername") @DefaultValue("") String customername) {
+		String output = StringPool.BLANK;
+		
+		return Response.status(200).entity(output).build();
+	}
+	
 	private static Log _log = LogFactoryUtil.getLog(DuongThuyAPI.class);
 }
