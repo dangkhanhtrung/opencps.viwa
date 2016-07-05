@@ -192,4 +192,9 @@ public class DossierPartLocalServiceImpl extends DossierPartLocalServiceBaseImpl
 					throws NoSuchDossierPartException, SystemException {
 		return dossierPartPersistence.findByT_PN(templateId, partNo);
 	}
+	
+	public DossierPart getByF_FORM_ONLINE(long dossierTemplateId, long parentId, long groupId) 
+			throws NoSuchDossierPartException, SystemException {
+		return dossierPartPersistence.fetchByF_FORM_ONLINE(dossierTemplateId, parentId, groupId);
+		}
 }

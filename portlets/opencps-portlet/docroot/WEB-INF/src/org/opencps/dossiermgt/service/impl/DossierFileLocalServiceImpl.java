@@ -851,7 +851,7 @@ public class DossierFileLocalServiceImpl
 		throws NoSuchDossierFileException, SystemException {
 
 		return dossierFilePersistence
-			.findByDossierFileInUse(dossierId, dossierPartId);
+			.fetchByDossierFileInUse(dossierId, dossierPartId);
 	}
 
 	/**
