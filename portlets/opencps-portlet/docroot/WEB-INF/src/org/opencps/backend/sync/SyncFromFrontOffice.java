@@ -272,7 +272,110 @@ public class SyncFromFrontOffice implements MessageListener{
 					    WebKeys.ACTION_CLOSE_VALUE,
 					    WebKeys.ACTION_CLOSE_VALUE);
 				}
+				else if (Validator.equals(WebKeys.ACTION_CANCEL_VALUE, action)) {
+					Dossier dossier =
+						    DossierLocalServiceUtil.fetchDossier(userActionMgs.getDossierId());
 
+						DossierLocalServiceUtil.updateDossierStatus(
+						    userActionMgs.getDossierId(),
+						    userActionMgs.getFileGroupId(),
+						    dossier.getDossierStatus(), dossier.getReceptionNo(),
+						    dossier.getEstimateDatetime(),
+						    dossier.getReceiveDatetime(),
+						    dossier.getFinishDatetime(),
+						    WebKeys.ACTOR_ACTION_CITIZEN,
+						    WebKeys.ACTION_CANCEL_VALUE,
+						    WebKeys.ACTION_CANCEL_VALUE,
+						    WebKeys.ACTION_CANCEL_VALUE);	
+						
+						//add data packages to tich hop duongthuy
+
+						String integrateURL = PortletProps.get("INTEGRATE_URL");
+						JSONObject objLv1 = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv2 = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv3Header = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv3Body = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv3SystemSignature = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv4HeaderReference = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv4HeaderFrom = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv4HeaderTo = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv4HeaderSubject = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv4BodyContent = JSONFactoryUtil.createJSONObject();
+						JSONObject objLv4BodySignature = JSONFactoryUtil.createJSONObject();
+						objLv4HeaderReference.put("version", "version");
+						objLv4HeaderReference.put("messageId", "messageId");
+						objLv4HeaderFrom.put("name", "name");
+						objLv4HeaderFrom.put("identity", "identity");
+						objLv4HeaderFrom.put("countryCode", "countryCode");
+						objLv4HeaderFrom.put("ministryCode", "ministryCode");
+						objLv4HeaderFrom.put("organizationCode", "organizationCode");
+						objLv4HeaderFrom.put("unitCode", "unitCode");
+						objLv4HeaderTo.put("name", "name");
+						objLv4HeaderTo.put("identity", "identity");
+						objLv4HeaderTo.put("countryCode", "countryCode");
+						objLv4HeaderTo.put("ministryCode", "ministryCode");
+						objLv4HeaderTo.put("organizationCode", "organizationCode");
+						objLv4HeaderTo.put("unitCode", "unitCode");
+						objLv4HeaderSubject.put("documentType", "documentType");
+						objLv4HeaderSubject.put("function", "function");
+						objLv4HeaderSubject.put("reference", "reference");
+						objLv4HeaderSubject.put("preReference", "preReference");
+						objLv4HeaderSubject.put("documentYear", "documentYear");
+						objLv4HeaderSubject.put("sendDate", "sendDate");
+						//
+						objLv3Header.put("Reference", objLv4HeaderReference);
+						objLv3Header.put("From", objLv4HeaderFrom);
+						objLv3Header.put("To", objLv4HeaderTo);
+						objLv3Header.put("Subject", objLv4HeaderSubject);
+						objLv2.put("Header", objLv3Header);
+						//
+						JSONObject contentLv1 = JSONFactoryUtil.createJSONObject();
+						JSONArray contentAttachedFiles = JSONFactoryUtil.createJSONArray();
+						JSONObject contentAttachedFile = JSONFactoryUtil.createJSONObject();
+						contentAttachedFile.put("AttachedTypeCode", "");
+						contentAttachedFile.put("AttachedTypeName", "");
+						contentAttachedFile.put("AttachedDocName", "");
+						contentAttachedFile.put("AttachedNote", "");
+						contentAttachedFile.put("AttachedSequenceNo", "");
+						contentAttachedFile.put("FullFileName", "");
+						contentAttachedFile.put("Base64FileContent", "");
+						
+						//
+						contentAttachedFiles.put(contentAttachedFile);
+						contentLv1.put("AttachedFile", contentAttachedFiles);
+						//
+						contentLv1.put("RegisteredNumber", "");
+						contentLv1.put("CancelDate", "");
+						contentLv1.put("FromOrganization", "FromOrganization");
+						contentLv1.put("Division", "Division");
+						contentLv1.put("ToOrganization", "ToOrganization");
+						contentLv1.put("DocNumber", "DocNumber");
+						contentLv1.put("BriefContent", "BriefContent");
+						contentLv1.put("DocContent", "DocContent");
+						contentLv1.put("SignName", "SignName");
+						contentLv1.put("SignTitle", "SignTitle");
+						contentLv1.put("SignPlace", "SignPlace");
+						contentLv1.put("SignDate", "SignDate");
+						//
+						objLv4BodyContent.put("Declaration", contentLv1);
+						objLv3Body.put("Content", objLv4BodyContent);
+						objLv3Body.put("Signature", objLv4BodySignature);
+						//
+						objLv2.put("Body", objLv3Body);
+						objLv2.put("SystemSignature", objLv3SystemSignature);
+						objLv1.put("Envelope", objLv2);
+						String input = objLv1.toString();
+						//add param
+						JSONObject param = JSONFactoryUtil.createJSONObject();
+						param.put("userId", dossier.getUserId());
+						param.put("userName", dossier.getContactName());
+						param.put("messageFunction", "03");
+						param.put("messageId", dossier.getOid());
+						param.put("messageFileIdData", objLv1);
+						
+						String inputPOST = param.toString();
+						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/addMessageFunctionData", inputPOST);
+				}
 			}
 			catch (Exception e) {
 				_log.error(e);

@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opencps.dossiermgt.model.DossierFile;
 import org.opencps.dossiermgt.service.DossierFileLocalServiceUtil;
-import org.opencps.pki.PdfVerifier;
+//import org.opencps.pki.PdfVerifier;
 import org.opencps.util.DLFileEntryUtil;
 import org.opencps.util.PDFUtil;
 import org.opencps.util.PortletUtil;
@@ -92,7 +92,7 @@ public class VerifySignDocumentServlet extends HttpServlet {
 				.saveAsPdf(PortletUtil
 					.getTempFolderPath(request), dossierFile
 						.getFileEntryId());
-
+			/*
 			PdfVerifier verifier = new PdfVerifier();
 
 			FileInputStream is = new FileInputStream(PortletUtil
@@ -125,6 +125,7 @@ public class VerifySignDocumentServlet extends HttpServlet {
 						embedURL +
 						"\"></iframe></div><div class=\"right-panel\" style=\"float: right; width: 18%;\">" +
 						isVerify + "</div></div>");
+			*/
 		}
 		catch (Exception e) {
 			e.printStackTrace();
