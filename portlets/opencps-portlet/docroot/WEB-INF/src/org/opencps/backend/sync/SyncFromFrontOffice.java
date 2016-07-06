@@ -18,11 +18,9 @@
 package org.opencps.backend.sync;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.opencps.accountmgt.model.Business;
 import org.opencps.accountmgt.model.Citizen;
@@ -46,8 +44,6 @@ import org.opencps.util.PortletConstants;
 import org.opencps.util.RESTfulUtils;
 import org.opencps.util.WebKeys;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -58,19 +54,11 @@ import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.MessageListenerException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portal.kernel.repository.model.FileVersion;
-import com.liferay.portal.kernel.util.Base64;
-import com.liferay.portal.kernel.util.CalendarUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GroupThreadLocal;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Company;
-import com.liferay.portal.service.CompanyLocalServiceUtil;
-import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
-import com.liferay.portlet.documentlibrary.util.DLUtil;
 import com.liferay.util.portlet.PortletProps;
 
 
@@ -280,8 +268,8 @@ public class SyncFromFrontOffice implements MessageListener{
 						
 						contentLv1.put("AttachedFile", contentAttachedFiles);
 						//
-						DossierPart dossierPartOnline = DossierPartLocalServiceUtil.getByF_FORM_ONLINE(dossier.getDossierTemplateId(), 0, GroupThreadLocal.getGroupId());
-						
+						DossierPart dossierPartOnline = DossierPartLocalServiceUtil.getByF_FORM_ONLINE(dossier.getDossierTemplateId(), 0, dossier.getGroupId(), 1);
+//						_log.info("dossierPartOnline" + dossierPartOnline);
 						DossierFile dossierFileOnline = null;
 						
 						if(Validator.isNotNull(dossierPartOnline)){
@@ -294,16 +282,16 @@ public class SyncFromFrontOffice implements MessageListener{
 						
 						if(Validator.isNotNull(dossierFileOnline)){
 							
-						sampleData = "{\"FromOrganization\":\"#FromOrganization@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"Division\":\"#Division@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"ToOrganization\":\"#ToOrganization@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"DocNumber\":\"#DocNumber@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"BriefContent\":\"#BriefContent@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"DocContent\":\"#DocContent@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"SignName\":\"#SignName@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"SignTitle\":\"#SignTitle@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"SignPlace\":\"#SignPlace@"+dossierFileOnline.getTemplateFileNo()+"\","
-								+ "\"SignDate\":\"#SignDate@"+dossierFileOnline.getTemplateFileNo()+"\"}";
+						sampleData = "{\"FromOrganization\":\"#tencoquantrinh@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"Division\":\"#Division@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"ToOrganization\":\"#kinhgui@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"DocNumber\":\"#socongvan@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"BriefContent\":\"#trichyeunoidung@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"DocContent\":\"#noidungvanban@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"SignName\":\"#tennguoiky@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"SignTitle\":\"#chucdanhky@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"SignPlace\":\"#diadiem@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"SignDate\":\"#ngaythangnam@"+dossierFileOnline.getTemplateFileNo()+"\"}";
 						}
 						Citizen ownerCitizen = null;
 						
@@ -378,7 +366,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						String inputPOST = param.toString();
 						
 						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/addMessageFunctionData", inputPOST);
-						
+//						RESTfulUtils.responseGETAPI(integrateURL+"dossier/new/messagefunction/01/messageid/04ac0077-ac36-47ed-9b71-fcf09d6e8706_46044931800432");
 						// Send message to ...engine/destination
 						MessageBusUtil.sendMessage(
 						    "opencps/backoffice/engine/destination",

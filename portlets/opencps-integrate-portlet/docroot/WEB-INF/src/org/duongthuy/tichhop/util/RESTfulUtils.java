@@ -165,6 +165,11 @@ public class RESTfulUtils {
 	    }
 	    return buf;
 	  }
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		responseGETAPI("http://hanoi.fds.vn:2780/opencps-integrate-portlet/rest/dossier/new/messagefunction/01/messageid/b2761858-3120-4d62-9b99-26758ac8ed62_238803332082597");
+	}
 	private static Log _log = LogFactoryUtil.getLog(RESTfulUtils.class);
 	
 }

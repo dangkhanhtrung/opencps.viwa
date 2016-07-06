@@ -802,8 +802,8 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 	}
 	
 	public Business getBymappingOrganizationId(long mappingOrganizationId) throws SystemException {
-		return null;
-		//return businessPersistence.fetchBymappingOrganizationId(mappingOrganizationId);
+//		return null;
+		return businessPersistence.fetchBymappingOrganizationId(mappingOrganizationId);
     }
 	private Log _log = LogFactoryUtil
 	    .getLog(BusinessLocalServiceImpl.class

@@ -130,7 +130,7 @@
 	}
 	
 %>
-
+<div style="padding: 0px 50px;">
 <portlet:actionURL var="updateDynamicFormDataURL" name="updateDynamicFormData"/>
 
 <aui:form 
@@ -166,7 +166,7 @@
 		
 	</aui:fieldset>
 </aui:form>
-
+</div>
 <aui:script>
 	var alpacaSchema = <%=Validator.isNotNull(alpacaSchema) ? alpacaSchema : PortletConstants.UNKNOW_ALPACA_SCHEMA%>;
 	var formData = '<%=formData%>';

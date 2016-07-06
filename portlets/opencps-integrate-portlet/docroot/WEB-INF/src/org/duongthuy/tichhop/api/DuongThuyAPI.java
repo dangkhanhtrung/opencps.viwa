@@ -55,7 +55,12 @@ public class DuongThuyAPI {
 			//(\\w+)
 			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
-			output = messageFunctionData.getMessageFileIdData();
+			if(Validator.isNotNull(messageFunctionData)){
+				output = messageFunctionData.getMessageFileIdData();
+			}else{
+				output = "{\"error\":\"no messageid\"}";
+				return Response.status(200).entity(output).build();
+			}
 			
 //			long fileId = 0;
 //			
@@ -94,8 +99,9 @@ public class DuongThuyAPI {
 //			_log.info("****************"+file.length() );
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			
+			_log.info("************ no messageid *******************");
+			output = "{\"error\":\"no messageid\"}";
+			return Response.status(200).entity(output).build();
 		}finally{
 
 			if(inputStream!=null){
@@ -123,7 +129,12 @@ public class DuongThuyAPI {
 			//(\\w+)
 			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
-			output = messageFunctionData.getMessageFileIdData();
+			if(Validator.isNotNull(messageFunctionData)){
+				output = messageFunctionData.getMessageFileIdData();
+			}else{
+				output = "{\"error\":\"no messageid\"}";
+				return Response.status(200).entity(output).build();
+			}
 			
 //			long fileId = 0;
 //			
@@ -161,7 +172,9 @@ public class DuongThuyAPI {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			_log.info("************ no messageid *******************");
+			output = "{\"error\":\"no messageid\"}";
+			return Response.status(200).entity(output).build();
 			
 		}finally{
 

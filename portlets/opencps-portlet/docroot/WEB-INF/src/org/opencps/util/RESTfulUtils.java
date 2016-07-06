@@ -57,7 +57,11 @@ public class RESTfulUtils {
 					+ response.getStatus());
 		}
 		
+		_log.info(response.getStatus());
+		
 		result = response.readEntity(String.class);
+		
+		_log.info(result);
 		
 		return Validator.isNotNull(result)?result:"{}";
 	}

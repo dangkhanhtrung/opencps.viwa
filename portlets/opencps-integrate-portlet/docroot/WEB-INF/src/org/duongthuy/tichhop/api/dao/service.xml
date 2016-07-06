@@ -25,6 +25,7 @@
 		
 		<column name="sendDate" type="Date" />
 
+		<column name="version" type="String" />
 		<!-- Order -->
 
 		<order by="asc">
