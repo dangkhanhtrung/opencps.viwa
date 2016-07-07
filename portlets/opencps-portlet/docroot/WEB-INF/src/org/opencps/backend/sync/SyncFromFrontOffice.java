@@ -444,7 +444,251 @@ public class SyncFromFrontOffice implements MessageListener{
 					    WebKeys.ACTION_CLOSE_VALUE,
 					    WebKeys.ACTION_CLOSE_VALUE);
 				}
+				else if (Validator.equals(WebKeys.ACTION_CANCEL_VALUE, action)) {
+					Dossier dossier =
+						    DossierLocalServiceUtil.fetchDossier(userActionMgs.getDossierId());
 
+						DossierLocalServiceUtil.updateDossierStatus(
+						    userActionMgs.getDossierId(),
+						    userActionMgs.getFileGroupId(),
+						    dossier.getDossierStatus(), dossier.getReceptionNo(),
+						    dossier.getEstimateDatetime(),
+						    dossier.getReceiveDatetime(),
+						    dossier.getFinishDatetime(),
+						    WebKeys.ACTOR_ACTION_CITIZEN,
+						    WebKeys.ACTION_CANCEL_VALUE,
+						    WebKeys.ACTION_CANCEL_VALUE,
+						    WebKeys.ACTION_CANCEL_VALUE);	
+						
+						//add data packages to tich hop duongthuy
+						DateFormat dateFormat = DateFormatFactoryUtil
+								.getSimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+						
+						Date date = new Date();
+						
+						String currentDate = dateFormat.format(date);
+						
+						String integrateURL = PortletProps.get("INTEGRATE_URL");
+						JSONObject objLv1 = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv2 = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv3Header = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv3Body = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv3SystemSignature = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv4HeaderReference = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv4HeaderFrom = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv4HeaderTo = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv4HeaderSubject = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv4BodyContent = JSONFactoryUtil.createJSONObject();
+						
+						JSONObject objLv4BodySignature = JSONFactoryUtil.createJSONObject();
+						
+						objLv4HeaderReference.put("version", "1.0");
+						
+						objLv4HeaderReference.put("messageId", dossier.getOid()+"_"+System.nanoTime());
+						
+						objLv4HeaderFrom.put("name", dossier.getContactName());
+						
+						objLv4HeaderFrom.put("identity", "CDTNDVN");
+						
+						objLv4HeaderFrom.put("countryCode", "VN");
+						
+						objLv4HeaderFrom.put("ministryCode", "BGTVT");
+						
+						objLv4HeaderFrom.put("organizationCode", "CDTNDVN");
+						
+						objLv4HeaderFrom.put("unitCode", "");
+						
+						objLv4HeaderTo.put("name", dossier.getGovAgencyName());
+						
+						objLv4HeaderTo.put("identity", "BGTVT");
+						
+						objLv4HeaderTo.put("countryCode", "VN");
+						
+						objLv4HeaderTo.put("ministryCode", "BGTVT");
+						
+						objLv4HeaderTo.put("organizationCode", "CDTNDVN");
+						
+						objLv4HeaderTo.put("unitCode", "");
+						
+						ServiceInfo serviceInfo = ServiceInfoLocalServiceUtil.fetchServiceInfo(dossier.getServiceInfoId());
+						
+						objLv4HeaderSubject.put("documentType", serviceInfo.getServiceNo());
+						
+						objLv4HeaderSubject.put("function", "01");
+						
+						objLv4HeaderSubject.put("reference", dossier.getOid());
+						
+						objLv4HeaderSubject.put("preReference", dossier.getOid());
+						
+						Calendar calendar = Calendar.getInstance();
+						
+						calendar.setTime(date);
+						
+						objLv4HeaderSubject.put("documentYear", calendar.get(Calendar.YEAR));
+						
+						objLv4HeaderSubject.put("sendDate", dateFormat.format(date));
+						
+						//
+						objLv3Header.put("Reference", objLv4HeaderReference);
+						
+						objLv3Header.put("From", objLv4HeaderFrom);
+						
+						objLv3Header.put("To", objLv4HeaderTo);
+						
+						objLv3Header.put("Subject", objLv4HeaderSubject);
+						
+						objLv2.put("Header", objLv3Header);
+						//
+						JSONObject contentLv1 = JSONFactoryUtil.createJSONObject();
+						
+						JSONArray contentAttachedFiles = JSONFactoryUtil.createJSONArray();
+						
+						JSONObject contentAttachedFile = JSONFactoryUtil.createJSONObject();
+						//
+						List<DossierFile> listDossierFiles = DossierFileLocalServiceUtil.getDossierFileByDossierId(dossier.getDossierId());
+						
+						for (DossierFile dossierFile : listDossierFiles) {
+							contentAttachedFile.put("AttachedTypeCode", dossierFile.getTemplateFileNo());
+							
+							contentAttachedFile.put("AttachedTypeName", dossierFile.getDossierFileType());
+							
+							contentAttachedFile.put("AttachedDocName", dossierFile.getDisplayName());
+							
+							contentAttachedFile.put("AttachedNote", StringPool.BLANK);
+							
+							contentAttachedFile.put("AttachedSequenceNo", dossierFile.getDossierPartId());
+							
+							contentAttachedFile.put("FullFileName", dossierFile.getDisplayName());
+							
+							String base64File = StringPool.BLANK;
+							
+							FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(dossierFile.getFileEntryId());
+							
+							String url =  PortletProps.get("VIRTUAL_HOST") + ":" + PortletProps.get("VIRTUAL_PORT") +  "/documents/"
+							        + fileEntry.getGroupId()
+							        + StringPool.SLASH
+							        + fileEntry.getFolderId()
+							        + StringPool.SLASH
+							        + fileEntry.getTitle()
+							        + "?version="+fileEntry.getVersion();
+							
+//							base64File = new String(Base64.encode(FileUtil.getBytes(fileEntry.getContentStream())));
+							
+							contentAttachedFile.put("Base64FileContent", url);
+							
+							contentAttachedFiles.put(contentAttachedFile);
+						}
+						
+						contentLv1.put("AttachedFile", contentAttachedFiles);
+						//
+						DossierPart dossierPartOnline = DossierPartLocalServiceUtil.getByF_FORM_ONLINE(dossier.getDossierTemplateId(), 0, GroupThreadLocal.getGroupId());
+						
+						DossierFile dossierFileOnline = null;
+						
+						if(Validator.isNotNull(dossierPartOnline)){
+						
+							dossierFileOnline = DossierFileLocalServiceUtil.getDossierFileInUse(dossier.getDossierId(), dossierPartOnline.getDossierpartId());
+						
+						}
+						
+						String sampleData="{}";
+						
+						if(Validator.isNotNull(dossierFileOnline)){
+							
+						sampleData = "{\"FromOrganization\":\"#FromOrganization@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"Division\":\"#Division@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"ToOrganization\":\"#ToOrganization@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"DocNumber\":\"#DocNumber@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"BriefContent\":\"#BriefContent@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"DocContent\":\"#DocContent@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"SignName\":\"#SignName@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"SignTitle\":\"#SignTitle@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"SignPlace\":\"#SignPlace@"+dossierFileOnline.getTemplateFileNo()+"\","
+								+ "\"SignDate\":\"#SignDate@"+dossierFileOnline.getTemplateFileNo()+"\"}";
+						}
+						Citizen ownerCitizen = null;
+						
+						Business ownerBusiness = null;
+						
+						if(dossier.getOwnerOrganizationId() <= 0){
+						
+							ownerCitizen = CitizenLocalServiceUtil.getByMappingUserId(dossier.getUserId());
+						
+						} else {
+						
+							ownerBusiness = BusinessLocalServiceUtil.getBymappingOrganizationId(dossier.getOwnerOrganizationId());
+						
+						}
+						
+						String resultBilding = AutoFillFormData.dataBinding(sampleData, ownerCitizen, ownerBusiness, dossier.getDossierId());
+						
+						JSONObject resultBildingJson = JSONFactoryUtil.createJSONObject(resultBilding);
+						
+						contentLv1.put("FromOrganization", resultBildingJson.getString("FromOrganization"));
+						
+						contentLv1.put("Division", resultBildingJson.getString("Division"));
+						
+						contentLv1.put("ToOrganization", resultBildingJson.getString("ToOrganization"));
+						
+						contentLv1.put("DocNumber", resultBildingJson.getString("DocNumber"));
+						
+						contentLv1.put("BriefContent", resultBildingJson.getString("BriefContent"));
+						
+						contentLv1.put("DocContent", resultBildingJson.getString("DocContent"));
+						
+						contentLv1.put("SignName", resultBildingJson.getString("SignName"));
+						
+						contentLv1.put("SignTitle", resultBildingJson.getString("SignTitle"));
+						
+						contentLv1.put("SignPlace", resultBildingJson.getString("SignPlace"));
+						
+						contentLv1.put("SignDate", resultBildingJson.getString("SignDate"));
+						//
+						
+						objLv4BodyContent.put("Declaration", contentLv1);
+						
+						objLv3Body.put("Content", objLv4BodyContent);
+						
+						objLv3Body.put("Signature", objLv4BodySignature);
+						//
+						objLv2.put("Body", objLv3Body);
+						
+						objLv2.put("SystemSignature", objLv3SystemSignature);
+						
+						objLv1.put("Envelope", objLv2);
+						
+						String input = objLv1.toString();
+						//add param
+						
+						JSONObject param = JSONFactoryUtil.createJSONObject();
+						
+						param.put("userId", dossier.getUserId());
+						
+						param.put("userName", dossier.getContactName());
+						
+						param.put("messageFunction", "03");
+						
+						param.put("messageId", dossier.getOid()+"_"+System.nanoTime());
+						
+						param.put("messageFileIdData", objLv1);
+						
+						param.put("version", "1.0");
+						
+						param.put("sendDate", currentDate);
+						
+						String inputPOST = param.toString();
+						
+						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/cancelMessageFunctionData", inputPOST);
+				}
 			}
 			catch (Exception e) {
 				_log.error(e);

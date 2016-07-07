@@ -61,8 +61,8 @@ import org.opencps.dossiermgt.service.DossierTemplateLocalServiceUtil;
 import org.opencps.dossiermgt.service.FileGroupLocalServiceUtil;
 import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
 import org.opencps.jasperreport.util.JRReportUtil;
-import org.opencps.pki.Helper;
-import org.opencps.pki.PdfSigner;
+//import org.opencps.pki.Helper;
+//import org.opencps.pki.PdfSigner;
 import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
@@ -1172,7 +1172,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 				.getLong("dossierFileId");
 			long dossierPartId = resources
 				.getLong("dossierPartId");
-
+			/*
 			PdfSigner pdfSigner = SignatureUtil
 				.getPdfSigner(inputFilePath, certPath, hashFileTempPath,
 					outputFilePath, false, imagePath);
@@ -1201,7 +1201,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 				is
 					.close();
 			}
-
+			*/
 		}
 		catch (Exception e) {
 			_log
@@ -1286,7 +1286,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 			inputFilePath = PDFUtil
 				.saveAsPdf(tempFolderPath, dossierFile
 					.getFileEntryId());
-
+			/*
 			PdfSigner pdfSigner = SignatureUtil
 				.getPdfSigner(inputFilePath, certPath, hashFileTempPath,
 					outputFilePath, isVisible, imagePath);
@@ -1325,7 +1325,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 
 			data
 				.put("resources", resources);
-
+			*/
 		}
 		catch (Exception e) {
 			_log
