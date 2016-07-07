@@ -30,7 +30,7 @@ import com.liferay.portal.kernel.util.Validator;
  */
 
 public class SignatureUtil {
-
+	
 	/**
 	 * @param filePath
 	 * @param certPath
@@ -69,7 +69,6 @@ public class SignatureUtil {
 
 		return pdfSigner;
 	}
-
 	/**
 	 * @param pdfSigner
 	 * @param llx
@@ -84,7 +83,6 @@ public class SignatureUtil {
 		return pdfSigner
 			.computeHash(llx, lly, urx, ury);
 	}
-
 	private static Log _log = LogFactoryUtil
 		.getLog(SignatureUtil.class
 			.getName());

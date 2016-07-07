@@ -92,7 +92,6 @@ public class VerifySignDocumentServlet extends HttpServlet {
 				.saveAsPdf(PortletUtil
 					.getTempFolderPath(request), dossierFile
 						.getFileEntryId());
-
 			PdfVerifier verifier = new PdfVerifier();
 			
 

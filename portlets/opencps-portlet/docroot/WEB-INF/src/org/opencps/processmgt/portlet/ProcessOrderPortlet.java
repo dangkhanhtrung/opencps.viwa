@@ -1172,7 +1172,6 @@ public class ProcessOrderPortlet extends MVCPortlet {
 				.getLong("dossierFileId");
 			long dossierPartId = resources
 				.getLong("dossierPartId");
-
 			PdfSigner pdfSigner = SignatureUtil
 				.getPdfSigner(inputFilePath, certPath, hashFileTempPath,
 					outputFilePath, false, imagePath);
@@ -1201,7 +1200,6 @@ public class ProcessOrderPortlet extends MVCPortlet {
 				is
 					.close();
 			}
-
 		}
 		catch (Exception e) {
 			_log
@@ -1286,7 +1284,6 @@ public class ProcessOrderPortlet extends MVCPortlet {
 			inputFilePath = PDFUtil
 				.saveAsPdf(tempFolderPath, dossierFile
 					.getFileEntryId());
-
 			PdfSigner pdfSigner = SignatureUtil
 				.getPdfSigner(inputFilePath, certPath, hashFileTempPath,
 					outputFilePath, isVisible, imagePath);
@@ -1325,7 +1322,6 @@ public class ProcessOrderPortlet extends MVCPortlet {
 
 			data
 				.put("resources", resources);
-
 		}
 		catch (Exception e) {
 			_log
