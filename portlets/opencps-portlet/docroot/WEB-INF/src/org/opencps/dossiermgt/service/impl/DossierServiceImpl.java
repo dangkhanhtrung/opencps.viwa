@@ -19,14 +19,17 @@
 
 package org.opencps.dossiermgt.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import org.opencps.datamgt.model.DictItem;
 import org.opencps.dossiermgt.model.Dossier;
+import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.dossiermgt.service.base.DossierServiceBaseImpl;
 
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
@@ -46,6 +49,8 @@ import com.liferay.portal.security.ac.AccessControlled;
  * @see org.opencps.dossiermgt.service.base.DossierServiceBaseImpl
  * @see org.opencps.dossiermgt.service.DossierServiceUtil
  */
+
+@JSONWebService
 public class DossierServiceImpl extends DossierServiceBaseImpl {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -96,5 +101,26 @@ public class DossierServiceImpl extends DossierServiceBaseImpl {
 		jsonObject.put("SignDate", dossier.getSubjectName());
 		declaration.put("Declaration", jsonObject);
 		return jsonObject;
+	}
+	
+	@JSONWebService(value = "search-dossier", method = "POST")
+	public JSONArray searchDossier(
+			String dossiertype, 
+			String organizationcode, 
+			String status, 
+			Date fromdate, 
+			Date todate, 
+			int documentyear, 
+			String customername) {
+		JSONArray dossierArr = JSONFactoryUtil.createJSONArray();
+		
+		long end = DossierLocalServiceUtil.countDossierForRemoteService(dossiertype, organizationcode, status, fromdate, todate, documentyear, customername);
+		List<Dossier> lsDossiers = DossierLocalServiceUtil.searchDossierForRemoteService(dossiertype, organizationcode, status, fromdate, todate, documentyear, customername, 0, (int)end);
+		for (Dossier d : lsDossiers) {
+			JSONObject obj = JSONFactoryUtil.createJSONObject();
+			obj.put("receptionNo", d.getReceptionNo());
+		}
+		
+		return dossierArr;
 	}
 }

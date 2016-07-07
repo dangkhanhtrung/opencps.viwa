@@ -21,10 +21,11 @@
 		
 		<column name="messageId" type="String" />
 		
-		<column name="messageFileIdData" type="long" />
+		<column name="messageFileIdData" type="String" />
 		
 		<column name="sendDate" type="Date" />
-
+		<column name="version" type="String"></column>
+		
 		<!-- Order -->
 
 		<order by="asc">

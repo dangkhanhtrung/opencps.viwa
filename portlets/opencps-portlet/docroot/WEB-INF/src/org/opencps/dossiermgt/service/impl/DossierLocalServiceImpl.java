@@ -1028,4 +1028,51 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		return dossierPersistence.fetchByoid(oid);
 	}
 	
+	/**
+	 * @param dossiertype
+	 * @param organizationcode
+	 * @param status
+	 * @param fromdate
+	 * @param todate
+	 * @param documentyear
+	 * @param customername
+	 * @return
+	 */
+	public int countDossierForRemoteService(
+		String dossiertype,
+		String organizationcode,
+		String status,
+		Date fromdate,
+		Date todate,
+		int documentyear,
+		String customername
+		) {
+
+		return dossierFinder.countDossierForRemoteService(dossiertype, organizationcode, status, fromdate, todate, documentyear, customername);
+	}
+
+	/**
+	 * @param dossiertype
+	 * @param organizationcode
+	 * @param status
+	 * @param fromdate
+	 * @param todate
+	 * @param documentyear
+	 * @param customername
+	 * @return
+	 */
+	public List<Dossier> searchDossierForRemoteService(
+		String dossiertype,
+		String organizationcode,
+		String status,
+		Date fromdate,
+		Date todate,
+		int documentyear,
+		String customername,		
+		int start, int end) {
+
+		return dossierFinder
+			.searchDossierForRemoteService(dossiertype, organizationcode, status, fromdate, todate, documentyear, customername, start, end);
+	}
+	
 }

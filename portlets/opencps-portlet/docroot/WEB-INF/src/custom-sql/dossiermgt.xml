@@ -587,4 +587,46 @@
 				opencps_dossier.dossierId DESC, opencps_dossier_file.modifiedDate DESC, opencps_dossier_file.displayName ASC
 		]]>
 	</sql>
+	
+	<sql id="org.opencps.dossiermgt.service.persistence.DossierFinder.countDossierForRemoteService">	
+		<![CDATA[
+			SELECT
+				count(*) AS COUNT_VALUE
+			FROM
+				opencps_dossier
+			WHERE
+				opencps_dossier.govAgencyCode = ?
+			AND
+				opencps_dossier.dossierStatus = ?
+			AND
+				opencps_dossier.receiveDatetime <= ?
+			AND
+				opencps_dossier.receiveDatetime >= ?
+			AND
+				YEAR(opencps_dossier.receiveDatetime) = ?
+			AND
+				(lower(opencps_dossier.subjectName) LIKE ? [$AND_OR_NULL_CHECK$])
+		]]>
+	</sql>
+	
+	<sql id="org.opencps.dossiermgt.service.persistence.DossierFinder.searchDossierForRemoteService">	
+		<![CDATA[
+			SELECT
+				opencps_dossier.*
+			FROM
+				opencps_dossier
+			WHERE
+				opencps_dossier.govAgencyCode = ?
+			AND
+				opencps_dossier.dossierStatus = ?
+			AND
+				opencps_dossier.receiveDatetime <= ?
+			AND
+				opencps_dossier.receiveDatetime >= ?
+			AND
+				YEAR(opencps_dossier.receiveDatetime) = ?
+			AND
+				(lower(opencps_dossier.subjectName) LIKE ? [$AND_OR_NULL_CHECK$])
+		]]>
+	</sql>	
 </custom-sql>

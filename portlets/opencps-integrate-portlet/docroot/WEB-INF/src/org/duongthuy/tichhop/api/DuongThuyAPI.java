@@ -9,7 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,6 +24,7 @@ import javax.ws.rs.core.Response;
 import org.duongthuy.tichhop.api.bean.ResponseBean;
 import org.duongthuy.tichhop.api.dao.model.MessageFunctionData;
 import org.duongthuy.tichhop.api.dao.service.MessageFunctionDataLocalServiceUtil;
+import org.duongthuy.tichhop.api.message.DossierMessage;
 import org.duongthuy.tichhop.util.DateTimeUtil;
 import org.duongthuy.tichhop.util.RESTfulUtils;
 
@@ -284,11 +287,13 @@ public class DuongThuyAPI {
 		return Response.status(201).entity(output).build();
 	}
 	
-	@GET
-	@Path("/instance/messagefunction/{messagefunction}/messageid/{messageid}")
-	@Produces("application/json")
-	public Response dossierInstance(@PathParam("messagefunction") String messagefunction, @PathParam("messageid") String messageid/*, @QueryParam("messagecontent") @DefaultValue("") String messagecontent*/) {
+	@POST
+	@Path("/instance")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response dossierInstance(@FormParam("messagefunction") String messagefunction, @FormParam("messageid") String messageid/*@QueryParam("messagefunction") String messagefunction, @QueryParam("messageid") String messageid, @QueryParam("messagecontent") @DefaultValue("") String messagecontent*/) {
 		String output = StringPool.BLANK;
+		_log.info("Message function: " + messagefunction);
 		switch (messagefunction) {
 		case "01":
 			break;
@@ -405,7 +410,102 @@ public class DuongThuyAPI {
 			@PathParam("customername") @DefaultValue("") String customername) {
 		String output = StringPool.BLANK;
 		
+		JSONObject sparam = JSONFactoryUtil.createJSONObject();
+		sparam.put("dossiertype", dossiertype);
+		sparam.put("organizationcode", organizationcode);
+		sparam.put("status", status);
+		sparam.put("fromdate", fromdate);
+		sparam.put("todate", todate);
+		sparam.put("documentyear", documentyear);
+		sparam.put("customername", customername);
+		String inputPOSTSearch = sparam.toString();
+		
+		//http://localhost:8080/api/jsonws/opencps-portlet.dossier/search-dossier/dossiertype/-1/organizationcode/sdf/status/1/fromdate/2015-12-01%2000%3A00%3A00/todate/2016-11-01%2000%3A00%3A00/documentyear/2015/customername/Test
+		output = RESTfulUtils.responseGETAPI("http://localhost:8080/api/jsonws/opencps-portlet.dossier/search-dossier/dossiertype/-1/organizationcode/sdf/status/1/fromdate/2015-12-01%2000%3A00%3A00/todate/2016-11-01%2000%3A00%3A00/documentyear/2015/customername/Test");
+		//output = RESTfulUtils.responsePOSTAPI("http://localhost:8080/api/jsonws/opencps-portlet.dossier/search-dossier", inputPOSTSearch);
 		return Response.status(200).entity(output).build();
+	}
+
+	@POST
+	@Path("/jsoninstance")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public Response dossierJSONInstance(DossierMessage message) {
+		String output = StringPool.BLANK;
+		_log.info("Message function: " + message.getMessagefunction());
+		switch (message.getMessagefunction()) {
+		case "01":
+			break;
+		case "02":
+			break;
+		case "03":
+			
+			break;
+		case "11":
+			break;
+		case "20":
+			break;
+		case "21":
+			break;
+		case "22":
+			break;
+		case "23":
+			break;
+		case "24":
+			break;
+		default:
+			break;
+		}
+		JSONObject inputJsonObject = JSONFactoryUtil.createJSONObject();
+		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+		inputJsonObject.put("ReceiveDate", df.format(new Date()));
+		
+		ResponseBean bean = new ResponseBean();
+		bean.setReceiveDate(df.format(new Date()));
+		
+		return Response.status(200).entity(inputJsonObject.toString()).build();
+		//return bean;
+	}
+
+	@POST
+	@Path("/textinstance")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response dossierTextInstance(String message) {
+		String output = StringPool.BLANK;
+		_log.info("Message function: " + message);
+		switch (message) {
+		case "01":
+			break;
+		case "02":
+			break;
+		case "03":
+			
+			break;
+		case "11":
+			break;
+		case "20":
+			break;
+		case "21":
+			break;
+		case "22":
+			break;
+		case "23":
+			break;
+		case "24":
+			break;
+		default:
+			break;
+		}
+		JSONObject inputJsonObject = JSONFactoryUtil.createJSONObject();
+		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+		inputJsonObject.put("ReceiveDate", df.format(new Date()));
+		
+		ResponseBean bean = new ResponseBean();
+		bean.setReceiveDate(df.format(new Date()));
+		
+		return Response.status(200).entity(inputJsonObject.toString()).build();
+		//return bean;
 	}
 	
 	private static Log _log = LogFactoryUtil.getLog(DuongThuyAPI.class);

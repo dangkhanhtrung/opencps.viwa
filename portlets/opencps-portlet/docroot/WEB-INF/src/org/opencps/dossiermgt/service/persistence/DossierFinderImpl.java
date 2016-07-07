@@ -19,6 +19,7 @@ package org.opencps.dossiermgt.service.persistence;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,6 +67,12 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 		DossierFinder.class
 			.getName() + ".searchDossierByKeywordDomainAndStatus";
 
+	public static final String COUNT_DOSSIER_FOR_REMOTE_SERVICE = DossierFinder.class
+			.getName() + ".countDossierForRemoteService";
+
+		public static final String SEARCH_DOSSIER_FOR_REMOTE_SERVICE = DossierFinder.class
+			.getName() + ".searchDossierForRemoteService";
+	
 	private Log _log = LogFactoryUtil
 		.getLog(DossierFinder.class
 			.getName());
@@ -1073,5 +1080,235 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 		}
 
 		return null;
+	}
+	
+	/**
+	 * @param dossiertype
+	 * @param organizationcode
+	 * @param status
+	 * @param fromdate
+	 * @param todate
+	 * @param documentyear
+	 * @param customername
+	 * @return
+	 */
+	public int countDossierForRemoteService(
+		String dossiertype,
+		String organizationcode,
+		String status,
+		Date fromdate,
+		Date todate,
+		int documentyear,
+		String customername) {
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			String sql = CustomSQLUtil
+				.get(COUNT_DOSSIER_FOR_REMOTE_SERVICE);
+
+			if ("-1".equals(status)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_dossier.dossierStatus = ?",
+							StringPool.BLANK);				
+			}
+			if (Validator.isNull(fromdate)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_dossier.receiveDatetime <= ?",
+							StringPool.BLANK);								
+			}
+			if (Validator.isNull(todate)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_dossier.receiveDatetime >= ?",
+							StringPool.BLANK);												
+			}
+			if (documentyear <= 0) {
+				sql = StringUtil
+						.replace(sql,
+							"AND DATEPART(yyyy, opencps_dossier.receiveDatetime) = ?",
+							StringPool.BLANK);																
+			}
+			if (Validator.isNull(customername) || "".equals(customername)) {
+				sql = StringUtil
+						.replace(sql,
+							"(lower(opencps_dossier.subjectName) LIKE ? [$AND_OR_NULL_CHECK$])",
+							StringPool.BLANK);				
+			}
+			else {
+				sql = CustomSQLUtil
+						.replaceKeywords(sql,
+							"lower(opencps_dossier.subjectName)",
+							StringPool.LIKE, true, new String[] { customername });				
+			}
+
+			sql = CustomSQLUtil
+				.replaceAndOperator(sql, true);
+
+			SQLQuery q = session
+				.createSQLQuery(sql);
+
+			q
+				.addScalar(COUNT_COLUMN_NAME, Type.INTEGER);
+
+			QueryPos qPos = QueryPos
+				.getInstance(q);
+
+			qPos.add(organizationcode);
+			if (!"-1".equals(status)) {
+				qPos.add(status);
+			}
+			if (Validator.isNotNull(fromdate)) {
+				qPos.add(fromdate);
+			}
+			if (Validator.isNotNull(todate)) {
+				qPos.add(todate);
+			}
+			if (documentyear > 0) {
+				qPos.add(documentyear);
+			}
+			if (Validator.isNotNull(customername) && !"".equals(customername)) {
+				qPos.add(new String[] { customername }, 2);
+			}
+
+			Iterator<Integer> itr = q
+				.iterate();
+
+			if (itr
+				.hasNext()) {
+				Integer count = itr
+					.next();
+
+				if (count != null) {
+					return count
+						.intValue();
+				}
+			}
+
+			return 0;
+
+		}
+		catch (Exception e) {
+			_log
+				.error(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return 0;
+		
+	}
+	
+	/**
+	 * @param dossiertype
+	 * @param organizationcode
+	 * @param status
+	 * @param fromdate
+	 * @param todate
+	 * @param documentyear
+	 * @param customername
+	 * @return
+	 */
+	public List<Dossier> searchDossierForRemoteService(
+		String dossiertype,
+		String organizationcode,
+		String status,
+		Date fromdate,
+		Date todate,
+		int documentyear,
+		String customername,		
+		int start, int end) {
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			String sql = CustomSQLUtil
+				.get(COUNT_DOSSIER_FOR_REMOTE_SERVICE);
+
+			if ("-1".equals(status)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_dossier.dossierStatus = ?",
+							StringPool.BLANK);				
+			}
+			if (Validator.isNull(fromdate)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_dossier.receiveDatetime <= ?",
+							StringPool.BLANK);								
+			}
+			if (Validator.isNull(todate)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_dossier.receiveDatetime >= ?",
+							StringPool.BLANK);												
+			}
+			if (documentyear <= 0) {
+				sql = StringUtil
+						.replace(sql,
+							"AND DATEPART(yyyy, opencps_dossier.receiveDatetime) = ?",
+							StringPool.BLANK);																
+			}
+			if (Validator.isNull(customername) || "".equals(customername)) {
+				sql = StringUtil
+						.replace(sql,
+							"(lower(opencps_dossier.subjectName) LIKE ? [$AND_OR_NULL_CHECK$])",
+							StringPool.BLANK);				
+			}
+			else {
+				sql = CustomSQLUtil
+						.replaceKeywords(sql,
+							"lower(opencps_dossier.subjectName)",
+							StringPool.LIKE, true, new String[] { customername });				
+			}
+
+			sql = CustomSQLUtil
+				.replaceAndOperator(sql, true);
+
+			SQLQuery q = session
+				.createSQLQuery(sql);
+			q
+				.addEntity("Dossier", DossierImpl.class);
+
+			QueryPos qPos = QueryPos
+				.getInstance(q);
+
+			qPos.add(organizationcode);
+			if (!"-1".equals(status)) {
+				qPos.add(status);
+			}
+			if (Validator.isNotNull(fromdate)) {
+				qPos.add(fromdate);
+			}
+			if (Validator.isNotNull(todate)) {
+				qPos.add(todate);
+			}
+			if (documentyear > 0) {
+				qPos.add(documentyear);
+			}
+			if (Validator.isNotNull(customername) && !"".equals(customername)) {
+				qPos.add(new String[] { customername }, 2);
+			}
+
+			return (List<Dossier>) QueryUtil
+				.list(q, getDialect(), start, end);
+		}
+		catch (Exception e) {
+			_log
+				.error(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return null;
+		
 	}
 }
