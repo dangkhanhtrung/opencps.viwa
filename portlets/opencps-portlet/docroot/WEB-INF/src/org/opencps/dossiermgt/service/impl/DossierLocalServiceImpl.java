@@ -1042,8 +1042,8 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		String dossiertype,
 		String organizationcode,
 		String status,
-		Date fromdate,
-		Date todate,
+		String fromdate,
+		String todate,
 		int documentyear,
 		String customername
 		) {
@@ -1065,8 +1065,8 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		String dossiertype,
 		String organizationcode,
 		String status,
-		Date fromdate,
-		Date todate,
+		String fromdate,
+		String todate,
 		int documentyear,
 		String customername,		
 		int start, int end) {

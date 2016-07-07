@@ -17,7 +17,10 @@
 
 package org.opencps.dossiermgt.service.persistence;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -26,6 +29,7 @@ import java.util.List;
 import org.opencps.dossiermgt.bean.DossierBean;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.model.impl.DossierImpl;
+import org.opencps.util.DateTimeUtil;
 
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -1096,13 +1100,24 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 		String dossiertype,
 		String organizationcode,
 		String status,
-		Date fromdate,
-		Date todate,
+		String fromdate,
+		String todate,
 		int documentyear,
 		String customername) {
 
 		Session session = null;
+		String[] keywords = null;
+		boolean andOperator = false;
+		if (Validator
+			.isNotNull(customername)) {
+			keywords = CustomSQLUtil
+				.keywords(customername);
+		}
+		else {
+			andOperator = true;
+		}
 
+		DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
 			session = openSession();
 
@@ -1115,13 +1130,13 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 							"AND opencps_dossier.dossierStatus = ?",
 							StringPool.BLANK);				
 			}
-			if (Validator.isNull(fromdate)) {
+			if (Validator.isNull(todate)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.receiveDatetime <= ?",
 							StringPool.BLANK);								
 			}
-			if (Validator.isNull(todate)) {
+			if (Validator.isNull(fromdate)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.receiveDatetime >= ?",
@@ -1130,25 +1145,26 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 			if (documentyear <= 0) {
 				sql = StringUtil
 						.replace(sql,
-							"AND DATEPART(yyyy, opencps_dossier.receiveDatetime) = ?",
+							"AND YEAR(opencps_dossier.receiveDatetime) = ?",
 							StringPool.BLANK);																
 			}
-			if (Validator.isNull(customername) || "".equals(customername)) {
+			if (keywords == null || keywords.length == 0) {
 				sql = StringUtil
 						.replace(sql,
-							"(lower(opencps_dossier.subjectName) LIKE ? [$AND_OR_NULL_CHECK$])",
+							"AND (lower(opencps_dossier.subjectName) LIKE ? [$AND_OR_NULL_CHECK$])",
 							StringPool.BLANK);				
 			}
 			else {
 				sql = CustomSQLUtil
 						.replaceKeywords(sql,
 							"lower(opencps_dossier.subjectName)",
-							StringPool.LIKE, true, new String[] { customername });				
+							StringPool.LIKE, true, keywords);				
 			}
 
 			sql = CustomSQLUtil
-				.replaceAndOperator(sql, true);
-
+				.replaceAndOperator(sql, andOperator);
+			
+			_log.info("Count sql: " + sql);
 			SQLQuery q = session
 				.createSQLQuery(sql);
 
@@ -1159,20 +1175,23 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 				.getInstance(q);
 
 			qPos.add(organizationcode);
+			_log.info("Gov agency code: " + organizationcode);
 			if (!"-1".equals(status)) {
 				qPos.add(status);
 			}
-			if (Validator.isNotNull(fromdate)) {
-				qPos.add(fromdate);
-			}
 			if (Validator.isNotNull(todate)) {
-				qPos.add(todate);
+				_log.info("To date: " + sdf.format(todate));
+				qPos.add(sdf.format(todate));
+			}
+			if (Validator.isNotNull(fromdate)) {
+				_log.info("From date: " + sdf.format(fromdate));
+				qPos.add(sdf.format(fromdate));
 			}
 			if (documentyear > 0) {
 				qPos.add(documentyear);
 			}
-			if (Validator.isNotNull(customername) && !"".equals(customername)) {
-				qPos.add(new String[] { customername }, 2);
+			if (keywords != null && keywords.length > 0) {
+				qPos.add(keywords, 2);
 			}
 
 			Iterator<Integer> itr = q
@@ -1218,19 +1237,30 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 		String dossiertype,
 		String organizationcode,
 		String status,
-		Date fromdate,
-		Date todate,
+		String fromdate,
+		String todate,
 		int documentyear,
 		String customername,		
 		int start, int end) {
 
 		Session session = null;
+		String[] keywords = null;
+		boolean andOperator = false;
+		if (Validator
+			.isNotNull(customername)) {
+			keywords = CustomSQLUtil
+				.keywords(customername);
+		}
+		else {
+			andOperator = true;
+		}
+		DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		try {
 			session = openSession();
 
 			String sql = CustomSQLUtil
-				.get(COUNT_DOSSIER_FOR_REMOTE_SERVICE);
+				.get(SEARCH_DOSSIER_FOR_REMOTE_SERVICE);
 
 			if ("-1".equals(status)) {
 				sql = StringUtil
@@ -1238,13 +1268,13 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 							"AND opencps_dossier.dossierStatus = ?",
 							StringPool.BLANK);				
 			}
-			if (Validator.isNull(fromdate)) {
+			if (Validator.isNull(todate)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.receiveDatetime <= ?",
 							StringPool.BLANK);								
 			}
-			if (Validator.isNull(todate)) {
+			if (Validator.isNull(fromdate)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.receiveDatetime >= ?",
@@ -1253,25 +1283,26 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 			if (documentyear <= 0) {
 				sql = StringUtil
 						.replace(sql,
-							"AND DATEPART(yyyy, opencps_dossier.receiveDatetime) = ?",
+							"AND YEAR(opencps_dossier.receiveDatetime) = ?",
 							StringPool.BLANK);																
 			}
-			if (Validator.isNull(customername) || "".equals(customername)) {
+			if (keywords == null || keywords.length == 0) {
 				sql = StringUtil
 						.replace(sql,
-							"(lower(opencps_dossier.subjectName) LIKE ? [$AND_OR_NULL_CHECK$])",
+							"AND (lower(opencps_dossier.subjectName) LIKE ? [$AND_OR_NULL_CHECK$])",
 							StringPool.BLANK);				
 			}
 			else {
 				sql = CustomSQLUtil
 						.replaceKeywords(sql,
 							"lower(opencps_dossier.subjectName)",
-							StringPool.LIKE, true, new String[] { customername });				
+							StringPool.LIKE, true, keywords);				
 			}
 
 			sql = CustomSQLUtil
-				.replaceAndOperator(sql, true);
+				.replaceAndOperator(sql, andOperator);
 
+			_log.info("Search dossier sql: " + sql);
 			SQLQuery q = session
 				.createSQLQuery(sql);
 			q
@@ -1284,19 +1315,19 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 			if (!"-1".equals(status)) {
 				qPos.add(status);
 			}
-			if (Validator.isNotNull(fromdate)) {
-				qPos.add(fromdate);
-			}
 			if (Validator.isNotNull(todate)) {
-				qPos.add(todate);
+				qPos.add(sdf.format(todate));
+			}
+			if (Validator.isNotNull(fromdate)) {
+				qPos.add(sdf.format(fromdate));
 			}
 			if (documentyear > 0) {
 				qPos.add(documentyear);
 			}
-			if (Validator.isNotNull(customername) && !"".equals(customername)) {
-				qPos.add(new String[] { customername }, 2);
+			if (keywords != null && keywords.length > 0) {
+				_log.info("Keyword: " + Arrays.toString(keywords));
+				qPos.add(keywords, 2);
 			}
-
 			return (List<Dossier>) QueryUtil
 				.list(q, getDialect(), start, end);
 		}
