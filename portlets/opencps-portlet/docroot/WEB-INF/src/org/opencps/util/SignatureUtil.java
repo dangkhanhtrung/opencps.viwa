@@ -19,7 +19,7 @@ package org.opencps.util;
 
 import java.security.cert.X509Certificate;
 
-//import org.opencps.pki.PdfSigner;
+import org.opencps.pki.PdfSigner;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -40,7 +40,6 @@ public class SignatureUtil {
 	 * @param imagePath
 	 * @return
 	 */
-	/*
 	public static PdfSigner getPdfSigner(
 		String filePath, String certPath, String tempFilePath,
 		String signedFilePath, boolean isVisible, String imagePath) {
@@ -70,7 +69,6 @@ public class SignatureUtil {
 
 		return pdfSigner;
 	}
-	*/
 	/**
 	 * @param pdfSigner
 	 * @param llx
@@ -79,14 +77,12 @@ public class SignatureUtil {
 	 * @param ury
 	 * @return
 	 */
-	/*
 	public static byte[] computerHash(
 		PdfSigner pdfSigner, float llx, float lly, float urx, float ury) {
 
 		return pdfSigner
 			.computeHash(llx, lly, urx, ury);
 	}
-	*/
 	private static Log _log = LogFactoryUtil
 		.getLog(SignatureUtil.class
 			.getName());
