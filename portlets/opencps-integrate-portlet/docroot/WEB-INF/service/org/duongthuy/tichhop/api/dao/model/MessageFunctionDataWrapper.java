@@ -59,6 +59,7 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 		attributes.put("messageId", getMessageId());
 		attributes.put("messageFileIdData", getMessageFileIdData());
 		attributes.put("sendDate", getSendDate());
+		attributes.put("version", getVersion());
 
 		return attributes;
 	}
@@ -107,7 +108,7 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 			setMessageId(messageId);
 		}
 
-		Long messageFileIdData = (Long)attributes.get("messageFileIdData");
+		String messageFileIdData = (String)attributes.get("messageFileIdData");
 
 		if (messageFileIdData != null) {
 			setMessageFileIdData(messageFileIdData);
@@ -117,6 +118,12 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 
 		if (sendDate != null) {
 			setSendDate(sendDate);
+		}
+
+		String version = (String)attributes.get("version");
+
+		if (version != null) {
+			setVersion(version);
 		}
 	}
 
@@ -308,7 +315,7 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 	* @return the message file ID data of this message function data
 	*/
 	@Override
-	public long getMessageFileIdData() {
+	public java.lang.String getMessageFileIdData() {
 		return _messageFunctionData.getMessageFileIdData();
 	}
 
@@ -318,7 +325,7 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 	* @param messageFileIdData the message file ID data of this message function data
 	*/
 	@Override
-	public void setMessageFileIdData(long messageFileIdData) {
+	public void setMessageFileIdData(java.lang.String messageFileIdData) {
 		_messageFunctionData.setMessageFileIdData(messageFileIdData);
 	}
 
@@ -340,6 +347,26 @@ public class MessageFunctionDataWrapper implements MessageFunctionData,
 	@Override
 	public void setSendDate(java.util.Date sendDate) {
 		_messageFunctionData.setSendDate(sendDate);
+	}
+
+	/**
+	* Returns the version of this message function data.
+	*
+	* @return the version of this message function data
+	*/
+	@Override
+	public java.lang.String getVersion() {
+		return _messageFunctionData.getVersion();
+	}
+
+	/**
+	* Sets the version of this message function data.
+	*
+	* @param version the version of this message function data
+	*/
+	@Override
+	public void setVersion(java.lang.String version) {
+		_messageFunctionData.setVersion(version);
 	}
 
 	@Override

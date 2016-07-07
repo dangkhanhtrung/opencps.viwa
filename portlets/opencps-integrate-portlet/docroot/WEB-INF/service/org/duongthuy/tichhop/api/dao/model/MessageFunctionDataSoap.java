@@ -39,6 +39,7 @@ public class MessageFunctionDataSoap implements Serializable {
 		soapModel.setMessageId(model.getMessageId());
 		soapModel.setMessageFileIdData(model.getMessageFileIdData());
 		soapModel.setSendDate(model.getSendDate());
+		soapModel.setVersion(model.getVersion());
 
 		return soapModel;
 	}
@@ -150,11 +151,11 @@ public class MessageFunctionDataSoap implements Serializable {
 		_messageId = messageId;
 	}
 
-	public long getMessageFileIdData() {
+	public String getMessageFileIdData() {
 		return _messageFileIdData;
 	}
 
-	public void setMessageFileIdData(long messageFileIdData) {
+	public void setMessageFileIdData(String messageFileIdData) {
 		_messageFileIdData = messageFileIdData;
 	}
 
@@ -166,6 +167,14 @@ public class MessageFunctionDataSoap implements Serializable {
 		_sendDate = sendDate;
 	}
 
+	public String getVersion() {
+		return _version;
+	}
+
+	public void setVersion(String version) {
+		_version = version;
+	}
+
 	private long _messagePackagesId;
 	private long _userId;
 	private String _userName;
@@ -173,6 +182,7 @@ public class MessageFunctionDataSoap implements Serializable {
 	private Date _modifiedDate;
 	private String _messageFunction;
 	private String _messageId;
-	private long _messageFileIdData;
+	private String _messageFileIdData;
 	private Date _sendDate;
+	private String _version;
 }

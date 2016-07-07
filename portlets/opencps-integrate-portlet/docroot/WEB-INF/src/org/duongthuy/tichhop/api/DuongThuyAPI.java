@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -437,8 +438,12 @@ public class DuongThuyAPI {
 		sparam.put("customername", customername);
 		String inputPOSTSearch = sparam.toString();
 		
+		String param = "dossiertype/" + dossiertype + "/organizationcode/" + organizationcode + "/status/" + status + "/fromdate/" + fromdate + "/todate/" + todate + "/documentyear/" + documentyear + "/customername/" + customername;
+		
 		//http://localhost:8080/api/jsonws/opencps-portlet.dossier/search-dossier/dossiertype/-1/organizationcode/sdf/status/1/fromdate/2015-12-01%2000%3A00%3A00/todate/2016-11-01%2000%3A00%3A00/documentyear/2015/customername/Test
-		output = RESTfulUtils.responseGETAPI("http://localhost:8080/api/jsonws/opencps-portlet.dossier/search-dossier/dossiertype/-1/organizationcode/sdf/status/1/fromdate/2015-12-01%2000%3A00%3A00/todate/2016-11-01%2000%3A00%3A00/documentyear/2015/customername/Test");
+		//output = RESTfulUtils.responseGETAPI(PortletProps.get("PORTAL_URL") + ".dossier/search-dossier/dossiertype/-1/organizationcode/sdf/status/1/fromdate/2015-12-01%2000%3A00%3A00/todate/2016-11-01%2000%3A00%3A00/documentyear/2015/customername/Test");
+		_log.info("Search URL: " + (PortletProps.get("PORTAL_URL") + "dossier/search-dossier/" + param));
+		output = RESTfulUtils.responseGETAPI(PortletProps.get("PORTAL_URL") + "dossier/search-dossier/" + param);
 		//output = RESTfulUtils.responsePOSTAPI("http://localhost:8080/api/jsonws/opencps-portlet.dossier/search-dossier", inputPOSTSearch);
 		return Response.status(200).entity(output).build();
 	}

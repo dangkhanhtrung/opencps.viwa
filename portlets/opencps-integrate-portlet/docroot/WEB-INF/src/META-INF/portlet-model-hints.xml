@@ -9,7 +9,8 @@
 		<field name="modifiedDate" type="Date" />
 		<field name="messageFunction" type="String" />
 		<field name="messageId" type="String" />
-		<field name="messageFileIdData" type="long" />
+		<field name="messageFileIdData" type="String" />
 		<field name="sendDate" type="Date" />
+		<field name="version" type="String" />
 	</model>
 </model-hints>

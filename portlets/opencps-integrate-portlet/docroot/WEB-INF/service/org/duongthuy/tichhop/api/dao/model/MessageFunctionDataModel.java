@@ -181,14 +181,15 @@ public interface MessageFunctionDataModel extends BaseModel<MessageFunctionData>
 	 *
 	 * @return the message file ID data of this message function data
 	 */
-	public long getMessageFileIdData();
+	@AutoEscape
+	public String getMessageFileIdData();
 
 	/**
 	 * Sets the message file ID data of this message function data.
 	 *
 	 * @param messageFileIdData the message file ID data of this message function data
 	 */
-	public void setMessageFileIdData(long messageFileIdData);
+	public void setMessageFileIdData(String messageFileIdData);
 
 	/**
 	 * Returns the send date of this message function data.
@@ -203,6 +204,21 @@ public interface MessageFunctionDataModel extends BaseModel<MessageFunctionData>
 	 * @param sendDate the send date of this message function data
 	 */
 	public void setSendDate(Date sendDate);
+
+	/**
+	 * Returns the version of this message function data.
+	 *
+	 * @return the version of this message function data
+	 */
+	@AutoEscape
+	public String getVersion();
+
+	/**
+	 * Sets the version of this message function data.
+	 *
+	 * @param version the version of this message function data
+	 */
+	public void setVersion(String version);
 
 	@Override
 	public boolean isNew();

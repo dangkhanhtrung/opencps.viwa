@@ -302,10 +302,12 @@ public class MessageFunctionDataLocalServiceWrapper
 	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData addMessageFunctionData(
 		java.lang.String userId, java.lang.String userName,
 		java.lang.String messageFunction, java.lang.String messageId,
-		long messageFileIdData)
+		java.lang.String messageFileIdData, java.lang.String version,
+		java.util.Date sendDate)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _messageFunctionDataLocalService.addMessageFunctionData(userId,
-			userName, messageFunction, messageId, messageFileIdData);
+			userName, messageFunction, messageId, messageFileIdData, version,
+			sendDate);
 	}
 
 	/**

@@ -38,7 +38,7 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 	Externalizable {
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("{messagePackagesId=");
 		sb.append(messagePackagesId);
@@ -58,6 +58,8 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 		sb.append(messageFileIdData);
 		sb.append(", sendDate=");
 		sb.append(sendDate);
+		sb.append(", version=");
+		sb.append(version);
 		sb.append("}");
 
 		return sb.toString();
@@ -105,13 +107,25 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 			messageFunctionDataImpl.setMessageId(messageId);
 		}
 
-		messageFunctionDataImpl.setMessageFileIdData(messageFileIdData);
+		if (messageFileIdData == null) {
+			messageFunctionDataImpl.setMessageFileIdData(StringPool.BLANK);
+		}
+		else {
+			messageFunctionDataImpl.setMessageFileIdData(messageFileIdData);
+		}
 
 		if (sendDate == Long.MIN_VALUE) {
 			messageFunctionDataImpl.setSendDate(null);
 		}
 		else {
 			messageFunctionDataImpl.setSendDate(new Date(sendDate));
+		}
+
+		if (version == null) {
+			messageFunctionDataImpl.setVersion(StringPool.BLANK);
+		}
+		else {
+			messageFunctionDataImpl.setVersion(version);
 		}
 
 		messageFunctionDataImpl.resetOriginalValues();
@@ -128,8 +142,9 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 		modifiedDate = objectInput.readLong();
 		messageFunction = objectInput.readUTF();
 		messageId = objectInput.readUTF();
-		messageFileIdData = objectInput.readLong();
+		messageFileIdData = objectInput.readUTF();
 		sendDate = objectInput.readLong();
+		version = objectInput.readUTF();
 	}
 
 	@Override
@@ -162,8 +177,21 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 			objectOutput.writeUTF(messageId);
 		}
 
-		objectOutput.writeLong(messageFileIdData);
+		if (messageFileIdData == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(messageFileIdData);
+		}
+
 		objectOutput.writeLong(sendDate);
+
+		if (version == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(version);
+		}
 	}
 
 	public long messagePackagesId;
@@ -173,6 +201,7 @@ public class MessageFunctionDataCacheModel implements CacheModel<MessageFunction
 	public long modifiedDate;
 	public String messageFunction;
 	public String messageId;
-	public long messageFileIdData;
+	public String messageFileIdData;
 	public long sendDate;
+	public String version;
 }
