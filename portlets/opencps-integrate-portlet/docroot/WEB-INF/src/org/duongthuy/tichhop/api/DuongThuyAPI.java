@@ -29,6 +29,8 @@ import org.duongthuy.tichhop.util.DateTimeUtil;
 import org.duongthuy.tichhop.util.RESTfulUtils;
 
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -290,42 +292,57 @@ public class DuongThuyAPI {
 	@POST
 	@Path("/instance")
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response dossierInstance(@FormParam("messagefunction") String messagefunction, @FormParam("messageid") String messageid/*@QueryParam("messagefunction") String messagefunction, @QueryParam("messageid") String messageid, @QueryParam("messagecontent") @DefaultValue("") String messagecontent*/) {
+	public Response dossierInstance(String input) {
 		String output = StringPool.BLANK;
-		_log.info("Message function: " + messagefunction);
-		switch (messagefunction) {
-		case "01":
-			break;
-		case "02":
-			break;
-		case "03":
-			
-			break;
-		case "11":
-			break;
-		case "20":
-			break;
-		case "21":
-			break;
-		case "22":
-			break;
-		case "23":
-			break;
-		case "24":
-			break;
-		default:
-			break;
+		if(Validator.isNull(input)){
+		    return Response.status(400).entity("Create packages fail!").build();
 		}
-		JSONObject inputJsonObject = JSONFactoryUtil.createJSONObject();
-		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
-		inputJsonObject.put("ReceiveDate", df.format(new Date()));
+		JSONObject inputJsonObject;
+		try {
+			inputJsonObject = JSONFactoryUtil.createJSONObject(input);
+			_log.info("messagefunction: "+inputJsonObject.getString("messagefunction").toString());
+			_log.info("messageid: "+inputJsonObject.getString("messageid").toString());
+			_log.info("messagecontent: "+inputJsonObject.getString("messagecontent").toString());
+
+			String messagefunction = inputJsonObject.getString("messagefunction");
+			String messageid = inputJsonObject.getString("messageid");
+			String messagecontent = inputJsonObject.getString("messagecontent");
+			
+			_log.info("Message function: " + messagefunction);
+			switch (messagefunction) {
+			case "01":
+				break;
+			case "02":
+				break;
+			case "03":			
+				break;
+			case "11":
+				output = confirmCacellation(messagefunction, messageid, messagecontent);
+				break;
+			case "20":
+				output = requestChanged(messagefunction, messageid, messagecontent);
+				break;
+			case "21":
+				output = acceptance(messagefunction, messageid, messagecontent);
+				break;
+			case "22":
+				output = reject(messagefunction, messageid, messagecontent);
+				break;
+			case "23":
+				output = noticeOfAssignment(messagefunction, messageid, messagecontent);
+				break;
+			case "24":
+				output = confirmCacellation(messagefunction, messageid, messagecontent);
+				break;
+			default:
+				break;
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		ResponseBean bean = new ResponseBean();
-		bean.setReceiveDate(df.format(new Date()));
-		
-		return Response.status(200).entity(inputJsonObject.toString()).build();
-		//return bean;
+		return Response.status(200).entity(output).build();
 	}
 	
 	//POST insert messageId
@@ -506,6 +523,150 @@ public class DuongThuyAPI {
 		
 		return Response.status(200).entity(inputJsonObject.toString()).build();
 		//return bean;
+	}
+	
+	private String requestChanged(String messagefunction, String messageid, String messagecontent) {
+		String output = StringPool.BLANK;
+		
+		try {
+			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
+			JSONObject dossierObj = obj.getJSONObject("RequestChanges");
+			
+			String requestDate = dossierObj.getString("RequestDate");
+			String fromOrganization = dossierObj.getString("FromOrganization");
+			String division = dossierObj.getString("Division");
+			String name = dossierObj.getString("Name");
+			String registeredNumber = dossierObj.getString("RegisteredNumber");
+			String reason = dossierObj.getString("Reason");
+			String finishDate = dossierObj.getString("FinishDate");
+			String toOrganization = dossierObj.getString("ToOrganization");
+			String docNumber = dossierObj.getString("DocNumber");
+			String briefContent = dossierObj.getString("BriefContent");
+			String docContent = dossierObj.getString("DocContent");
+			String signName = dossierObj.getString("SignName");
+			String signTitle = dossierObj.getString("SignTitle");
+			String signPlace = dossierObj.getString("SignPlace");
+			String signDate = dossierObj.getString("SignDate");
+			JSONArray attachedFileObj = dossierObj.getJSONArray("AttachedFile");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		JSONObject outputJsonObject = JSONFactoryUtil.createJSONObject();
+		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+		outputJsonObject.put("ReceiveDate", df.format(new Date()));
+		
+		output = outputJsonObject.toString();
+		
+		return output;
+	}
+
+	private String acceptance(String messagefunction, String messageid, String messagecontent) {
+		String output = StringPool.BLANK;
+		
+		try {
+			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
+			JSONObject acceptanceObj = obj.getJSONObject("Acceptance");
+			
+			String acceptDate = acceptanceObj.getString("AcceptDate");
+			String organization = acceptanceObj.getString("Organization");
+			String division = acceptanceObj.getString("Division");
+			String name = acceptanceObj.getString("Name");
+			String registeredNumber = acceptanceObj.getString("RegisteredNumber");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JSONObject outputJsonObject = JSONFactoryUtil.createJSONObject();
+		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+		outputJsonObject.put("ReceiveDate", df.format(new Date()));
+		
+		output = outputJsonObject.toString();
+		
+		return output;
+	}
+
+	private String reject(String messagefunction, String messageid, String messagecontent) {
+		String output = StringPool.BLANK;
+		
+		try {
+			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
+			JSONObject rejectObj = obj.getJSONObject("Reject");
+			
+			String rejectCode = rejectObj.getString("RejectCode");
+			String rejectDesc = rejectObj.getString("RejectDesc");
+			String rejectDate = rejectObj.getString("RejectDate");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JSONObject outputJsonObject = JSONFactoryUtil.createJSONObject();
+		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+		outputJsonObject.put("ReceiveDate", df.format(new Date()));
+		
+		output = outputJsonObject.toString();
+		
+		return output;
+	}
+
+	private String noticeOfAssignment(String messagefunction, String messageid, String messagecontent) {
+		String output = StringPool.BLANK;
+		
+		try {
+			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
+			JSONObject nOfAssignmentObj = obj.getJSONObject("NoticeOfAssignment");
+			
+			String assignDate = nOfAssignmentObj.getString("AssignDate");
+			String organization = nOfAssignmentObj.getString("Organization");
+			String division = nOfAssignmentObj.getString("Division");
+			String name = nOfAssignmentObj.getString("Name");
+			String registeredNumber = nOfAssignmentObj.getString("RegisteredNumber");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JSONObject outputJsonObject = JSONFactoryUtil.createJSONObject();
+		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+		outputJsonObject.put("ReceiveDate", df.format(new Date()));
+		
+		output = outputJsonObject.toString();
+		
+		return output;
+	}
+
+	private String confirmCacellation(String messagefunction, String messageid, String messagecontent) {
+		String output = StringPool.BLANK;
+		
+		try {
+			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
+			JSONObject cancelObj = obj.getJSONObject("ConfirmCancellation");
+			
+			String registeredNumber = cancelObj.getString("RegisteredNumber");
+			String finishDate = cancelObj.getString("FinishDate");
+			String result = cancelObj.getString("Result");
+			String fromOrganization = cancelObj.getString("FromOrganization");
+			String division = cancelObj.getString("Division");
+			String toOrganization = cancelObj.getString("ToOrganization");
+			String docNumber = cancelObj.getString("DocNumber");
+			String briefContent = cancelObj.getString("BriefContent");
+			String docContent = cancelObj.getString("DocContent");
+			String signName = cancelObj.getString("SignName");
+			String signTitle = cancelObj.getString("SignTitle");
+			String signPlace = cancelObj.getString("SignPlace");
+			String signDate = cancelObj.getString("SignDate");
+			JSONArray attachedFileObj = cancelObj.getJSONArray("AttachedFile");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JSONObject outputJsonObject = JSONFactoryUtil.createJSONObject();
+		DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+		outputJsonObject.put("ReceiveDate", df.format(new Date()));
+		
+		output = outputJsonObject.toString();
+		
+		return output;
 	}
 	
 	private static Log _log = LogFactoryUtil.getLog(DuongThuyAPI.class);
