@@ -35,6 +35,7 @@ import org.opencps.util.DLFolderUtil;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.PortletUtil;
 
+import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.Indexer;
@@ -43,7 +44,10 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
+import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.model.DLFolder;
 
 /**
@@ -1046,6 +1050,7 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 	public int countDossierForRemoteService(
 		String dossiertype,
 		String organizationcode,
+		String processStepId,
 		String status,
 		String fromdate,
 		String todate,
@@ -1053,7 +1058,7 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		String customername
 		) {
 
-		return dossierFinder.countDossierForRemoteService(dossiertype, organizationcode, status, fromdate, todate, documentyear, customername);
+		return dossierFinder.countDossierForRemoteService(dossiertype, organizationcode, processStepId, status, fromdate, todate, documentyear, customername);
 	}
 
 	/**
@@ -1069,6 +1074,7 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 	public List<Dossier> searchDossierForRemoteService(
 		String dossiertype,
 		String organizationcode,
+		String processStepId,
 		String status,
 		String fromdate,
 		String todate,
@@ -1077,7 +1083,121 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		int start, int end) {
 
 		return dossierFinder
-			.searchDossierForRemoteService(dossiertype, organizationcode, status, fromdate, todate, documentyear, customername, start, end);
+			.searchDossierForRemoteService(dossiertype, organizationcode, processStepId, status, fromdate, todate, documentyear, customername, start, end);
+	}
+	
+	/**
+	 * @param username
+	 * @return
+	 */
+	public int countDossierByUserAssignProcessOrder(
+		String username
+		) throws NoSuchUserException {
+		
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchUserException();
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchUserException();
+		}
+		return dossierFinder.countDossierByUserAssignProcessOrder(userId);
+	}
+
+	/**
+	 * @param username
+	 * @return
+	 */
+	public List<Dossier> searchDossierByUserAssignProcessOrder(
+		String username,
+		int start, int end) throws NoSuchUserException {
+
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchUserException();
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchUserException();
+		}		
+		return dossierFinder
+			.searchDossierByUserAssignByProcessOrder(userId, start, end);
+	}
+	
+	/**
+	 * @param processNo
+	 * @param stepNo
+	 * @param username
+	 * @return
+	 */
+	public int countDossierByP_S_U(
+		String processNo,
+		String stepNo,
+		String username
+		) {
+		
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			
+		}
+		return dossierFinder.countDossierByP_S_U(processNo, stepNo, userId);
+	}
+
+	/**
+	 * @param processNo
+	 * @param stepNo
+	 * @param username
+	 * @return
+	 */
+	public List<Dossier> searchDossierByP_S_U(
+		String processNo,
+		String stepNo,
+		String username,
+		int start, int end) {
+
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			
+		}		
+		return dossierFinder
+			.searchDossierByP_S_U(processNo, stepNo, userId, start, end);
 	}
 	
 }

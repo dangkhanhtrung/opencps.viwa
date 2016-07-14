@@ -4,9 +4,9 @@ create table duongthuy_message_packages (
 	userName VARCHAR(75) null,
 	createDate DATE null,
 	modifiedDate DATE null,
-	messageFunction VARCHAR(75) null,
-	messageId VARCHAR(75) null,
-	messageFileIdData VARCHAR(75) null,
+	messageFunction VARCHAR(128) null,
+	messageId VARCHAR(128) null,
+	messageFileIdData VARCHAR(512) null,
 	sendDate DATE null,
 	version VARCHAR(75) null
 );

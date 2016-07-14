@@ -310,6 +310,13 @@ public class MessageFunctionDataLocalServiceWrapper
 			sendDate);
 	}
 
+	@Override
+	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData getByMI(
+		java.lang.String messageId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _messageFunctionDataLocalService.getByMI(messageId);
+	}
+
 	/**
 	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
 	 */

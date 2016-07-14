@@ -30,6 +30,7 @@ import org.opencps.backend.message.SendToEngineMsg;
 import org.opencps.backend.message.UserActionMsg;
 import org.opencps.backend.util.AutoFillFormData;
 import org.opencps.backend.util.BackendUtils;
+import org.opencps.dossiermgt.NoSuchDossierFileException;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.model.DossierFile;
 import org.opencps.dossiermgt.model.DossierPart;
@@ -94,7 +95,6 @@ public class SyncFromFrontOffice implements MessageListener{
 		String action = userActionMgs.getAction();
 
 		long dosserId = userActionMgs.getDossierId();
-
 		boolean trustServiceMode = true;//_checkServiceMode(dosserId);
 
 		if (trustServiceMode) {
@@ -111,13 +111,12 @@ public class SyncFromFrontOffice implements MessageListener{
 					        userActionMgs.getFileGroupId()))) {
 
 						int logLevel = 0;
-
 						long govAgencyOrgId =
 						    BackendUtils.getGovAgencyOrgId(userActionMgs.getDossierId());
 
 						// Change dossier status to SYSTEM
 						// Update govAgencyOrgId of dossier and dossierFile
-					 	Dossier dossier = DossierLocalServiceUtil.updateDossierStatus(
+						Dossier dossier = DossierLocalServiceUtil.updateDossierStatus(
 						    userActionMgs.getUserId(),
 						    userActionMgs.getDossierId(),
 						    govAgencyOrgId,
@@ -125,8 +124,12 @@ public class SyncFromFrontOffice implements MessageListener{
 						    PortletConstants.DOSSIER_FILE_SYNC_STATUS_SYNCSUCCESS,
 						    userActionMgs.getFileGroupId(), logLevel,
 						    userActionMgs.getLocale());
-
 						// Create message
+						_log.info("MESSAGE: " + userActionMgs);
+						_log.info("DOSSIER ID: " + userActionMgs.getDossierId());
+						//Dossier dossier = DossierLocalServiceUtil.getDossier(userActionMgs.getDossierId());
+						
+						_log.info("DOSSIER: " + dossier.getDossierId());
 						Message msgToEngine = new Message();
 
 						SendToEngineMsg engineMsg = new SendToEngineMsg();
@@ -232,44 +235,49 @@ public class SyncFromFrontOffice implements MessageListener{
 						
 						JSONObject contentAttachedFile = JSONFactoryUtil.createJSONObject();
 						//
-						List<DossierFile> listDossierFiles = DossierFileLocalServiceUtil.getDossierFileByDossierId(dossier.getDossierId());
-						
-						for (DossierFile dossierFile : listDossierFiles) {
-							contentAttachedFile.put("AttachedTypeCode", dossierFile.getTemplateFileNo());
-							
-							contentAttachedFile.put("AttachedTypeName", dossierFile.getDossierFileType());
-							
-							contentAttachedFile.put("AttachedDocName", dossierFile.getDisplayName());
-							
-							contentAttachedFile.put("AttachedNote", StringPool.BLANK);
-							
-							contentAttachedFile.put("AttachedSequenceNo", dossierFile.getDossierPartId());
-							
-							contentAttachedFile.put("FullFileName", dossierFile.getDisplayName());
-							
-							String base64File = StringPool.BLANK;
-							
-							FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(dossierFile.getFileEntryId());
-							
-							String url =  PortletProps.get("VIRTUAL_HOST") + ":" + PortletProps.get("VIRTUAL_PORT") +  "/documents/"
-							        + fileEntry.getGroupId()
-							        + StringPool.SLASH
-							        + fileEntry.getFolderId()
-							        + StringPool.SLASH
-							        + fileEntry.getTitle()
-							        + "?version="+fileEntry.getVersion();
-							
-//							base64File = new String(Base64.encode(FileUtil.getBytes(fileEntry.getContentStream())));
-							
-							contentAttachedFile.put("Base64FileContent", url);
-							
-							contentAttachedFiles.put(contentAttachedFile);
+						try {
+							List<DossierFile> listDossierFiles = DossierFileLocalServiceUtil.getDossierFileByDossierId(dossier.getDossierId());
+							for (DossierFile dossierFile : listDossierFiles) {
+								if(dossierFile.getFileEntryId() > 0) {
+									contentAttachedFile.put("AttachedTypeCode", dossierFile.getTemplateFileNo());
+									
+									contentAttachedFile.put("AttachedTypeName", dossierFile.getDossierFileType());
+									
+									contentAttachedFile.put("AttachedDocName", dossierFile.getDisplayName());
+									
+									contentAttachedFile.put("AttachedNote", StringPool.BLANK);
+									
+									contentAttachedFile.put("AttachedSequenceNo", dossierFile.getDossierPartId());
+									
+									
+									String base64File = StringPool.BLANK;
+									
+									FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(dossierFile.getFileEntryId());
+									contentAttachedFile.put("FullFileName", dossierFile.getDisplayName() + "." + fileEntry.getExtension());
+									
+									String url =  PortletProps.get("VIRTUAL_HOST") + ":" + PortletProps.get("VIRTUAL_PORT") +  "/documents/"
+									        + fileEntry.getGroupId()
+									        + StringPool.SLASH
+									        + fileEntry.getFolderId()
+									        + StringPool.SLASH
+									        + fileEntry.getTitle()
+									        + "?version="+fileEntry.getVersion();
+									
+		//							base64File = new String(Base64.encode(FileUtil.getBytes(fileEntry.getContentStream())));
+									
+									contentAttachedFile.put("Base64FileContent", url);
+									
+									contentAttachedFiles.put(contentAttachedFile);
+								}
+							}
 						}
-						
+						catch (NoSuchDossierFileException e) {
+							
+						}
 						contentLv1.put("AttachedFile", contentAttachedFiles);
 						//
 						DossierPart dossierPartOnline = DossierPartLocalServiceUtil.getByF_FORM_ONLINE(dossier.getDossierTemplateId(), 0, dossier.getGroupId(), 1);
-//						_log.info("dossierPartOnline" + dossierPartOnline);
+						_log.info("dossierPartOnline" + dossierPartOnline);
 						DossierFile dossierFileOnline = null;
 						
 						if(Validator.isNotNull(dossierPartOnline)){
@@ -281,7 +289,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						String sampleData="{}";
 						
 						if(Validator.isNotNull(dossierFileOnline)){
-							
+
 						sampleData = "{\"FromOrganization\":\"#tencoquantrinh@"+dossierFileOnline.getTemplateFileNo()+"\","
 	                                + "\"Division\":\"#Division@"+dossierFileOnline.getTemplateFileNo()+"\","
 	                                + "\"ToOrganization\":\"#kinhgui@"+dossierFileOnline.getTemplateFileNo()+"\","
@@ -292,6 +300,18 @@ public class SyncFromFrontOffice implements MessageListener{
 	                                + "\"SignTitle\":\"#chucdanhky@"+dossierFileOnline.getTemplateFileNo()+"\","
 	                                + "\"SignPlace\":\"#diadiem@"+dossierFileOnline.getTemplateFileNo()+"\","
 	                                + "\"SignDate\":\"#ngaythangnam@"+dossierFileOnline.getTemplateFileNo()+"\"}";
+						/*
+							sampleData = "{\"FromOrganization\":\"#FromOrganization@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"Division\":\"#Division@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"ToOrganization\":\"#ToOrganization@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"DocNumber\":\"#DocNumber@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"BriefContent\":\"#BriefContent@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"DocContent\":\"#DocContent@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"SignName\":\"#SignName@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"SignTitle\":\"#SignTitle@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"SignPlace\":\"#SignPlace@"+dossierFileOnline.getTemplateFileNo()+"\","
+	                                + "\"SignDate\":\"#SignDate@"+dossierFileOnline.getTemplateFileNo()+"\"}";							
+	                    */
 						}
 						Citizen ownerCitizen = null;
 						
@@ -306,9 +326,11 @@ public class SyncFromFrontOffice implements MessageListener{
 							ownerBusiness = BusinessLocalServiceUtil.getBymappingOrganizationId(dossier.getOwnerOrganizationId());
 						
 						}
-						
+						System.out.println("===HELLOWORLD===" + sampleData);
 						String resultBilding = AutoFillFormData.dataBinding(sampleData, ownerCitizen, ownerBusiness, dossier.getDossierId());
 						
+						
+						System.out.println("===resultBilding===" + resultBilding);
 						JSONObject resultBildingJson = JSONFactoryUtil.createJSONObject(resultBilding);
 						
 						contentLv1.put("FromOrganization", resultBildingJson.getString("FromOrganization"));
@@ -365,13 +387,13 @@ public class SyncFromFrontOffice implements MessageListener{
 						
 						String inputPOST = param.toString();
 						
+						_log.info("Input POST: " + inputPOST);
 						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/addMessageFunctionData", inputPOST);
 //						RESTfulUtils.responseGETAPI(integrateURL+"dossier/new/messagefunction/01/messageid/04ac0077-ac36-47ed-9b71-fcf09d6e8706_46044931800432");
 						// Send message to ...engine/destination
 						MessageBusUtil.sendMessage(
 						    "opencps/backoffice/engine/destination",
 						    msgToEngine);
-						
 					}
 
 				}
@@ -389,6 +411,7 @@ public class SyncFromFrontOffice implements MessageListener{
 
 					SendToEngineMsg engineMsg = new SendToEngineMsg();
 
+					_log.info("RESUBMIT DOSSIER============" + userActionMgs.getDossierId());
 					DossierLocalServiceUtil.updateDossierStatus(
 					    userActionMgs.getUserId(),
 					    userActionMgs.getDossierId(), govAgencyOrgId,
@@ -404,7 +427,8 @@ public class SyncFromFrontOffice implements MessageListener{
 					engineMsg.setProcessOrderId(userActionMgs.getProcessOrderId());
 
 					msgToEngine.put("msgToEngine", engineMsg);
-
+					
+					_log.info("SEND MESSAGE TO ENGINE: " + engineMsg);
 					// Send message to ...engine/destination
 					MessageBusUtil.sendMessage(
 					    "opencps/backoffice/engine/destination", msgToEngine);
@@ -590,7 +614,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						
 						contentLv1.put("AttachedFile", contentAttachedFiles);
 						//
-						DossierPart dossierPartOnline = DossierPartLocalServiceUtil.getByF_FORM_ONLINE(dossier.getDossierTemplateId(), 0, GroupThreadLocal.getGroupId());
+						DossierPart dossierPartOnline = DossierPartLocalServiceUtil.getByF_FORM_ONLINE(dossier.getDossierTemplateId(), 0, GroupThreadLocal.getGroupId(), 1);
 						
 						DossierFile dossierFileOnline = null;
 						
@@ -737,14 +761,12 @@ public class SyncFromFrontOffice implements MessageListener{
         	_log.error(e);
         	
         }
-    	
     	if (Validator.isNotNull(status)) {
-			if (status.getDossierStatus() == PortletConstants.DOSSIER_STATUS_NEW ||
-			    status.getDossierStatus() == PortletConstants.DOSSIER_STATUS_WAITING) {
+			if (status.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_NEW) ||
+			    status.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_WAITING)) {
 				isValidatorStatus = true;
 			}
     	}
-    	
     	return isValidatorStatus;
     }
     

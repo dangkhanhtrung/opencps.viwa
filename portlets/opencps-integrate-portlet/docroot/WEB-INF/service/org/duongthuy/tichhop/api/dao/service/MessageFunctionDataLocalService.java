@@ -265,4 +265,9 @@ public interface MessageFunctionDataLocalService extends BaseLocalService,
 		java.lang.String messageFileIdData, java.lang.String version,
 		java.util.Date sendDate)
 		throws com.liferay.portal.kernel.exception.SystemException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData getByMI(
+		java.lang.String messageId)
+		throws com.liferay.portal.kernel.exception.SystemException;
 }

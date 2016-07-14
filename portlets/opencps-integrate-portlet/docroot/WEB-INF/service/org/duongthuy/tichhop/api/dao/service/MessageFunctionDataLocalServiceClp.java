@@ -129,6 +129,10 @@ public class MessageFunctionDataLocalServiceClp
 				"java.lang.String", "java.lang.String", "java.lang.String",
 				"java.util.Date"
 			};
+
+		_methodName21 = "getByMI";
+
+		_methodParameterTypes21 = new String[] { "java.lang.String" };
 	}
 
 	@Override
@@ -768,6 +772,36 @@ public class MessageFunctionDataLocalServiceClp
 		return (org.duongthuy.tichhop.api.dao.model.MessageFunctionData)ClpSerializer.translateOutput(returnObj);
 	}
 
+	@Override
+	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData getByMI(
+		java.lang.String messageId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName21,
+					_methodParameterTypes21,
+					new Object[] { ClpSerializer.translateInput(messageId) });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof com.liferay.portal.kernel.exception.SystemException) {
+				throw (com.liferay.portal.kernel.exception.SystemException)t;
+			}
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (org.duongthuy.tichhop.api.dao.model.MessageFunctionData)ClpSerializer.translateOutput(returnObj);
+	}
+
 	private InvokableLocalService _invokableLocalService;
 	private String _methodName0;
 	private String[] _methodParameterTypes0;
@@ -809,4 +843,6 @@ public class MessageFunctionDataLocalServiceClp
 	private String[] _methodParameterTypes19;
 	private String _methodName20;
 	private String[] _methodParameterTypes20;
+	private String _methodName21;
+	private String[] _methodParameterTypes21;
 }
