@@ -103,6 +103,64 @@ public interface MessageFunctionDataPersistence extends BasePersistence<MessageF
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	/**
+	* Returns the message function data where messageId = &#63; or throws a {@link org.duongthuy.tichhop.api.dao.NoSuchMessageFunctionDataException} if it could not be found.
+	*
+	* @param messageId the message ID
+	* @return the matching message function data
+	* @throws org.duongthuy.tichhop.api.dao.NoSuchMessageFunctionDataException if a matching message function data could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData findByMI(
+		java.lang.String messageId)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			org.duongthuy.tichhop.api.dao.NoSuchMessageFunctionDataException;
+
+	/**
+	* Returns the message function data where messageId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	*
+	* @param messageId the message ID
+	* @return the matching message function data, or <code>null</code> if a matching message function data could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData fetchByMI(
+		java.lang.String messageId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the message function data where messageId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	*
+	* @param messageId the message ID
+	* @param retrieveFromCache whether to use the finder cache
+	* @return the matching message function data, or <code>null</code> if a matching message function data could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData fetchByMI(
+		java.lang.String messageId, boolean retrieveFromCache)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Removes the message function data where messageId = &#63; from the database.
+	*
+	* @param messageId the message ID
+	* @return the message function data that was removed
+	* @throws SystemException if a system exception occurred
+	*/
+	public org.duongthuy.tichhop.api.dao.model.MessageFunctionData removeByMI(
+		java.lang.String messageId)
+		throws com.liferay.portal.kernel.exception.SystemException,
+			org.duongthuy.tichhop.api.dao.NoSuchMessageFunctionDataException;
+
+	/**
+	* Returns the number of message function datas where messageId = &#63;.
+	*
+	* @param messageId the message ID
+	* @return the number of matching message function datas
+	* @throws SystemException if a system exception occurred
+	*/
+	public int countByMI(java.lang.String messageId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
 	* Caches the message function data in the entity cache if it is enabled.
 	*
 	* @param messageFunctionData the message function data

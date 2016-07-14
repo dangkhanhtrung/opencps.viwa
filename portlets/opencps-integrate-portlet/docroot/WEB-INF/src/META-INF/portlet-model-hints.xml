@@ -7,9 +7,15 @@
 		<field name="userName" type="String" />
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
-		<field name="messageFunction" type="String" />
-		<field name="messageId" type="String" />
-		<field name="messageFileIdData" type="String" />
+		<field name="messageFunction" type="String">
+			<hint name="max-length">128</hint>
+		</field>
+		<field name="messageId" type="String">
+			<hint name="max-length">128</hint>
+		</field>
+		<field name="messageFileIdData" type="String">
+			<hint name="max-length">512</hint>
+		</field>
 		<field name="sendDate" type="Date" />
 		<field name="version" type="String" />
 	</model>

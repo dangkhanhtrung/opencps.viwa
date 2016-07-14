@@ -139,7 +139,14 @@ public class DuongThuyAPI {
 			_log.info("************** messagefunction: "+messagefunction);
 			_log.info("************** messageid: "+messageid);
 			//(\\w+)
-			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
+			MessageFunctionData messageFunctionData = null;
+			if (messagefunction.equals("02")) {
+				messageFunctionData = MessageFunctionDataLocalServiceUtil.getByMI(messageid);				
+			}
+			else {
+				
+			}
+			messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
 			
 			if(Validator.isNotNull(messageFunctionData)){
 				output = messageFunctionData.getMessageFileIdData();
@@ -203,6 +210,80 @@ public class DuongThuyAPI {
 		return Response.status(200).entity(output).build();
 	}
 	
+	@GET
+	@Path("/cancel/messagefunction/{messagefunction}/messageid/{messageid}")
+	@Produces(MediaType.APPLICATION_JSON+";charset=utf-8")
+	public Response getCancelDossier(@NotNull @PathParam("messagefunction") String messagefunction,
+			 @PathParam("messageid") String messageid) {
+		String output = StringPool.BLANK;
+		InputStream inputStream = null;
+		try {
+			_log.info("************** messagefunction: "+messagefunction);
+			_log.info("************** messageid: "+messageid);
+			//(\\w+)
+			MessageFunctionData messageFunctionData = MessageFunctionDataLocalServiceUtil.getByF_O(messagefunction, messageid);
+			
+			if(Validator.isNotNull(messageFunctionData)){
+				output = messageFunctionData.getMessageFileIdData();
+			}else{
+				output = "{\"error\":\"no messageid\"}";
+				return Response.status(200).entity(output).build();
+			}
+			//output = messageFunctionData.getMessageFileIdData();
+			
+//			long fileId = 0;
+//			
+//			if(Validator.isNotNull(messageFunctionData)){
+//				
+//				fileId = messageFunctionData.getMessageFileIdData();
+//				
+//			}
+//
+//			DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(fileId);
+//
+//			_log.info(dlFileEntry);
+//			
+//			if(Validator.isNotNull(dlFileEntry)){
+//				
+//				RESTfulUtils.acceptReadFile();
+//				
+//				inputStream = dlFileEntry.getContentStream();
+//				
+//				int i;
+//			    
+//				char c;
+//			    
+//			    while((i=inputStream.read())!=-1)
+//			    {
+//			    	c=(char)i;
+//			            
+//			    	output += c;
+//			            
+//			    }
+//				
+//			}
+			
+			_log.info("************** output - update *******************: "+output);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			_log.info("************ no messageid *******************");
+			output = "{\"error\":\"no messageid\"}";
+			return Response.status(200).entity(output).build();
+			
+		}finally{
+
+			if(inputStream!=null){
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+	    }
+		return Response.status(200).entity(output).build();
+	}
 	
 	//POST insert messageId
 	@POST
@@ -285,6 +366,9 @@ public class DuongThuyAPI {
 				paramNotification.put("messageid", meData.getMessageId());
 				paramNotification.put("messagecontent", "Call responsePOSTAPI_Notification");
 				paramNotification.put("reference", oid);
+				_log.info("==========================================");
+				_log.info("==============" + paramNotification.toString() + "=================");
+				_log.info("==========================================");
 				String inputPOSTNotification = paramNotification.toString();
 			RESTfulUtils.responsePOSTAPI_Notification("http://daotao.viwa.gov.vn/notifications/instance", inputPOSTNotification, "dvcviwa","dvc2016");
 			}
@@ -308,8 +392,69 @@ public class DuongThuyAPI {
 	@POST
 	@Path("/instance")
 	@Produces(MediaType.APPLICATION_JSON)
+	public Response dossierInstance(
+			@FormParam("messagefunction") @DefaultValue("21") String messagefunction, 
+			@FormParam("messageid") @DefaultValue("") String messageid, 
+			@FormParam("messagecontent") @DefaultValue("") String messagecontent) {
+		
+		String output = StringPool.BLANK;
+		JSONObject inputJsonObject;
+		try {
+
+			
+			_log.info("Message function: " + messagefunction);
+			if (messagefunction != null) {
+				switch (messagefunction) {
+				case "01":
+					break;
+				case "02":
+					break;
+				case "03":			
+					break;
+				case "11":
+					output = confirmCancellation(messagefunction, messageid, messagecontent);
+					break;
+				case "20":
+					output = requestChanged(messagefunction, messageid, messagecontent);
+					break;
+				case "21":
+					output = acceptance(messagefunction, messageid, messagecontent);
+					break;
+				case "22":
+					output = reject(messagefunction, messageid, messagecontent);
+					break;
+				case "23":
+					output = noticeOfAssignment(messagefunction, messageid, messagecontent);
+					break;
+				case "24":
+					output = confirmCancellation(messagefunction, messageid, messagecontent);
+					break;
+				default:
+					output = "{ 'error': 'Parameter not valid' }";
+					break;
+				}				
+			}
+			else {
+				output = "{ 'error': 'Parameter not valid' }";
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+			//inputJsonObject.put("ReceiveDate", df.format(new Date()));
+	
+			output = "{ 'error': 'JSON error', 'receiveDate': '" + df.format(new Date()) + "'}";
+
+			//e.printStackTrace();
+			_log.error(e);
+		}
+		
+		
+		return Response.status(200).entity(output).build();
+	}	
+	/*
 	public Response dossierInstance(String input) {
 		String output = StringPool.BLANK;
+		_log.info("INPUT JSON: -----------------" + input);
 		if(Validator.isNull(input)){
 		    return Response.status(400).entity("Create packages fail!").build();
 		}
@@ -325,42 +470,54 @@ public class DuongThuyAPI {
 			String messagecontent = inputJsonObject.getString("messagecontent");
 			
 			_log.info("Message function: " + messagefunction);
-			switch (messagefunction) {
-			case "01":
-				break;
-			case "02":
-				break;
-			case "03":			
-				break;
-			case "11":
-				output = confirmCacellation(messagefunction, messageid, messagecontent);
-				break;
-			case "20":
-				output = requestChanged(messagefunction, messageid, messagecontent);
-				break;
-			case "21":
-				output = acceptance(messagefunction, messageid, messagecontent);
-				break;
-			case "22":
-				output = reject(messagefunction, messageid, messagecontent);
-				break;
-			case "23":
-				output = noticeOfAssignment(messagefunction, messageid, messagecontent);
-				break;
-			case "24":
-				output = confirmCacellation(messagefunction, messageid, messagecontent);
-				break;
-			default:
-				break;
+			if (messagefunction != null) {
+				switch (messagefunction) {
+				case "01":
+					break;
+				case "02":
+					break;
+				case "03":			
+					break;
+				case "11":
+					output = confirmCacellation(messagefunction, messageid, messagecontent);
+					break;
+				case "20":
+					output = requestChanged(messagefunction, messageid, messagecontent);
+					break;
+				case "21":
+					output = acceptance(messagefunction, messageid, messagecontent);
+					break;
+				case "22":
+					output = reject(messagefunction, messageid, messagecontent);
+					break;
+				case "23":
+					output = noticeOfAssignment(messagefunction, messageid, messagecontent);
+					break;
+				case "24":
+					output = confirmCacellation(messagefunction, messageid, messagecontent);
+					break;
+				default:
+					output = "{ 'error': 'Parameter not valid' }";
+					break;
+				}				
 			}
-		} catch (JSONException e) {
+			else {
+				output = "{ 'error': 'Parameter not valid' }";
+			}
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DateFormat df = new SimpleDateFormat(DateTimeUtil._VN_DATE_TIME_FORMAT);
+			//inputJsonObject.put("ReceiveDate", df.format(new Date()));
+	
+			output = "{ 'error': 'JSON error', 'content': '" + input + "', 'receiveDate': '" + df.format(new Date()) + "'}";
+			//e.printStackTrace();
+			_log.error(e);
 		}
+		
 		
 		return Response.status(200).entity(output).build();
 	}
-	
+	*/
 	//POST insert messageId
 	@POST
 	@Path("/cancelMessageFunctionData")
@@ -431,8 +588,8 @@ public class DuongThuyAPI {
 	}
 	
 	@GET
-	@Path("/dossiertype/{dossiertype}/organizationcode/{organizationcode}/status/{status}/fromdate/{fromdate}/todate/{todate}/documentyear/{documentyear}/customername/{customername}")
-	@Produces("application/json")
+	@Path("/dossiertype/{dossiertype}/organizationcode/{organizationcode}/status/{status: .+}/fromdate/{fromdate: .+}/todate/{todate: .+}/documentyear/{documentyear: .+}/customername/{customername: .+}")
+	@Produces("application/json;charset=utf-8")
 	public Response searchDossier(
 			@PathParam("dossiertype") String dossiertype, 
 			@PathParam("organizationcode") String organizationcode, 
@@ -454,13 +611,35 @@ public class DuongThuyAPI {
 		String inputPOSTSearch = sparam.toString();
 		
 		String param = "dossiertype/" + dossiertype + "/organizationcode/" + organizationcode + "/status/" + status + "/fromdate/" + fromdate + "/todate/" + todate + "/documentyear/" + documentyear + "/customername/" + customername;
-		
+		param = "dossiertype/" + dossiertype + "/organizationcode/" + organizationcode;
+		if ("''".equals(todate) && "''".equals(fromdate)) {
+			param = "dossiertype/" + dossiertype + "/organizationcode/" + organizationcode + "/status/" + status + "/-fromdate/" + "-todate/" + "/documentyear/" + documentyear + "/customername/" + customername;
+		}
+		else if ("''".equals(fromdate)) {
+			param = "dossiertype/" + dossiertype + "/organizationcode/" + organizationcode + "/status/" + status + "/-fromdate" + "/todate/" + todate + "/documentyear/" + documentyear + "/customername/" + customername;			
+		}
+		else if ("''".equals(todate)) { 
+			param = "dossiertype/" + dossiertype + "/organizationcode/" + organizationcode + "/status/" + status + "/fromdate/" + fromdate + "/-todate" + "/documentyear/" + documentyear + "/customername/" + customername;						
+		}
+		else {
+			param = "dossiertype/" + dossiertype + "/organizationcode/" + organizationcode + "/status/" + status + "/fromdate/" + fromdate + "/todate/" + todate + "/documentyear/" + documentyear + "/customername/" + customername;		
+		}
 		//http://localhost:8080/api/jsonws/opencps-portlet.dossier/search-dossier/dossiertype/-1/organizationcode/sdf/status/1/fromdate/2015-12-01%2000%3A00%3A00/todate/2016-11-01%2000%3A00%3A00/documentyear/2015/customername/Test
 		//output = RESTfulUtils.responseGETAPI(PortletProps.get("PORTAL_URL") + ".dossier/search-dossier/dossiertype/-1/organizationcode/sdf/status/1/fromdate/2015-12-01%2000%3A00%3A00/todate/2016-11-01%2000%3A00%3A00/documentyear/2015/customername/Test");
 		_log.info("Search URL: " + (PortletProps.get("PORTAL_URL") + "dossier/search-dossier/" + param));
 		output = RESTfulUtils.responseGETAPI(PortletProps.get("PORTAL_URL") + "dossier/search-dossier/" + param);
 		//output = RESTfulUtils.responsePOSTAPI("http://localhost:8080/api/jsonws/opencps-portlet.dossier/search-dossier", inputPOSTSearch);
 		return Response.status(200).entity(output).build();
+	}
+
+	@GET
+	@Path("/oid/{oid}")
+	@Produces("application/json;charset=utf-8")
+	public Response getDossierByOid(@PathParam("oid") String oid) { 
+		String output = StringPool.BLANK;
+		_log.info("GET BY OID URL: " + PortletProps.get("PORTAL_URL") + "dossier/get-byoid/oid/" + oid);		
+		output = RESTfulUtils.responseGETAPI(PortletProps.get("PORTAL_URL") + "dossier/get-byoid/oid/" + oid);
+		return Response.status(200).entity(output).build();		
 	}
 
 	@POST
@@ -550,7 +729,10 @@ public class DuongThuyAPI {
 		
 		try {
 			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
-			JSONObject dossierObj = obj.getJSONObject("RequestChanges");
+			JSONObject envelopObj = obj.getJSONObject("Envelope");
+			JSONObject bodyObj = envelopObj.getJSONObject("Body");
+			JSONObject contentObj = bodyObj.getJSONObject("Content");
+			JSONObject dossierObj = contentObj.getJSONObject("RequestChanges");
 			
 			String requestDate = dossierObj.getString("RequestDate");
 			String fromOrganization = dossierObj.getString("FromOrganization");
@@ -568,6 +750,8 @@ public class DuongThuyAPI {
 			String signPlace = dossierObj.getString("SignPlace");
 			String signDate = dossierObj.getString("SignDate");
 			JSONArray attachedFileObj = dossierObj.getJSONArray("AttachedFile");
+			
+			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -587,7 +771,11 @@ public class DuongThuyAPI {
 		
 		try {
 			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
-			JSONObject acceptanceObj = obj.getJSONObject("Acceptance");
+			JSONObject envelopObj = obj.getJSONObject("Envelope");
+			JSONObject bodyObj = envelopObj.getJSONObject("Body");
+			JSONObject contentObj = bodyObj.getJSONObject("Content");
+	
+			JSONObject acceptanceObj = contentObj.getJSONObject("Acceptance");
 			
 			String acceptDate = acceptanceObj.getString("AcceptDate");
 			String organization = acceptanceObj.getString("Organization");
@@ -612,7 +800,10 @@ public class DuongThuyAPI {
 		
 		try {
 			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
-			JSONObject rejectObj = obj.getJSONObject("Reject");
+			JSONObject envelopObj = obj.getJSONObject("Envelope");
+			JSONObject bodyObj = envelopObj.getJSONObject("Body");
+			JSONObject contentObj = bodyObj.getJSONObject("Content");
+			JSONObject rejectObj = contentObj.getJSONObject("Reject");
 			
 			String rejectCode = rejectObj.getString("RejectCode");
 			String rejectDesc = rejectObj.getString("RejectDesc");
@@ -635,7 +826,10 @@ public class DuongThuyAPI {
 		
 		try {
 			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
-			JSONObject nOfAssignmentObj = obj.getJSONObject("NoticeOfAssignment");
+			JSONObject envelopObj = obj.getJSONObject("Envelope");
+			JSONObject bodyObj = envelopObj.getJSONObject("Body");
+			JSONObject contentObj = bodyObj.getJSONObject("Content");
+			JSONObject nOfAssignmentObj = contentObj.getJSONObject("NoticeOfAssignment");
 			
 			String assignDate = nOfAssignmentObj.getString("AssignDate");
 			String organization = nOfAssignmentObj.getString("Organization");
@@ -655,12 +849,15 @@ public class DuongThuyAPI {
 		return output;
 	}
 
-	private String confirmCacellation(String messagefunction, String messageid, String messagecontent) {
+	private String confirmCancellation(String messagefunction, String messageid, String messagecontent) {
 		String output = StringPool.BLANK;
 		
 		try {
 			JSONObject obj = JSONFactoryUtil.createJSONObject(messagecontent);
-			JSONObject cancelObj = obj.getJSONObject("ConfirmCancellation");
+			JSONObject envelopObj = obj.getJSONObject("Envelope");
+			JSONObject bodyObj = envelopObj.getJSONObject("Body");
+			JSONObject contentObj = bodyObj.getJSONObject("Content");
+			JSONObject cancelObj = contentObj.getJSONObject("ConfirmCancellation");
 			
 			String registeredNumber = cancelObj.getString("RegisteredNumber");
 			String finishDate = cancelObj.getString("FinishDate");

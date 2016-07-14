@@ -39,5 +39,8 @@
 			<finder-column name="messageFunction" />
 			<finder-column name="messageId" />
 		</finder>
+        <finder name="MI" return-type="MessageFunctionData">
+            <finder-column name="messageId"></finder-column>
+        </finder>
 	</entity>
 </service-builder>

@@ -12,37 +12,33 @@
  * details.
  */
 
-package org.duongthuy.tichhop.api.dao.service.base;
+package org.opencps.api.service.base;
 
-import org.duongthuy.tichhop.api.dao.service.MessageFunctionDataLocalServiceUtil;
+import org.opencps.api.service.ApiServiceLocalServiceUtil;
 
 import java.util.Arrays;
 
 /**
- * @author binhth
+ * @author trungdk
  * @generated
  */
-public class MessageFunctionDataLocalServiceClpInvoker {
-	public MessageFunctionDataLocalServiceClpInvoker() {
-		_methodName0 = "addMessageFunctionData";
+public class ApiServiceLocalServiceClpInvoker {
+	public ApiServiceLocalServiceClpInvoker() {
+		_methodName0 = "addApiService";
 
-		_methodParameterTypes0 = new String[] {
-				"org.duongthuy.tichhop.api.dao.model.MessageFunctionData"
-			};
+		_methodParameterTypes0 = new String[] { "org.opencps.api.model.ApiService" };
 
-		_methodName1 = "createMessageFunctionData";
+		_methodName1 = "createApiService";
 
 		_methodParameterTypes1 = new String[] { "long" };
 
-		_methodName2 = "deleteMessageFunctionData";
+		_methodName2 = "deleteApiService";
 
 		_methodParameterTypes2 = new String[] { "long" };
 
-		_methodName3 = "deleteMessageFunctionData";
+		_methodName3 = "deleteApiService";
 
-		_methodParameterTypes3 = new String[] {
-				"org.duongthuy.tichhop.api.dao.model.MessageFunctionData"
-			};
+		_methodParameterTypes3 = new String[] { "org.opencps.api.model.ApiService" };
 
 		_methodName4 = "dynamicQuery";
 
@@ -80,101 +76,87 @@ public class MessageFunctionDataLocalServiceClpInvoker {
 				"com.liferay.portal.kernel.dao.orm.Projection"
 			};
 
-		_methodName10 = "fetchMessageFunctionData";
+		_methodName10 = "fetchApiService";
 
 		_methodParameterTypes10 = new String[] { "long" };
-
-		_methodName11 = "getMessageFunctionData";
-
-		_methodParameterTypes11 = new String[] { "long" };
 
 		_methodName12 = "getPersistedModel";
 
 		_methodParameterTypes12 = new String[] { "java.io.Serializable" };
 
-		_methodName13 = "getMessageFunctionDatas";
+		_methodName13 = "getApiServices";
 
 		_methodParameterTypes13 = new String[] { "int", "int" };
 
-		_methodName14 = "getMessageFunctionDatasCount";
+		_methodName14 = "getApiServicesCount";
 
 		_methodParameterTypes14 = new String[] {  };
 
-		_methodName15 = "updateMessageFunctionData";
+		_methodName15 = "updateApiService";
 
 		_methodParameterTypes15 = new String[] {
-				"org.duongthuy.tichhop.api.dao.model.MessageFunctionData"
+				"org.opencps.api.model.ApiService"
 			};
 
-		_methodName32 = "getBeanIdentifier";
+		_methodName42 = "getBeanIdentifier";
 
-		_methodParameterTypes32 = new String[] {  };
+		_methodParameterTypes42 = new String[] {  };
 
-		_methodName33 = "setBeanIdentifier";
+		_methodName43 = "setBeanIdentifier";
 
-		_methodParameterTypes33 = new String[] { "java.lang.String" };
+		_methodParameterTypes43 = new String[] { "java.lang.String" };
 
-		_methodName38 = "getByF_O";
+		_methodName48 = "addApiService";
 
-		_methodParameterTypes38 = new String[] {
-				"java.lang.String", "java.lang.String"
-			};
-
-		_methodName39 = "addMessageFunctionData";
-
-		_methodParameterTypes39 = new String[] {
+		_methodParameterTypes48 = new String[] {
+				"long", "java.lang.String", "java.lang.String",
 				"java.lang.String", "java.lang.String", "java.lang.String",
-				"java.lang.String", "java.lang.String", "java.lang.String",
-				"java.util.Date"
+				"com.liferay.portal.service.ServiceContext"
 			};
-
-		_methodName40 = "getByMI";
-
-		_methodParameterTypes40 = new String[] { "java.lang.String" };
 	}
 
 	public Object invokeMethod(String name, String[] parameterTypes,
 		Object[] arguments) throws Throwable {
 		if (_methodName0.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes0, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.addMessageFunctionData((org.duongthuy.tichhop.api.dao.model.MessageFunctionData)arguments[0]);
+			return ApiServiceLocalServiceUtil.addApiService((org.opencps.api.model.ApiService)arguments[0]);
 		}
 
 		if (_methodName1.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes1, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.createMessageFunctionData(((Long)arguments[0]).longValue());
+			return ApiServiceLocalServiceUtil.createApiService(((Long)arguments[0]).longValue());
 		}
 
 		if (_methodName2.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes2, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.deleteMessageFunctionData(((Long)arguments[0]).longValue());
+			return ApiServiceLocalServiceUtil.deleteApiService(((Long)arguments[0]).longValue());
 		}
 
 		if (_methodName3.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes3, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.deleteMessageFunctionData((org.duongthuy.tichhop.api.dao.model.MessageFunctionData)arguments[0]);
+			return ApiServiceLocalServiceUtil.deleteApiService((org.opencps.api.model.ApiService)arguments[0]);
 		}
 
 		if (_methodName4.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes4, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.dynamicQuery();
+			return ApiServiceLocalServiceUtil.dynamicQuery();
 		}
 
 		if (_methodName5.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes5, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.dynamicQuery((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0]);
+			return ApiServiceLocalServiceUtil.dynamicQuery((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0]);
 		}
 
 		if (_methodName6.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes6, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.dynamicQuery((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0],
+			return ApiServiceLocalServiceUtil.dynamicQuery((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0],
 				((Integer)arguments[1]).intValue(),
 				((Integer)arguments[2]).intValue());
 		}
 
 		if (_methodName7.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes7, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.dynamicQuery((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0],
+			return ApiServiceLocalServiceUtil.dynamicQuery((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0],
 				((Integer)arguments[1]).intValue(),
 				((Integer)arguments[2]).intValue(),
 				(com.liferay.portal.kernel.util.OrderByComparator)arguments[3]);
@@ -182,75 +164,60 @@ public class MessageFunctionDataLocalServiceClpInvoker {
 
 		if (_methodName8.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes8, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.dynamicQueryCount((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0]);
+			return ApiServiceLocalServiceUtil.dynamicQueryCount((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0]);
 		}
 
 		if (_methodName9.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes9, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.dynamicQueryCount((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0],
+			return ApiServiceLocalServiceUtil.dynamicQueryCount((com.liferay.portal.kernel.dao.orm.DynamicQuery)arguments[0],
 				(com.liferay.portal.kernel.dao.orm.Projection)arguments[1]);
 		}
 
 		if (_methodName10.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes10, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.fetchMessageFunctionData(((Long)arguments[0]).longValue());
-		}
-
-		if (_methodName11.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes11, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.getMessageFunctionData(((Long)arguments[0]).longValue());
+			return ApiServiceLocalServiceUtil.fetchApiService(((Long)arguments[0]).longValue());
 		}
 
 		if (_methodName12.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes12, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.getPersistedModel((java.io.Serializable)arguments[0]);
+			return ApiServiceLocalServiceUtil.getPersistedModel((java.io.Serializable)arguments[0]);
 		}
 
 		if (_methodName13.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes13, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.getMessageFunctionDatas(((Integer)arguments[0]).intValue(),
+			return ApiServiceLocalServiceUtil.getApiServices(((Integer)arguments[0]).intValue(),
 				((Integer)arguments[1]).intValue());
 		}
 
 		if (_methodName14.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes14, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.getMessageFunctionDatasCount();
+			return ApiServiceLocalServiceUtil.getApiServicesCount();
 		}
 
 		if (_methodName15.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes15, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.updateMessageFunctionData((org.duongthuy.tichhop.api.dao.model.MessageFunctionData)arguments[0]);
+			return ApiServiceLocalServiceUtil.updateApiService((org.opencps.api.model.ApiService)arguments[0]);
 		}
 
-		if (_methodName32.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes32, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.getBeanIdentifier();
+		if (_methodName42.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes42, parameterTypes)) {
+			return ApiServiceLocalServiceUtil.getBeanIdentifier();
 		}
 
-		if (_methodName33.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes33, parameterTypes)) {
-			MessageFunctionDataLocalServiceUtil.setBeanIdentifier((java.lang.String)arguments[0]);
+		if (_methodName43.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes43, parameterTypes)) {
+			ApiServiceLocalServiceUtil.setBeanIdentifier((java.lang.String)arguments[0]);
 
 			return null;
 		}
 
-		if (_methodName38.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes38, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.getByF_O((java.lang.String)arguments[0],
-				(java.lang.String)arguments[1]);
-		}
-
-		if (_methodName39.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes39, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.addMessageFunctionData((java.lang.String)arguments[0],
+		if (_methodName48.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes48, parameterTypes)) {
+			return ApiServiceLocalServiceUtil.addApiService(((Long)arguments[0]).longValue(),
 				(java.lang.String)arguments[1], (java.lang.String)arguments[2],
 				(java.lang.String)arguments[3], (java.lang.String)arguments[4],
-				(java.lang.String)arguments[5], (java.util.Date)arguments[6]);
-		}
-
-		if (_methodName40.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes40, parameterTypes)) {
-			return MessageFunctionDataLocalServiceUtil.getByMI((java.lang.String)arguments[0]);
+				(java.lang.String)arguments[5],
+				(com.liferay.portal.service.ServiceContext)arguments[6]);
 		}
 
 		throw new UnsupportedOperationException();
@@ -278,8 +245,6 @@ public class MessageFunctionDataLocalServiceClpInvoker {
 	private String[] _methodParameterTypes9;
 	private String _methodName10;
 	private String[] _methodParameterTypes10;
-	private String _methodName11;
-	private String[] _methodParameterTypes11;
 	private String _methodName12;
 	private String[] _methodParameterTypes12;
 	private String _methodName13;
@@ -288,14 +253,10 @@ public class MessageFunctionDataLocalServiceClpInvoker {
 	private String[] _methodParameterTypes14;
 	private String _methodName15;
 	private String[] _methodParameterTypes15;
-	private String _methodName32;
-	private String[] _methodParameterTypes32;
-	private String _methodName33;
-	private String[] _methodParameterTypes33;
-	private String _methodName38;
-	private String[] _methodParameterTypes38;
-	private String _methodName39;
-	private String[] _methodParameterTypes39;
-	private String _methodName40;
-	private String[] _methodParameterTypes40;
+	private String _methodName42;
+	private String[] _methodParameterTypes42;
+	private String _methodName43;
+	private String[] _methodParameterTypes43;
+	private String _methodName48;
+	private String[] _methodParameterTypes48;
 }

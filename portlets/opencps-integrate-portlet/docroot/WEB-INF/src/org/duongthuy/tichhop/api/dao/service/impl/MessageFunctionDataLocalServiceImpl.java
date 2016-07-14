@@ -77,4 +77,9 @@ public class MessageFunctionDataLocalServiceImpl
 		messageFunctionDataPersistence.update(messageFunctionData);
 		return messageFunctionData;
 	}
+	
+	public MessageFunctionData getByMI(String messageId) throws SystemException {
+		return messageFunctionDataPersistence.fetchByMI(messageId);
+	}
+	
 }

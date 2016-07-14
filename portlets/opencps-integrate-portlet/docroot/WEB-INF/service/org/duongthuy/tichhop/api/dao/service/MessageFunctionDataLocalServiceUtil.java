@@ -292,6 +292,12 @@ public class MessageFunctionDataLocalServiceUtil {
 			messageId, messageFileIdData, version, sendDate);
 	}
 
+	public static org.duongthuy.tichhop.api.dao.model.MessageFunctionData getByMI(
+		java.lang.String messageId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getByMI(messageId);
+	}
+
 	public static void clearService() {
 		_service = null;
 	}

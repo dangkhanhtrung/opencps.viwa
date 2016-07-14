@@ -125,7 +125,7 @@ public class AutoFillFormData {
 			JSONObject jsonSampleData = JSONFactoryUtil.createJSONObject(sampleData);
 			Map<String, Object> jsonMap = jsonToMap(jsonSampleData);
 			for (Map.Entry<String, Object> entry : jsonMap.entrySet()) {
-//				System.out.println(entry.getKey() + ": " + entry.getValue());
+				System.out.println("FUCK====" + entry.getKey() + ": " + entry.getValue());
 				String value = String.valueOf(entry.getValue());
 				if(value.startsWith("_")){
 					if(value.equals("_subjectName")){

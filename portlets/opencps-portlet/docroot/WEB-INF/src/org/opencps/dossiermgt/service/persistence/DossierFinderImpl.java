@@ -76,7 +76,18 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 
 		public static final String SEARCH_DOSSIER_FOR_REMOTE_SERVICE = DossierFinder.class
 			.getName() + ".searchDossierForRemoteService";
-	
+
+		public static final String COUNT_DOSSIER_BY_USER_ASSIGN_PROCESSORDER = DossierFinder.class
+			.getName() + ".countDossierByUserAssignProcessOrder";
+
+		public static final String SEARCH_DOSSIER_BY_USER_ASSIGN_PROCESSORDER = DossierFinder.class
+			.getName() + ".searchDossierByUserAssignProcessOrder";
+		public static final String COUNT_DOSSIER_BY_P_S_U = DossierFinder.class
+			.getName() + ".countDossierByP_S_U";
+
+		public static final String SEARCH_DOSSIER_BY_P_S_U = DossierFinder.class
+			.getName() + ".searchDossierByP_S_U";
+		
 	private Log _log = LogFactoryUtil
 		.getLog(DossierFinder.class
 			.getName());
@@ -1114,6 +1125,7 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 	public int countDossierForRemoteService(
 		String dossiertype,
 		String organizationcode,
+		String processStepId,
 		String status,
 		String fromdate,
 		String todate,
@@ -1138,20 +1150,32 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 
 			String sql = CustomSQLUtil
 				.get(COUNT_DOSSIER_FOR_REMOTE_SERVICE);
+			if ("-1".equals(dossiertype)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_dossier.serviceInfoId = ?",
+							StringPool.BLANK);								
+			}
 
-			if ("-1".equals(status)) {
+			if ("-1".equals(status) || "".equals(status) || Validator.isNull(status)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.dossierStatus = ?",
 							StringPool.BLANK);				
 			}
-			if (Validator.isNull(todate)) {
+			if (Validator.isNull(processStepId) || "-1".equals(processStepId)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_processorder.processStepId = ?",
+							StringPool.BLANK);												
+			}
+			if (Validator.isNull(todate) || "".equals(todate)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.receiveDatetime <= ?",
 							StringPool.BLANK);								
 			}
-			if (Validator.isNull(fromdate)) {
+			if (Validator.isNull(fromdate) || "".equals(fromdate)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.receiveDatetime >= ?",
@@ -1190,17 +1214,25 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 				.getInstance(q);
 
 			qPos.add(organizationcode);
+			if (!"-1".equals(dossiertype)) {
+				qPos.add(dossiertype);
+			}
 			_log.info("Gov agency code: " + organizationcode);
+			if (Validator.isNotNull(processStepId) && !"-1".equals(processStepId)) {
+				qPos.add(processStepId);
+			}
 			if (!"-1".equals(status)) {
 				qPos.add(status);
 			}
-			if (Validator.isNotNull(todate)) {
-				_log.info("To date: " + sdf.format(todate));
-				qPos.add(sdf.format(todate));
+			if (Validator.isNotNull(todate) && !"".equals(todate)) {
+				//_log.info("To date: " + sdf.format(todate));
+				//qPos.add(sdf.format(todate));
+				qPos.add(todate);
 			}
-			if (Validator.isNotNull(fromdate)) {
-				_log.info("From date: " + sdf.format(fromdate));
-				qPos.add(sdf.format(fromdate));
+			if (Validator.isNotNull(fromdate) && !"".equals(fromdate)) {
+				//_log.info("From date: " + sdf.format(fromdate));
+				//qPos.add(sdf.format(fromdate));
+				qPos.add(fromdate);
 			}
 			if (documentyear > 0) {
 				qPos.add(documentyear);
@@ -1251,6 +1283,7 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 	public List<Dossier> searchDossierForRemoteService(
 		String dossiertype,
 		String organizationcode,
+		String processStepId,
 		String status,
 		String fromdate,
 		String todate,
@@ -1276,20 +1309,31 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 
 			String sql = CustomSQLUtil
 				.get(SEARCH_DOSSIER_FOR_REMOTE_SERVICE);
-
-			if ("-1".equals(status)) {
+			if (Validator.isNull(processStepId) || "-1".equals(processStepId)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_processorder.processStepId = ?",
+							StringPool.BLANK);												
+			}
+			if ("-1".equals(status) || "".equals(status) || Validator.isNull(status)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.dossierStatus = ?",
 							StringPool.BLANK);				
 			}
-			if (Validator.isNull(todate)) {
+			if ("-1".equals(dossiertype)) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_dossier.serviceInfoId = ?",
+							StringPool.BLANK);								
+			}
+			if (Validator.isNull(todate) || "".equals(todate)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.receiveDatetime <= ?",
 							StringPool.BLANK);								
 			}
-			if (Validator.isNull(fromdate)) {
+			if (Validator.isNull(fromdate) || "".equals(fromdate)) {
 				sql = StringUtil
 						.replace(sql,
 							"AND opencps_dossier.receiveDatetime >= ?",
@@ -1327,14 +1371,22 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 				.getInstance(q);
 
 			qPos.add(organizationcode);
+			if (!"-1".equals(dossiertype)) {
+				qPos.add(dossiertype);
+			}
+			if (Validator.isNotNull(processStepId) && !"-1".equals(processStepId)) {
+				qPos.add(processStepId);
+			}
 			if (!"-1".equals(status)) {
 				qPos.add(status);
 			}
-			if (Validator.isNotNull(todate)) {
-				qPos.add(sdf.format(todate));
+			if (Validator.isNotNull(todate) && !"".equals(todate)) {
+				//qPos.add(sdf.format(todate));
+				qPos.add(todate);
 			}
-			if (Validator.isNotNull(fromdate)) {
-				qPos.add(sdf.format(fromdate));
+			if (Validator.isNotNull(fromdate) && !"".equals(fromdate)) {
+				//qPos.add(sdf.format(fromdate));
+				qPos.add(fromdate);
 			}
 			if (documentyear > 0) {
 				qPos.add(documentyear);
@@ -1357,4 +1409,228 @@ public class DossierFinderImpl extends BasePersistenceImpl<Dossier>
 		return null;
 		
 	}
+	
+	/**
+	 * @param userId
+	 * @return
+	 */
+	public int countDossierByUserAssignProcessOrder(
+		long userId) {
+
+		Session session = null;
+		String[] keywords = null;
+
+		try {
+			session = openSession();
+
+			String sql = CustomSQLUtil
+				.get(COUNT_DOSSIER_BY_USER_ASSIGN_PROCESSORDER);
+
+			SQLQuery q = session
+				.createSQLQuery(sql);
+
+			q
+				.addScalar(COUNT_COLUMN_NAME, Type.INTEGER);
+
+			QueryPos qPos = QueryPos
+				.getInstance(q);
+
+			qPos.add(userId);
+
+			Iterator<Integer> itr = q
+				.iterate();
+
+			if (itr
+				.hasNext()) {
+				Integer count = itr
+					.next();
+
+				if (count != null) {
+					return count
+						.intValue();
+				}
+			}
+
+			return 0;
+
+		}
+		catch (Exception e) {
+			_log
+				.error(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return 0;
+		
+	}
+	
+	/**
+	 * @param userId
+	 * @return
+	 */
+	public List<Dossier> searchDossierByUserAssignByProcessOrder(
+		long userId,
+		int start, int end) {
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			String sql = CustomSQLUtil
+				.get(SEARCH_DOSSIER_BY_USER_ASSIGN_PROCESSORDER);
+
+			SQLQuery q = session
+				.createSQLQuery(sql);
+			q
+				.addEntity("Dossier", DossierImpl.class);
+
+			QueryPos qPos = QueryPos
+				.getInstance(q);
+
+			qPos.add(userId);
+
+			return (List<Dossier>) QueryUtil
+				.list(q, getDialect(), start, end);
+		}
+		catch (Exception e) {
+			_log
+				.error(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return null;
+		
+	}
+
+	/**
+	 * @param userId
+	 * @param processNo
+	 * @param stepNo
+	 * @return
+	 */
+	public int countDossierByP_S_U(
+		String processNo,
+		String stepNo,
+		long userId) {
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			String sql = CustomSQLUtil
+				.get(COUNT_DOSSIER_BY_P_S_U);
+
+			if (userId <= 0) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_processorder.assignToUserId = ?",
+				StringPool.BLANK);																				
+			}
+			
+			SQLQuery q = session
+				.createSQLQuery(sql);
+
+			q
+				.addScalar(COUNT_COLUMN_NAME, Type.INTEGER);
+
+			QueryPos qPos = QueryPos
+				.getInstance(q);
+
+			qPos.add(processNo);
+			qPos.add(stepNo);
+			if (userId > 0) {
+				qPos.add(userId);				
+			}
+
+			Iterator<Integer> itr = q
+				.iterate();
+
+			if (itr
+				.hasNext()) {
+				Integer count = itr
+					.next();
+
+				if (count != null) {
+					return count
+						.intValue();
+				}
+			}
+
+			return 0;
+
+		}
+		catch (Exception e) {
+			_log
+				.error(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return 0;
+		
+	}
+	
+	/**
+	 * @param userId
+	 * @param processNo
+	 * @param stepNo
+	 * @return
+	 */
+	public List<Dossier> searchDossierByP_S_U(
+		String processNo,
+		String stepNo,
+		long userId,
+		int start, int end) {
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			String sql = CustomSQLUtil
+				.get(SEARCH_DOSSIER_BY_P_S_U);
+
+			if (userId <= 0) {
+				sql = StringUtil
+						.replace(sql,
+							"AND opencps_processorder.assignToUserId = ?",
+				StringPool.BLANK);																				
+			}
+			
+			SQLQuery q = session
+				.createSQLQuery(sql);
+			q
+				.addEntity("Dossier", DossierImpl.class);
+
+			QueryPos qPos = QueryPos
+				.getInstance(q);
+
+			qPos.add(processNo);
+			qPos.add(stepNo);
+			if (userId > 0) {
+				qPos.add(userId);				
+			}
+
+			return (List<Dossier>) QueryUtil
+				.list(q, getDialect(), start, end);
+		}
+		catch (Exception e) {
+			_log
+				.error(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return null;
+		
+	}
+	
 }

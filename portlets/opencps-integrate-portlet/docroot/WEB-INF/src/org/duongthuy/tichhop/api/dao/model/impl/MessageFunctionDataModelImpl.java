@@ -72,7 +72,7 @@ public class MessageFunctionDataModelImpl extends BaseModelImpl<MessageFunctionD
 			{ "sendDate", Types.TIMESTAMP },
 			{ "version", Types.VARCHAR }
 		};
-	public static final String TABLE_SQL_CREATE = "create table duongthuy_message_packages (messagePackagesId LONG not null primary key,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,messageFunction VARCHAR(75) null,messageId VARCHAR(75) null,messageFileIdData VARCHAR(75) null,sendDate DATE null,version VARCHAR(75) null)";
+	public static final String TABLE_SQL_CREATE = "create table duongthuy_message_packages (messagePackagesId LONG not null primary key,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,messageFunction VARCHAR(128) null,messageId VARCHAR(128) null,messageFileIdData VARCHAR(512) null,sendDate DATE null,version VARCHAR(75) null)";
 	public static final String TABLE_SQL_DROP = "drop table duongthuy_message_packages";
 	public static final String ORDER_BY_JPQL = " ORDER BY messageFunctionData.messageFunction ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY duongthuy_message_packages.messageFunction ASC";

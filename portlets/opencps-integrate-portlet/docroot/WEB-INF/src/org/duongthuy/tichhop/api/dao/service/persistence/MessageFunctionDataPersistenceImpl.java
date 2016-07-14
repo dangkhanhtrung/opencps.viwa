@@ -394,6 +394,254 @@ public class MessageFunctionDataPersistenceImpl extends BasePersistenceImpl<Mess
 	private static final String _FINDER_COLUMN_F_O_MESSAGEID_1 = "messageFunctionData.messageId IS NULL";
 	private static final String _FINDER_COLUMN_F_O_MESSAGEID_2 = "messageFunctionData.messageId = ?";
 	private static final String _FINDER_COLUMN_F_O_MESSAGEID_3 = "(messageFunctionData.messageId IS NULL OR messageFunctionData.messageId = '')";
+	public static final FinderPath FINDER_PATH_FETCH_BY_MI = new FinderPath(MessageFunctionDataModelImpl.ENTITY_CACHE_ENABLED,
+			MessageFunctionDataModelImpl.FINDER_CACHE_ENABLED,
+			MessageFunctionDataImpl.class, FINDER_CLASS_NAME_ENTITY,
+			"fetchByMI", new String[] { String.class.getName() },
+			MessageFunctionDataModelImpl.MESSAGEID_COLUMN_BITMASK);
+	public static final FinderPath FINDER_PATH_COUNT_BY_MI = new FinderPath(MessageFunctionDataModelImpl.ENTITY_CACHE_ENABLED,
+			MessageFunctionDataModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByMI",
+			new String[] { String.class.getName() });
+
+	/**
+	 * Returns the message function data where messageId = &#63; or throws a {@link org.duongthuy.tichhop.api.dao.NoSuchMessageFunctionDataException} if it could not be found.
+	 *
+	 * @param messageId the message ID
+	 * @return the matching message function data
+	 * @throws org.duongthuy.tichhop.api.dao.NoSuchMessageFunctionDataException if a matching message function data could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public MessageFunctionData findByMI(String messageId)
+		throws NoSuchMessageFunctionDataException, SystemException {
+		MessageFunctionData messageFunctionData = fetchByMI(messageId);
+
+		if (messageFunctionData == null) {
+			StringBundler msg = new StringBundler(4);
+
+			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+			msg.append("messageId=");
+			msg.append(messageId);
+
+			msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(msg.toString());
+			}
+
+			throw new NoSuchMessageFunctionDataException(msg.toString());
+		}
+
+		return messageFunctionData;
+	}
+
+	/**
+	 * Returns the message function data where messageId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param messageId the message ID
+	 * @return the matching message function data, or <code>null</code> if a matching message function data could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public MessageFunctionData fetchByMI(String messageId)
+		throws SystemException {
+		return fetchByMI(messageId, true);
+	}
+
+	/**
+	 * Returns the message function data where messageId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param messageId the message ID
+	 * @param retrieveFromCache whether to use the finder cache
+	 * @return the matching message function data, or <code>null</code> if a matching message function data could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public MessageFunctionData fetchByMI(String messageId,
+		boolean retrieveFromCache) throws SystemException {
+		Object[] finderArgs = new Object[] { messageId };
+
+		Object result = null;
+
+		if (retrieveFromCache) {
+			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_MI,
+					finderArgs, this);
+		}
+
+		if (result instanceof MessageFunctionData) {
+			MessageFunctionData messageFunctionData = (MessageFunctionData)result;
+
+			if (!Validator.equals(messageId, messageFunctionData.getMessageId())) {
+				result = null;
+			}
+		}
+
+		if (result == null) {
+			StringBundler query = new StringBundler(3);
+
+			query.append(_SQL_SELECT_MESSAGEFUNCTIONDATA_WHERE);
+
+			boolean bindMessageId = false;
+
+			if (messageId == null) {
+				query.append(_FINDER_COLUMN_MI_MESSAGEID_1);
+			}
+			else if (messageId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_MI_MESSAGEID_3);
+			}
+			else {
+				bindMessageId = true;
+
+				query.append(_FINDER_COLUMN_MI_MESSAGEID_2);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (bindMessageId) {
+					qPos.add(messageId);
+				}
+
+				List<MessageFunctionData> list = q.list();
+
+				if (list.isEmpty()) {
+					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_MI,
+						finderArgs, list);
+				}
+				else {
+					if ((list.size() > 1) && _log.isWarnEnabled()) {
+						_log.warn(
+							"MessageFunctionDataPersistenceImpl.fetchByMI(String, boolean) with parameters (" +
+							StringUtil.merge(finderArgs) +
+							") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+					}
+
+					MessageFunctionData messageFunctionData = list.get(0);
+
+					result = messageFunctionData;
+
+					cacheResult(messageFunctionData);
+
+					if ((messageFunctionData.getMessageId() == null) ||
+							!messageFunctionData.getMessageId().equals(messageId)) {
+						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_MI,
+							finderArgs, messageFunctionData);
+					}
+				}
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_MI, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		if (result instanceof List<?>) {
+			return null;
+		}
+		else {
+			return (MessageFunctionData)result;
+		}
+	}
+
+	/**
+	 * Removes the message function data where messageId = &#63; from the database.
+	 *
+	 * @param messageId the message ID
+	 * @return the message function data that was removed
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public MessageFunctionData removeByMI(String messageId)
+		throws NoSuchMessageFunctionDataException, SystemException {
+		MessageFunctionData messageFunctionData = findByMI(messageId);
+
+		return remove(messageFunctionData);
+	}
+
+	/**
+	 * Returns the number of message function datas where messageId = &#63;.
+	 *
+	 * @param messageId the message ID
+	 * @return the number of matching message function datas
+	 * @throws SystemException if a system exception occurred
+	 */
+	@Override
+	public int countByMI(String messageId) throws SystemException {
+		FinderPath finderPath = FINDER_PATH_COUNT_BY_MI;
+
+		Object[] finderArgs = new Object[] { messageId };
+
+		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
+				this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(2);
+
+			query.append(_SQL_COUNT_MESSAGEFUNCTIONDATA_WHERE);
+
+			boolean bindMessageId = false;
+
+			if (messageId == null) {
+				query.append(_FINDER_COLUMN_MI_MESSAGEID_1);
+			}
+			else if (messageId.equals(StringPool.BLANK)) {
+				query.append(_FINDER_COLUMN_MI_MESSAGEID_3);
+			}
+			else {
+				bindMessageId = true;
+
+				query.append(_FINDER_COLUMN_MI_MESSAGEID_2);
+			}
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				if (bindMessageId) {
+					qPos.add(messageId);
+				}
+
+				count = (Long)q.uniqueResult();
+
+				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				FinderCacheUtil.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_MI_MESSAGEID_1 = "messageFunctionData.messageId IS NULL";
+	private static final String _FINDER_COLUMN_MI_MESSAGEID_2 = "messageFunctionData.messageId = ?";
+	private static final String _FINDER_COLUMN_MI_MESSAGEID_3 = "(messageFunctionData.messageId IS NULL OR messageFunctionData.messageId = '')";
 
 	public MessageFunctionDataPersistenceImpl() {
 		setModelClass(MessageFunctionData.class);
@@ -415,6 +663,10 @@ public class MessageFunctionDataPersistenceImpl extends BasePersistenceImpl<Mess
 				messageFunctionData.getMessageFunction(),
 				messageFunctionData.getMessageId()
 			}, messageFunctionData);
+
+		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_MI,
+			new Object[] { messageFunctionData.getMessageId() },
+			messageFunctionData);
 
 		messageFunctionData.resetOriginalValues();
 	}
@@ -503,6 +755,13 @@ public class MessageFunctionDataPersistenceImpl extends BasePersistenceImpl<Mess
 				Long.valueOf(1));
 			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_O, args,
 				messageFunctionData);
+
+			args = new Object[] { messageFunctionData.getMessageId() };
+
+			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_MI, args,
+				Long.valueOf(1));
+			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_MI, args,
+				messageFunctionData);
 		}
 		else {
 			MessageFunctionDataModelImpl messageFunctionDataModelImpl = (MessageFunctionDataModelImpl)messageFunctionData;
@@ -517,6 +776,16 @@ public class MessageFunctionDataPersistenceImpl extends BasePersistenceImpl<Mess
 				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_F_O, args,
 					Long.valueOf(1));
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_O, args,
+					messageFunctionData);
+			}
+
+			if ((messageFunctionDataModelImpl.getColumnBitmask() &
+					FINDER_PATH_FETCH_BY_MI.getColumnBitmask()) != 0) {
+				Object[] args = new Object[] { messageFunctionData.getMessageId() };
+
+				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_MI, args,
+					Long.valueOf(1));
+				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_MI, args,
 					messageFunctionData);
 			}
 		}
@@ -543,6 +812,21 @@ public class MessageFunctionDataPersistenceImpl extends BasePersistenceImpl<Mess
 
 			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_F_O, args);
 			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_F_O, args);
+		}
+
+		args = new Object[] { messageFunctionData.getMessageId() };
+
+		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_MI, args);
+		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_MI, args);
+
+		if ((messageFunctionDataModelImpl.getColumnBitmask() &
+				FINDER_PATH_FETCH_BY_MI.getColumnBitmask()) != 0) {
+			args = new Object[] {
+					messageFunctionDataModelImpl.getOriginalMessageId()
+				};
+
+			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_MI, args);
+			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_MI, args);
 		}
 	}
 
