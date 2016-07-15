@@ -491,8 +491,15 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 	@JSONWebService(value = "processorder", method = "POST")
 	public JSONObject nextStep(String oid, String actioncode, String username) {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
+		Dossier dossier = null;
 		try {
-			Dossier dossier = DossierLocalServiceUtil.getByoid(oid);
+			dossier = DossierLocalServiceUtil.getByoid(oid);			
+		}
+		catch (SystemException e) {
+			resultObj.put("statusCode", "DossierNotFound");
+			return resultObj;
+		}
+		try {
 			System.out.println("PROCESS ORDER============" + dossier.getDossierId());
 			ProcessOrder processOrder = ProcessOrderLocalServiceUtil.getProcessOrder(dossier.getDossierId(), 0);
 			User user = UserLocalServiceUtil.getUserByScreenName(dossier.getCompanyId(), username);
@@ -567,7 +574,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			resultObj.put("statusCode", "Success");
 		} catch (SystemException e) {
 			// TODO Auto-generated catch block
-			resultObj.put("statusCode", "DossierNotFound");
+			resultObj.put("statusCode", "ActionNotFound");
 		} catch (NoSuchProcessOrderException e) {
 			// TODO Auto-generated catch block
 			resultObj.put("statusCode", "ActionNotFound");
