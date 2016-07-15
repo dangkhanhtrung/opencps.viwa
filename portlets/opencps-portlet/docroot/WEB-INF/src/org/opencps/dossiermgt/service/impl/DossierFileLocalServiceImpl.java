@@ -1115,4 +1115,10 @@ public class DossierFileLocalServiceImpl
 				comparator);
 	}
 
+	public DossierFile getByOid(
+			String oid)
+			throws SystemException {
+		return dossierFilePersistence.fetchByOid(oid);
+	}
+	
 }

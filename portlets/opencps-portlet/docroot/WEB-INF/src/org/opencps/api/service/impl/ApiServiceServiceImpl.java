@@ -439,6 +439,71 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 					
 				}
 			}
+			else {
+				if (dossierFileURL.equals("")) {
+					
+				}
+				else {
+					try {
+						DossierFile dossierFile = null;
+						dossierFile = DossierFileLocalServiceUtil.getByOid(dossierFileOid);
+						URL fileURL = new URL(dossierFileURL);
+						InputStream is = fileURL.openStream();
+						long size = is.available();
+						ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+						Dossier dossier = null;
+						DossierPart dossierPart = null;
+							
+						System.out.println("GET DOSSIER FOLDER=============");
+						dossier = DossierLocalServiceUtil.getByoid(oid);
+						long dossierId = dossier.getDossierId();
+						DLFolder dossierFolder = DLFolderUtil
+									.getDossierFolder(serviceContext
+										.getScopeGroupId(), dossier
+											.getUserId(),
+										dossier
+											.getCounter(),
+										serviceContext);
+						dossierPart = DossierPartLocalServiceUtil
+									.getDossierPartByPartNo(dossierPartNo);
+						System.out.println("ADD DOSSIER FILE FROM URL=============");
+						DossierFileLocalServiceUtil
+								.addDossierFile(serviceContext
+								.getUserId(), dossierId, dossierPart.getDossierpartId(), dossierPart
+									.getTemplateFileNo(),
+								StringPool.BLANK, 0L, 0L, dossier.getUserId(),
+								dossier
+									.getOwnerOrganizationId(),
+								dossierFileName, StringPool.BLANK,
+								dossierFile != null ? dossierFile
+									.getFileEntryId() : 0,
+								PortletConstants.DOSSIER_FILE_MARK_UNKNOW, 1,
+								dossierFileNo, new Date(), 1,
+								PortletConstants.DOSSIER_FILE_SYNC_STATUS_NOSYNC,
+								dossierFolder
+									.getFolderId(),
+								dossierFileNo, "", dossierFileName, StringPool.BLANK,
+								StringPool.BLANK, is, size, serviceContext);							
+
+					} catch (SystemException e) {
+						// TODO Auto-generated catch block
+						
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						
+					} catch (NoSuchDossierPartException e) {
+						// TODO Auto-generated catch block
+						
+					} catch (PortalException e) {
+						// TODO Auto-generated catch block
+						
+					}
+					
+				}
+			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
