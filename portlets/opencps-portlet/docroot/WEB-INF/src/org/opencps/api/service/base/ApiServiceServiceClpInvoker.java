@@ -36,7 +36,7 @@ public class ApiServiceServiceClpInvoker {
 
 		_methodParameterTypes32 = new String[] { "java.lang.String" };
 
-		_methodName33 = "searchDossierByUserAssignProcessOrder";
+		_methodName33 = "searchDossierByProcessStepAndUser";
 
 		_methodParameterTypes33 = new String[] {
 				"java.lang.String", "java.lang.String", "java.lang.String"
@@ -80,7 +80,7 @@ public class ApiServiceServiceClpInvoker {
 
 		if (_methodName33.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes33, parameterTypes)) {
-			return ApiServiceServiceUtil.searchDossierByUserAssignProcessOrder((java.lang.String)arguments[0],
+			return ApiServiceServiceUtil.searchDossierByProcessStepAndUser((java.lang.String)arguments[0],
 				(java.lang.String)arguments[1], (java.lang.String)arguments[2]);
 		}
 

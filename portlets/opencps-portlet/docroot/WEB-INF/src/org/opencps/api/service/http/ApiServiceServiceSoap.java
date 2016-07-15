@@ -76,11 +76,11 @@ public class ApiServiceServiceSoap {
 		}
 	}
 
-	public static java.lang.String searchDossierByUserAssignProcessOrder(
+	public static java.lang.String searchDossierByProcessStepAndUser(
 		java.lang.String processno, java.lang.String stepno,
 		java.lang.String username) throws RemoteException {
 		try {
-			com.liferay.portal.kernel.json.JSONObject returnValue = ApiServiceServiceUtil.searchDossierByUserAssignProcessOrder(processno,
+			com.liferay.portal.kernel.json.JSONObject returnValue = ApiServiceServiceUtil.searchDossierByProcessStepAndUser(processno,
 					stepno, username);
 
 			return returnValue.toString();

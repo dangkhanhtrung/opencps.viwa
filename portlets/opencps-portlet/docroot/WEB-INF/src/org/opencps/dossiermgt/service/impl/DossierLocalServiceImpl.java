@@ -1161,7 +1161,6 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		}
 		catch (PortalException e) {
 			// TODO Auto-generated catch block
-			
 		} catch (SystemException e) {
 			// TODO Auto-generated catch block
 			
