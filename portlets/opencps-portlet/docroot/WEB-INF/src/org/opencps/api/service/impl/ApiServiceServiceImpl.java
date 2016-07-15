@@ -14,6 +14,10 @@
 
 package org.opencps.api.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +47,7 @@ import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
 import org.opencps.servicemgt.NoSuchServiceInfoException;
 import org.opencps.servicemgt.model.ServiceInfo;
 import org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil;
+import org.opencps.util.DLFolderUtil;
 import org.opencps.util.DateTimeUtil;
 import org.opencps.util.PortletConstants;
 
@@ -63,7 +68,9 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.ac.AccessControlled;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.util.portlet.PortletProps;
 
@@ -331,47 +338,106 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			String dossierFileDate = dossierfileObj.getString("dossierFileDate");
 			System.out.println("DOSSIER FILE OID===============" + dossierFileOid);
 			System.out.println("DOSSIER FILE URL===============" + dossierFileURL);
-			if (dossierFileOid.equals("") && dossierFileURL.equals("")) {
+			if (dossierFileOid.equals("")) {
 				//Add new dossier file
-				System.out.println("ADD NEW DOSSIER FILE=============");
-				Dossier dossier = null;
-				DossierFile dossierFile = null;
-				DossierPart dossierPart = null;
-				try {
-					dossier = DossierLocalServiceUtil.getByoid(oid);
-					long dossierId = dossier.getDossierId();
-
-					ServiceContext serviceContext = new ServiceContext();
+				if (dossierFileURL.equals("")) {
+					System.out.println("ADD NEW DOSSIER FILE=============");
+					Dossier dossier = null;
+					DossierFile dossierFile = null;
+					DossierPart dossierPart = null;
 					try {
-						dossier = DossierLocalServiceUtil
-							.getDossier(dossierId);
+						dossier = DossierLocalServiceUtil.getByoid(oid);
+						long dossierId = dossier.getDossierId();
+
+						ServiceContext serviceContext = new ServiceContext();
+						try {
+							dossier = DossierLocalServiceUtil
+								.getDossier(dossierId);
+							
+							dossierPart = DossierPartLocalServiceUtil
+								.getDossierPartByPartNo(dossierPartNo);
+							
+							serviceContext.setUserId(dossier.getUserId());
+							
+							DossierFileLocalServiceUtil
+								.addDossierFile(dossier.getUserId(), dossierId, dossierPart.getDossierpartId(), dossierPart
+										.getTemplateFileNo(),
+									StringPool.BLANK, 0, 0, dossier.getUserId(),
+									dossier.getOwnerOrganizationId(),
+									dossierFileName, dossierFileContent,
+									0,
+									PortletConstants.DOSSIER_FILE_MARK_UNKNOW, 1,
+									dossierFileNo, new Date(), 1,
+									PortletConstants.DOSSIER_FILE_SYNC_STATUS_NOSYNC, serviceContext
+									);
+
+
+						}
+						catch (Exception e) {
+
+						}					
+					} catch (SystemException ee) {
+						// TODO Auto-generated catch block
 						
-						dossierPart = DossierPartLocalServiceUtil
-							.getDossierPartByPartNo(dossierPartNo);
-						
-						serviceContext.setUserId(dossier.getUserId());
-						
-						DossierFileLocalServiceUtil
-							.addDossierFile(dossier.getUserId(), dossierId, dossierPart.getDossierpartId(), dossierPart
+					}						
+				}		
+				else if (dossierFileContent.equals("")) {
+					try {
+						URL fileURL = new URL(dossierFileURL);
+						InputStream is = fileURL.openStream();
+						long size = is.available();
+						ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+						Dossier dossier = null;
+						DossierFile dossierFile = null;
+						DossierPart dossierPart = null;
+						try {
+							System.out.println("GET DOSSIER FOLDER=============");
+							dossier = DossierLocalServiceUtil.getByoid(oid);
+							long dossierId = dossier.getDossierId();
+							DLFolder dossierFolder = DLFolderUtil
+									.getDossierFolder(serviceContext
+										.getScopeGroupId(), dossier
+											.getUserId(),
+										dossier
+											.getCounter(),
+										serviceContext);
+							dossierPart = DossierPartLocalServiceUtil
+									.getDossierPartByPartNo(dossierPartNo);
+							System.out.println("ADD DOSSIER FILE FROM URL=============");
+							DossierFileLocalServiceUtil
+								.addDossierFile(serviceContext
+								.getUserId(), dossierId, dossierPart.getDossierpartId(), dossierPart
 									.getTemplateFileNo(),
-								StringPool.BLANK, 0, 0, dossier.getUserId(),
-								dossier.getOwnerOrganizationId(),
-								dossierFileName, dossierFileContent,
-								0,
+								StringPool.BLANK, 0L, 0L, dossier.getUserId(),
+								dossier
+									.getOwnerOrganizationId(),
+								dossierFileName, StringPool.BLANK,
+								dossierFile != null ? dossierFile
+									.getFileEntryId() : 0,
 								PortletConstants.DOSSIER_FILE_MARK_UNKNOW, 1,
 								dossierFileNo, new Date(), 1,
-								PortletConstants.DOSSIER_FILE_SYNC_STATUS_NOSYNC, serviceContext
-								);
-
-
+								PortletConstants.DOSSIER_FILE_SYNC_STATUS_NOSYNC,
+								dossierFolder
+									.getFolderId(),
+								dossierFileNo, "", dossierFileName, StringPool.BLANK,
+								StringPool.BLANK, is, size, serviceContext);							
+						}
+						catch (SystemException e) {
+							
+						} catch (PortalException e) {
+							// TODO Auto-generated catch block
+							
+						}
+						
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						
 					}
-					catch (Exception e) {
-
-					}					
-				} catch (SystemException ee) {
-					// TODO Auto-generated catch block
 					
-				}				
+				}
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
