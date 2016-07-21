@@ -347,6 +347,7 @@
 		<field name="isFinishStep" type="boolean" />
 		<field name="preCondition" type="String" />
 		<field name="isMultipled" type="boolean" />
+		<field name="actionCode" type="String" />
 	</model>
 	<model name="org.opencps.processmgt.model.SchedulerJobs">
 		<field name="schedulerJobsId" type="long" />

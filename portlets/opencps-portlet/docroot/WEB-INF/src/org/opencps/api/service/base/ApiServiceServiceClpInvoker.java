@@ -57,6 +57,20 @@ public class ApiServiceServiceClpInvoker {
 		_methodParameterTypes36 = new String[] {
 				"java.lang.String", "java.lang.String", "java.lang.String"
 			};
+
+		_methodName37 = "nextStep";
+
+		_methodParameterTypes37 = new String[] {
+				"java.lang.String", "java.lang.String", "java.lang.String",
+				"java.lang.String"
+			};
+
+		_methodName38 = "searchDossierByDS_RD_SN_U";
+
+		_methodParameterTypes38 = new String[] {
+				"java.lang.String", "java.lang.String", "java.lang.String",
+				"java.lang.String", "java.lang.String"
+			};
 	}
 
 	public Object invokeMethod(String name, String[] parameterTypes,
@@ -101,6 +115,20 @@ public class ApiServiceServiceClpInvoker {
 				(java.lang.String)arguments[1], (java.lang.String)arguments[2]);
 		}
 
+		if (_methodName37.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes37, parameterTypes)) {
+			return ApiServiceServiceUtil.nextStep((java.lang.String)arguments[0],
+				(java.lang.String)arguments[1], (java.lang.String)arguments[2],
+				(java.lang.String)arguments[3]);
+		}
+
+		if (_methodName38.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes38, parameterTypes)) {
+			return ApiServiceServiceUtil.searchDossierByDS_RD_SN_U((java.lang.String)arguments[0],
+				(java.lang.String)arguments[1], (java.lang.String)arguments[2],
+				(java.lang.String)arguments[3], (java.lang.String)arguments[4]);
+		}
+
 		throw new UnsupportedOperationException();
 	}
 
@@ -118,4 +146,8 @@ public class ApiServiceServiceClpInvoker {
 	private String[] _methodParameterTypes35;
 	private String _methodName36;
 	private String[] _methodParameterTypes36;
+	private String _methodName37;
+	private String[] _methodParameterTypes37;
+	private String _methodName38;
+	private String[] _methodParameterTypes38;
 }

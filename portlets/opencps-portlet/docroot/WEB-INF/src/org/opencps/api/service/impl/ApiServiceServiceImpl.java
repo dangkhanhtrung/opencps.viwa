@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import org.opencps.api.service.ApiServiceLocalServiceUtil;
 import org.opencps.api.service.base.ApiServiceServiceBaseImpl;
 import org.opencps.backend.message.SendToEngineMsg;
 import org.opencps.dossiermgt.NoSuchDossierPartException;
+import org.opencps.dossiermgt.bean.ProcessOrderBean;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.model.DossierFile;
 import org.opencps.dossiermgt.model.DossierPart;
@@ -70,6 +72,7 @@ import com.liferay.portal.security.ac.AccessControlled;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.util.portlet.PortletProps;
@@ -105,15 +108,48 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 	public JSONObject searchDossierByUserAssignProcessOrder(String username)
 			throws SystemException {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
+		long userId = 0;
 		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(getUser().getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			
+		}		
+
+		//try {
 			SimpleDateFormat sdf = new SimpleDateFormat(
 					DateTimeUtil._VN_DATE_TIME_FORMAT);
+			/*
 			int count = dossierLocalService
 					.countDossierByUserAssignProcessOrder(username);
 			List<Dossier> dossiers = dossierLocalService
 					.searchDossierByUserAssignProcessOrder(username, 0, count);
+			*/
+			int serviceInfoId = 0;
+			int processStepId = 0;
+			
+			int count = ProcessOrderLocalServiceUtil.countProcessOrder(serviceInfoId, processStepId, userId, userId);
+			List<ProcessOrderBean> processOrders = ProcessOrderLocalServiceUtil.searchProcessOrder(serviceInfoId, processStepId, userId, userId,
+					0, count, 
+					null);
+			List<Dossier> dossiers = new ArrayList<Dossier>();
+			for (ProcessOrderBean pd : processOrders) {
+				try {
+					dossiers.add(DossierLocalServiceUtil.getDossier(pd.getDossierId()));
+				} catch (PortalException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			JSONArray resultArr = JSONFactoryUtil.createJSONArray();
-			long userId = 0;
 			for (Dossier d : dossiers) {
 				userId = d.getUserId();
 				JSONObject dossierObj = JSONFactoryUtil.createJSONObject();
@@ -153,13 +189,36 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 
 			resultObj.put("statusCode", "Success");
 			resultObj.put("data", resultArr);
-			ServiceContext serviceContext = new ServiceContext();
-			serviceContext.setUserId(userId);
-			ApiServiceLocalServiceUtil.addApiService(userId, "02", "127.0.0.1",
-					"", username, "success", serviceContext);
-		} catch (NoSuchUserException e) {
+			try {
+				ServiceContext serviceContext = new ServiceContext();
+				serviceContext.setUserId(getUser().getUserId());
+				serviceContext.setScopeGroupId(getUser().getGroupId());
+				serviceContext.setCompanyId(getUser().getCompanyId());
+
+				String ipAddress = PortalUtil.getComputerAddress();
+
+				ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+						"02", ipAddress, "", "{ 'username': '" + username
+								+ "' }", "success", serviceContext);
+			} catch (PortalException pe) {
+
+			}
+		/*} catch (NoSuchUserException e) {
 			resultObj.put("statusCode", "UserNotFound");
-		}
+			String ipAddress = PortalUtil.getComputerAddress();
+			try {
+				ServiceContext serviceContext = new ServiceContext();
+				serviceContext.setUserId(getUser().getUserId());
+				serviceContext.setScopeGroupId(getUser().getGroupId());
+				serviceContext.setCompanyId(getUser().getCompanyId());
+
+				ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+						"02", ipAddress, "", "{ 'username': '" + username
+								+ "' }", "error", serviceContext);
+			} catch (PortalException pe) {
+
+			}
+		}*/
 		return resultObj;
 	}
 
@@ -169,52 +228,85 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
 		SimpleDateFormat sdf = new SimpleDateFormat(
 				DateTimeUtil._VN_DATE_TIME_FORMAT);
+		/*
 		int count = dossierLocalService.countDossierByP_S_U(processno, stepno,
 				username);
 		List<Dossier> dossiers = dossierLocalService.searchDossierByP_S_U(
 				processno, stepno, username, 0, count);
-		JSONArray resultArr = JSONFactoryUtil.createJSONArray();
-		for (Dossier d : dossiers) {
-			JSONObject dossierObj = JSONFactoryUtil.createJSONObject();
-			dossierObj.put("oid", d.getOid());
-			ServiceInfo serviceInfo = null;
+		*/
+		try {
+			int count = dossierLocalService.countDossierByP_PS_U(processno, stepno,
+					username);
+			List<Dossier> dossiers = dossierLocalService.searchDossierByP_PS_U(
+					processno, stepno, username, 0, count);
+			JSONArray resultArr = JSONFactoryUtil.createJSONArray();
+			for (Dossier d : dossiers) {
+				JSONObject dossierObj = JSONFactoryUtil.createJSONObject();
+				dossierObj.put("oid", d.getOid());
+				ServiceInfo serviceInfo = null;
+				try {
+					serviceInfo = ServiceInfoLocalServiceUtil.getServiceInfo(d
+							.getServiceInfoId());
+					dossierObj.put("serviceNo", serviceInfo.getServiceNo());
+					dossierObj.put("serviceName", serviceInfo.getServiceName());
+				} catch (NoSuchServiceInfoException e) {
+					dossierObj.put("serviceNo", "");
+					dossierObj.put("serviceName", "");
+				} catch (PortalException e) {
+					// TODO Auto-generated catch block
+					dossierObj.put("serviceNo", "");
+					dossierObj.put("serviceName", "");
+				} catch (SystemException e) {
+					// TODO Auto-generated catch block
+
+				}
+				dossierObj.put("subjectName", d.getSubjectName());
+				dossierObj.put("address", d.getAddress());
+				if (d.getSubmitDatetime() != null) {
+					dossierObj.put("submitDatetime",
+							sdf.format(d.getSubmitDatetime()));
+				}
+				if (d.getReceiveDatetime() != null) {
+					dossierObj.put("receiveDatetime",
+							sdf.format(d.getReceiveDatetime()));
+				}
+				dossierObj.put("receptionNo", d.getReceptionNo());
+				if (d.getEstimateDatetime() != null) {
+					dossierObj.put("estimateDatetime", d.getEstimateDatetime());
+				}
+				dossierObj.put("dossierStatus", d.getDossierStatus());
+				dossierObj.put("delayStatus", d.getDelayStatus());
+				resultArr.put(dossierObj);
+			}
+
+			resultObj.put("statusCode", "Success");
+			resultObj.put("data", resultArr);
+
 			try {
-				serviceInfo = ServiceInfoLocalServiceUtil.getServiceInfo(d
-						.getServiceInfoId());
-				dossierObj.put("serviceNo", serviceInfo.getServiceNo());
-				dossierObj.put("serviceName", serviceInfo.getServiceName());
-			} catch (NoSuchServiceInfoException e) {
-				dossierObj.put("serviceNo", "");
-				dossierObj.put("serviceName", "");
-			} catch (PortalException e) {
-				// TODO Auto-generated catch block
-				dossierObj.put("serviceNo", "");
-				dossierObj.put("serviceName", "");
-			} catch (SystemException e) {
-				// TODO Auto-generated catch block
+				ServiceContext serviceContext = new ServiceContext();
+				serviceContext.setUserId(getUser().getUserId());
+				serviceContext.setScopeGroupId(getUser().getGroupId());
+				serviceContext.setCompanyId(getUser().getCompanyId());
+				String ipAddress = PortalUtil.getComputerAddress();
 
-			}
-			dossierObj.put("subjectName", d.getSubjectName());
-			dossierObj.put("address", d.getAddress());
-			if (d.getSubmitDatetime() != null) {
-				dossierObj.put("submitDatetime",
-						sdf.format(d.getSubmitDatetime()));
-			}
-			if (d.getReceiveDatetime() != null) {
-				dossierObj.put("receiveDatetime",
-						sdf.format(d.getReceiveDatetime()));
-			}
-			dossierObj.put("receptionNo", d.getReceptionNo());
-			if (d.getEstimateDatetime() != null) {
-				dossierObj.put("estimateDatetime", d.getEstimateDatetime());
-			}
-			dossierObj.put("dossierStatus", d.getDossierStatus());
-			dossierObj.put("delayStatus", d.getDelayStatus());
-			resultArr.put(dossierObj);
+				JSONObject params = JSONFactoryUtil.createJSONObject();
+				params.put("processno", processno);
+				params.put("stepno", stepno);
+				params.put("username", username);
+
+				ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+						"01", ipAddress, "", params.toString(), "success",
+						serviceContext);
+			} catch (SystemException se) {
+
+			} catch (PortalException pe) {
+
+			}	
 		}
-
-		resultObj.put("statusCode", "Success");
-		resultObj.put("data", resultArr);
+		catch (NoSuchUserException e) {
+			resultObj.put("statusCode", "UserNotFound");
+		}
+		
 
 		return resultObj;
 	}
@@ -332,9 +424,46 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			}
 
 			jsonObject.put("dossierFiles", dfArr);
+			try {
+				ServiceContext serviceContext = new ServiceContext();
+				serviceContext.setUserId(getUser().getUserId());
+				serviceContext.setScopeGroupId(getUser().getGroupId());
+				serviceContext.setCompanyId(getUser().getCompanyId());
+				String ipAddress = PortalUtil.getComputerAddress();
+
+				JSONObject params = JSONFactoryUtil.createJSONObject();
+				params.put("oid", oid);
+
+				ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+						"03", ipAddress, "", params.toString(), "success",
+						serviceContext);
+			} catch (SystemException se) {
+
+			} catch (PortalException pe) {
+
+			}
 		} catch (SystemException e) {
 			// TODO Auto-generated catch block
 			jsonObject.put("statusCode", "DossierNotFound");
+			try {
+				ServiceContext serviceContext = new ServiceContext();
+				serviceContext.setUserId(getUser().getUserId());
+				serviceContext.setScopeGroupId(getUser().getGroupId());
+				serviceContext.setCompanyId(getUser().getCompanyId());
+				String ipAddress = PortalUtil.getComputerAddress();
+
+				JSONObject params = JSONFactoryUtil.createJSONObject();
+				params.put("oid", oid);
+
+				ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+						"03", ipAddress, "", params.toString(), "error",
+						serviceContext);
+			} catch (SystemException se) {
+
+			} catch (PortalException pe) {
+
+			}
+
 		}
 
 		return jsonObject;
@@ -405,6 +534,30 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 											PortletConstants.DOSSIER_FILE_SYNC_STATUS_NOSYNC,
 											serviceContext);
 
+							try {
+								serviceContext = new ServiceContext();
+								serviceContext.setUserId(getUser().getUserId());
+								serviceContext.setScopeGroupId(getUser()
+										.getGroupId());
+								serviceContext.setCompanyId(getUser()
+										.getCompanyId());
+
+								String ipAddress = PortalUtil
+										.getComputerAddress();
+								JSONObject params = JSONFactoryUtil
+										.createJSONObject();
+								params.put("oid", oid);
+								params.put("dossierfile", dossierfile);
+								ApiServiceLocalServiceUtil.addApiService(
+										getUser().getUserId(), "04", ipAddress,
+										"", params.toString(), "success",
+										serviceContext);
+							} catch (SystemException se) {
+
+							} catch (PortalException pe) {
+
+							}
+
 						} catch (Exception e) {
 
 						}
@@ -462,6 +615,30 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 											dossierFileNo, "", dossierFileName,
 											StringPool.BLANK, StringPool.BLANK,
 											is, size, serviceContext);
+							try {
+								serviceContext = new ServiceContext();
+								serviceContext.setUserId(getUser().getUserId());
+								serviceContext.setScopeGroupId(getUser()
+										.getGroupId());
+								serviceContext.setCompanyId(getUser()
+										.getCompanyId());
+
+								String ipAddress = PortalUtil
+										.getComputerAddress();
+								JSONObject params = JSONFactoryUtil
+										.createJSONObject();
+								params.put("oid", oid);
+								params.put("dossierfile", dossierfile);
+								ApiServiceLocalServiceUtil.addApiService(
+										getUser().getUserId(), "04", ipAddress,
+										"", params.toString(), "success",
+										serviceContext);
+							} catch (SystemException se) {
+
+							} catch (PortalException pe) {
+
+							}
+
 						} catch (SystemException e) {
 
 						} catch (PortalException e) {
@@ -522,6 +699,30 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 												1,
 												PortletConstants.DOSSIER_FILE_SYNC_STATUS_NOSYNC,
 												serviceContext);
+								try {
+									serviceContext = new ServiceContext();
+									serviceContext.setUserId(getUser()
+											.getUserId());
+									serviceContext.setScopeGroupId(getUser()
+											.getGroupId());
+									serviceContext.setCompanyId(getUser()
+											.getCompanyId());
+
+									String ipAddress = PortalUtil
+											.getComputerAddress();
+									JSONObject params = JSONFactoryUtil
+											.createJSONObject();
+									params.put("oid", oid);
+									params.put("dossierfile", dossierfile);
+									ApiServiceLocalServiceUtil.addApiService(
+											getUser().getUserId(), "04",
+											ipAddress, "", params.toString(),
+											"success", serviceContext);
+								} catch (SystemException se) {
+
+								} catch (PortalException pe) {
+
+								}
 
 							} catch (Exception e) {
 
@@ -586,6 +787,27 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 										StringPool.BLANK, StringPool.BLANK, is,
 										size, serviceContext);
 
+						try {
+							serviceContext = new ServiceContext();
+							serviceContext.setUserId(getUser().getUserId());
+							serviceContext.setScopeGroupId(getUser()
+									.getGroupId());
+							serviceContext.setCompanyId(getUser()
+									.getCompanyId());
+
+							String ipAddress = PortalUtil.getComputerAddress();
+							JSONObject params = JSONFactoryUtil
+									.createJSONObject();
+							params.put("oid", oid);
+							params.put("dossierfile", dossierfile);
+							ApiServiceLocalServiceUtil.addApiService(getUser()
+									.getUserId(), "04", ipAddress, "", params
+									.toString(), "success", serviceContext);
+						} catch (SystemException se) {
+
+						} catch (PortalException pe) {
+
+						}
 					} catch (SystemException e) {
 						// TODO Auto-generated catch block
 
@@ -607,7 +829,25 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
+			try {
+				ServiceContext serviceContext = new ServiceContext();
+				serviceContext.setUserId(getUser().getUserId());
+				serviceContext.setScopeGroupId(getUser().getGroupId());
+				serviceContext.setCompanyId(getUser().getCompanyId());
+
+				String ipAddress = PortalUtil.getComputerAddress();
+				JSONObject params = JSONFactoryUtil.createJSONObject();
+				params.put("oid", oid);
+				params.put("dossierfile", dossierfile);
+				ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+						"04", ipAddress, "", params.toString(), "error",
+						serviceContext);
+			} catch (SystemException se) {
+
+			} catch (PortalException pe) {
+
+			}
 		}
 
 		/*
@@ -647,8 +887,10 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 	public JSONObject nextStep(String oid, String actioncode, String username) {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
 		Dossier dossier = null;
+		long userId = 0;
 		try {
 			dossier = DossierLocalServiceUtil.getByoid(oid);
+			userId = dossier.getUserId();
 		} catch (SystemException e) {
 			resultObj.put("statusCode", "DossierNotFound");
 			return resultObj;
@@ -660,9 +902,9 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 					.getProcessOrder(dossier.getDossierId(), 0);
 			User user = UserLocalServiceUtil.getUserByScreenName(
 					dossier.getCompanyId(), username);
-			int processWorkflowId = Integer.parseInt(actioncode);
+			// int processWorkflowId = Integer.parseInt(actioncode);
 			ProcessWorkflow processWorkflow = ProcessWorkflowLocalServiceUtil
-					.getProcessWorkflow(processWorkflowId);
+					.getByActionCode(actioncode);
 			Message message = new Message();
 			message.put(ProcessOrderDisplayTerms.EVENT, null);
 			message.put(ProcessOrderDisplayTerms.ACTION_NOTE,
@@ -675,7 +917,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			message.put(ProcessOrderDisplayTerms.PAYMENTVALUE, 0);
 
 			message.put(ProcessOrderDisplayTerms.PROCESS_WORKFLOW_ID,
-					processWorkflowId);
+					processWorkflow.getProcessWorkflowId());
 
 			message.put(ProcessOrderDisplayTerms.ACTION_USER_ID,
 					user.getUserId());
@@ -701,7 +943,8 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			sendToEngineMsg.setFileGroupId(0);
 			sendToEngineMsg.setPaymentValue(GetterUtil.getDouble(0));
 			sendToEngineMsg.setProcessOrderId(processOrder.getProcessOrderId());
-			sendToEngineMsg.setProcessWorkflowId(processWorkflowId);
+			sendToEngineMsg.setProcessWorkflowId(processWorkflow
+					.getProcessWorkflowId());
 			sendToEngineMsg.setReceptionNo(Validator.isNotNull(dossier
 					.getReceptionNo()) ? dossier.getReceptionNo()
 					: StringPool.BLANK);
@@ -711,16 +954,312 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			MessageBusUtil.sendMessage("opencps/backoffice/engine/destination",
 					message);
 			resultObj.put("statusCode", "Success");
+			ServiceContext serviceContext = ServiceContextThreadLocal
+					.getServiceContext();
+			serviceContext.setUserId(getUser().getUserId());
+			serviceContext.setScopeGroupId(getUser().getGroupId());
+			serviceContext.setCompanyId(getUser().getCompanyId());
+
+			String ipAddress = PortalUtil.getComputerAddress();
+			JSONObject params = JSONFactoryUtil.createJSONObject();
+			params.put("oid", oid);
+			params.put("actioncode", actioncode);
+			params.put("username", username);
+
+			ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+					"05", ipAddress, "", params.toString(), "success",
+					serviceContext);
 		} catch (SystemException e) {
 			// TODO Auto-generated catch block
 			resultObj.put("statusCode", "ActionNotFound");
+			ServiceContext serviceContext = ServiceContextThreadLocal
+					.getServiceContext();
+			serviceContext.setUserId(userId);
+			String ipAddress = PortalUtil.getComputerAddress();
+			JSONObject params = JSONFactoryUtil.createJSONObject();
+			params.put("oid", oid);
+			params.put("actioncode", actioncode);
+			params.put("username", username);
+
+			try {
+				ApiServiceLocalServiceUtil.addApiService(userId, "05",
+						ipAddress, "", params.toString(), "error",
+						serviceContext);
+			} catch (SystemException se) {
+
+			}
 		} catch (NoSuchProcessOrderException e) {
 			// TODO Auto-generated catch block
 			resultObj.put("statusCode", "ActionNotFound");
+
+			try {
+				ServiceContext serviceContext = ServiceContextThreadLocal
+						.getServiceContext();
+				serviceContext.setUserId(getUser().getUserId());
+				serviceContext.setScopeGroupId(getUser().getGroupId());
+				serviceContext.setCompanyId(getUser().getCompanyId());
+
+				String ipAddress = PortalUtil.getComputerAddress();
+				JSONObject params = JSONFactoryUtil.createJSONObject();
+				params.put("oid", oid);
+				params.put("actioncode", actioncode);
+				params.put("username", username);
+				ApiServiceLocalServiceUtil.addApiService(userId, "05",
+						ipAddress, "", params.toString(), "error",
+						serviceContext);
+			} catch (SystemException se) {
+
+			} catch (PortalException pe) {
+
+			}
 		} catch (PortalException e) {
 			// TODO Auto-generated catch block
 			resultObj.put("statusCode", "ActionNotFound");
+			ServiceContext serviceContext = ServiceContextThreadLocal
+					.getServiceContext();
+			serviceContext.setUserId(userId);
+			String ipAddress = PortalUtil.getComputerAddress();
+			JSONObject params = JSONFactoryUtil.createJSONObject();
+			params.put("oid", oid);
+			params.put("actioncode", actioncode);
+			params.put("username", username);
+
+			try {
+				ApiServiceLocalServiceUtil.addApiService(userId, "05",
+						ipAddress, "", params.toString(), "error",
+						serviceContext);
+			} catch (SystemException se) {
+
+			}
+
 		}
+		return resultObj;
+	}
+
+	@JSONWebService(value = "processorder", method = "POST")
+	public JSONObject nextStep(String oid, String actioncode,
+			String actionnote, String username) {
+		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
+		Dossier dossier = null;
+		long userId = 0;
+		try {
+			dossier = DossierLocalServiceUtil.getByoid(oid);
+			userId = dossier.getUserId();
+		} catch (SystemException e) {
+			resultObj.put("statusCode", "DossierNotFound");
+			return resultObj;
+		}
+		try {
+			System.out.println("PROCESS ORDER============"
+					+ dossier.getDossierId());
+			ProcessOrder processOrder = ProcessOrderLocalServiceUtil
+					.getProcessOrder(dossier.getDossierId(), 0);
+			User user = UserLocalServiceUtil.getUserByScreenName(
+					dossier.getCompanyId(), username);
+			// int processWorkflowId = Integer.parseInt(actioncode);
+			ProcessWorkflow processWorkflow = ProcessWorkflowLocalServiceUtil
+					.getByActionCode(actioncode);
+			if (processWorkflow == null) {
+				resultObj.put("statusCode", "ActionNotFound");
+				return resultObj;
+			}
+			Message message = new Message();
+			message.put(ProcessOrderDisplayTerms.EVENT, null);
+			message.put(ProcessOrderDisplayTerms.ACTION_NOTE, actionnote);
+			message.put(ProcessOrderDisplayTerms.PROCESS_STEP_ID,
+					processOrder.getProcessStepId());
+			message.put(ProcessOrderDisplayTerms.ASSIGN_TO_USER_ID, 0);
+			message.put(ProcessOrderDisplayTerms.SERVICE_PROCESS_ID,
+					processOrder.getServiceProcessId());
+			message.put(ProcessOrderDisplayTerms.PAYMENTVALUE, 0);
+
+			message.put(ProcessOrderDisplayTerms.PROCESS_WORKFLOW_ID,
+					processWorkflow.getProcessWorkflowId());
+
+			message.put(ProcessOrderDisplayTerms.ACTION_USER_ID,
+					user.getUserId());
+
+			message.put(ProcessOrderDisplayTerms.PROCESS_ORDER_ID,
+					processOrder.getProcessOrderId());
+			message.put(ProcessOrderDisplayTerms.FILE_GROUP_ID, 0);
+			message.put(ProcessOrderDisplayTerms.DOSSIER_ID,
+					dossier.getDossierId());
+
+			message.put(ProcessOrderDisplayTerms.GROUP_ID, dossier.getGroupId());
+
+			message.put(ProcessOrderDisplayTerms.COMPANY_ID,
+					dossier.getCompanyId());
+
+			SendToEngineMsg sendToEngineMsg = new SendToEngineMsg();
+
+			// sendToEngineMsg.setAction(WebKeys.ACTION);
+			sendToEngineMsg.setActionNote(actionnote);
+			sendToEngineMsg.setAssignToUserId(0);
+			sendToEngineMsg.setActionUserId(user.getUserId());
+			sendToEngineMsg.setDossierId(dossier.getDossierId());
+			sendToEngineMsg.setFileGroupId(0);
+			sendToEngineMsg.setPaymentValue(GetterUtil.getDouble(0));
+			sendToEngineMsg.setProcessOrderId(processOrder.getProcessOrderId());
+			sendToEngineMsg.setProcessWorkflowId(processWorkflow
+					.getProcessWorkflowId());
+			sendToEngineMsg.setReceptionNo(Validator.isNotNull(dossier
+					.getReceptionNo()) ? dossier.getReceptionNo()
+					: StringPool.BLANK);
+			sendToEngineMsg.setSignature(0);
+			message.put("msgToEngine", sendToEngineMsg);
+			System.out.println("BEFORE SEND============" + message);
+			MessageBusUtil.sendMessage("opencps/backoffice/engine/destination",
+					message);
+			resultObj.put("statusCode", "Success");
+			ServiceContext serviceContext = ServiceContextThreadLocal
+					.getServiceContext();
+			serviceContext.setUserId(getUser().getUserId());
+			serviceContext.setScopeGroupId(getUser().getGroupId());
+			serviceContext.setCompanyId(getUser().getCompanyId());
+
+			String ipAddress = PortalUtil.getComputerAddress();
+			JSONObject params = JSONFactoryUtil.createJSONObject();
+			params.put("oid", oid);
+			params.put("actioncode", actioncode);
+			params.put("username", username);
+
+			ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+					"05", ipAddress, "", params.toString(), "success",
+					serviceContext);
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			resultObj.put("statusCode", "ActionNotFound");
+			ServiceContext serviceContext = ServiceContextThreadLocal
+					.getServiceContext();
+			serviceContext.setUserId(userId);
+			String ipAddress = PortalUtil.getComputerAddress();
+			JSONObject params = JSONFactoryUtil.createJSONObject();
+			params.put("oid", oid);
+			params.put("actioncode", actioncode);
+			params.put("username", username);
+
+			try {
+				ApiServiceLocalServiceUtil.addApiService(userId, "05",
+						ipAddress, "", params.toString(), "error",
+						serviceContext);
+			} catch (SystemException se) {
+
+			}
+		} catch (NoSuchProcessOrderException e) {
+			// TODO Auto-generated catch block
+			resultObj.put("statusCode", "ActionNotFound");
+
+			try {
+				ServiceContext serviceContext = ServiceContextThreadLocal
+						.getServiceContext();
+				serviceContext.setUserId(getUser().getUserId());
+				serviceContext.setScopeGroupId(getUser().getGroupId());
+				serviceContext.setCompanyId(getUser().getCompanyId());
+
+				String ipAddress = PortalUtil.getComputerAddress();
+				JSONObject params = JSONFactoryUtil.createJSONObject();
+				params.put("oid", oid);
+				params.put("actioncode", actioncode);
+				params.put("username", username);
+				ApiServiceLocalServiceUtil.addApiService(userId, "05",
+						ipAddress, "", params.toString(), "error",
+						serviceContext);
+			} catch (SystemException se) {
+
+			} catch (PortalException pe) {
+
+			}
+		} catch (PortalException e) {
+			// TODO Auto-generated catch block
+			resultObj.put("statusCode", "ActionNotFound");
+			ServiceContext serviceContext = ServiceContextThreadLocal
+					.getServiceContext();
+			serviceContext.setUserId(userId);
+			String ipAddress = PortalUtil.getComputerAddress();
+			JSONObject params = JSONFactoryUtil.createJSONObject();
+			params.put("oid", oid);
+			params.put("actioncode", actioncode);
+			params.put("username", username);
+
+			try {
+				ApiServiceLocalServiceUtil.addApiService(userId, "05",
+						ipAddress, "", params.toString(), "error",
+						serviceContext);
+			} catch (SystemException se) {
+
+			}
+
+		}
+		return resultObj;
+	}
+
+	@JSONWebService(value = "dossiers", method = "GET")
+	public JSONObject searchDossierByDS_RD_SN_U(String dossierstatus,
+			String serviceno, String fromdate, String todate, String username)
+			throws SystemException {
+		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
+		long userId = 0;
+		SimpleDateFormat sdf = new SimpleDateFormat(
+				DateTimeUtil._VN_DATE_TIME_FORMAT);
+		int count = dossierLocalService.countDossierByDS_RD_SN_U(dossierstatus,
+				serviceno, fromdate, todate, username);
+		List<Dossier> dossiers = dossierLocalService.searchDossierByDS_RD_SN_U(
+				dossierstatus,serviceno, fromdate, todate, username, 0, count);
+		JSONArray resultArr = JSONFactoryUtil.createJSONArray();
+		for (Dossier d : dossiers) {
+			userId = d.getUserId();
+			JSONObject dossierObj = JSONFactoryUtil.createJSONObject();
+			dossierObj.put("oid", d.getOid());
+			ServiceInfo serviceInfo = null;
+			try {
+				serviceInfo = ServiceInfoLocalServiceUtil.getServiceInfo(d
+						.getServiceInfoId());
+				dossierObj.put("serviceNo", serviceInfo.getServiceNo());
+				dossierObj.put("serviceName", serviceInfo.getServiceName());
+			} catch (NoSuchServiceInfoException e) {
+				dossierObj.put("serviceNo", "");
+				dossierObj.put("serviceName", "");
+			} catch (PortalException e) {
+				// TODO Auto-generated catch block
+				dossierObj.put("serviceNo", "");
+				dossierObj.put("serviceName", "");
+			}
+			dossierObj.put("subjectName", d.getSubjectName());
+			dossierObj.put("address", d.getAddress());
+			if (d.getSubmitDatetime() != null) {
+				dossierObj.put("submitDatetime",
+						sdf.format(d.getSubmitDatetime()));
+			}
+			if (d.getReceiveDatetime() != null) {
+				dossierObj.put("receiveDatetime",
+						sdf.format(d.getReceiveDatetime()));
+			}
+			dossierObj.put("receptionNo", d.getReceptionNo());
+			if (d.getEstimateDatetime() != null) {
+				dossierObj.put("estimateDatetime", d.getEstimateDatetime());
+			}
+			dossierObj.put("dossierStatus", d.getDossierStatus());
+			dossierObj.put("delayStatus", d.getDelayStatus());
+			resultArr.put(dossierObj);
+		}
+
+		resultObj.put("statusCode", "Success");
+		resultObj.put("data", resultArr);
+		try {
+			ServiceContext serviceContext = new ServiceContext();
+			serviceContext.setUserId(getUser().getUserId());
+			serviceContext.setScopeGroupId(getUser().getGroupId());
+			serviceContext.setCompanyId(getUser().getCompanyId());
+
+			String ipAddress = PortalUtil.getComputerAddress();
+
+			ApiServiceLocalServiceUtil.addApiService(getUser().getUserId(),
+					"02", ipAddress, "", "{ 'username': '" + username + "' }",
+					"success", serviceContext);
+		} catch (PortalException pe) {
+
+		}
+
 		return resultObj;
 	}
 }
