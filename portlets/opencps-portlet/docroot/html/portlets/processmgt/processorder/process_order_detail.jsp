@@ -41,54 +41,56 @@
 	
 	String[][] categorySections = {processOrderSections};
 %>
-
+<div class="ocps-header-history">
 <liferay-ui:header
 	backURL="<%= backURL %>"
 	title="process-order"
 />
-
+</div>
 <portlet:actionURL var="updateProcessOrderURL" name="updateDossier"/>
-
-<liferay-util:buffer var="htmlTop">
-	<c:if test="<%= processOrder != null %>">
-		<div class="form-navigator-topper dossier-info">
-			<div class="form-navigator-container">
-				<i aria-hidden="true" class="fa fa-suitcase"></i>
-				<span class="form-navigator-topper-name"><%= Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.BLANK %></span>
+<div class="ocps-history-bound-navigator">
+	<liferay-util:buffer var="htmlTop">
+		<c:if test="<%= processOrder != null %>">
+			<div class="form-navigator-topper dossier-info">
+				<div class="form-navigator-container">
+					<i aria-hidden="true" class="fa fa-suitcase"></i>
+					<span class="form-navigator-topper-name"><%= Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.BLANK %></span>
+				</div>
 			</div>
-		</div>
-	</c:if> 
-</liferay-util:buffer>
-
-<liferay-util:buffer var="htmlBottom">
-
-</liferay-util:buffer>
-
-<aui:form name="fm" action="<%=updateProcessOrderURL %>" method="post">
-
-	<aui:model-context bean="<%= processOrder %>" model="<%= ProcessOrder.class %>" />
+		</c:if> 
+	</liferay-util:buffer>
 	
-	<aui:input 
-		name="redirectURL" 
-		type="hidden" 
-		value="<%= backURL%>"
-	/>
-	<aui:input 
-		name="returnURL" 
-		type="hidden" 
-		value="<%= currentURL%>"
-	/>
+	<liferay-util:buffer var="htmlBottom">
 	
-	<liferay-ui:form-navigator
-		backURL="<%= backURL %>"
-		categoryNames="<%= ProcessUtils._PROCESS_ORDER_CATEGORY_NAMES %>"
-		categorySections="<%= categorySections %>"
-		htmlBottom="<%= htmlBottom %>"
-		htmlTop="<%= htmlTop %>"
-		jspPath='<%=templatePath + "dossier/" %>'
-		showButtons="<%=false%>"
-	/>
-</aui:form>
+	</liferay-util:buffer>
+	
+	<aui:form name="fm" action="<%=updateProcessOrderURL %>" method="post">
+	
+		<aui:model-context bean="<%= processOrder %>" model="<%= ProcessOrder.class %>" />
+		
+		<aui:input 
+			name="redirectURL" 
+			type="hidden" 
+			value="<%= backURL%>"
+		/>
+		<aui:input 
+			name="returnURL" 
+			type="hidden" 
+			value="<%= currentURL%>"
+		/>
+		
+		<liferay-ui:form-navigator
+			backURL="<%= backURL %>"
+			categoryNames="<%= ProcessUtils._PROCESS_ORDER_CATEGORY_NAMES %>"
+			categorySections="<%= categorySections %>"
+			htmlBottom="<%= htmlBottom %>"
+			htmlTop="<%= htmlTop %>"
+			jspPath='<%=templatePath + "dossier/" %>'
+			showButtons="<%=false%>"
+		/>
+	</aui:form>
+
+</div>
 
 <%!
 	private Log _log = LogFactoryUtil.getLog("html.portlets.processmgt.processorder.process_order_detail.jsp");
