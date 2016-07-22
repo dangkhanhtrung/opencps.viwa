@@ -1,4 +1,5 @@
 
+<%@page import="com.liferay.portal.security.auth.AuthTokenUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -106,9 +107,14 @@
 	
 	String formData = AutoFillFormData.dataBinding(sampleData, ownerCitizen, ownerBusiness, dossierId);;
 
+	/*
 	String alpacaSchema = dossierPart != null && Validator.isNotNull(dossierPart.getFormScript()) ? 
 			dossierPart.getFormScript() : StringPool.BLANK;
-
+	*/
+	String auTock = AuthTokenUtil.getToken(request);
+	String alpacaSchema = dossierPart != null && Validator.isNotNull(dossierPart.getFormScript()) ? 
+			dossierPart.getFormScript().replaceAll("p_auth=REPLACEKEY", "p_auth="+auTock) : StringPool.BLANK;
+			
 	DossierFile dossierFile = null;
 	
 	if(dossierFileId > 0){

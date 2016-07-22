@@ -551,9 +551,9 @@ public class ProcessOrderPortlet extends MVCPortlet {
 			.setSignature(signature ? 1 : 0);
 		message
 			.put("msgToEngine", sendToEngineMsg);
+		_log.info("SEND TO ENGINE MESSAGE RESUBMIT======================" + sendToEngineMsg);
 		MessageBusUtil
 			.sendMessage("opencps/backoffice/engine/destination", message);
-
 		actionResponse
 			.setRenderParameter("jspPage",
 				"/html/portlets/processmgt/processorder/assign_to_user.jsp");

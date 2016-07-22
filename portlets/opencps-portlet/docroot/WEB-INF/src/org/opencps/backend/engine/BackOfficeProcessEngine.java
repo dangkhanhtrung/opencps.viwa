@@ -95,7 +95,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 			govAgencyCode = dossier.getGovAgencyCode();
 			govAgencyName = dossier.getGovAgencyName();
 			govAgencyOrganizationId = dossier.getGovAgencyOrganizationId();
-
+			//_log.info("DOSSIER IN BACKEND ENGINE===========" + dossier.getGovAgencyCode());
 			try {
 				serviceProcessId =
 				    ServiceInfoProcessLocalServiceUtil.getServiceInfo(
@@ -113,13 +113,13 @@ public class BackOfficeProcessEngine implements MessageListener {
 		long processOrderId = toEngineMsg.getProcessOrderId();
 
 		long processStepId = 0;
-
 		String actionName = StringPool.BLANK;
 		String stepName = StringPool.BLANK;
 		ProcessOrder processOrder = null;
+		//_log.info("PROCESS WORK FLOW ID IN BACKEND ENGINE=========" + processWorkflowId);
 		try {
 			if (Validator.isNull(processOrderId)) {
-
+				//_log.info("PROCESS ORDER IS NULL");
 				processOrder =
 				    BackendUtils.getProcessOrder(
 				        toEngineMsg.getDossierId(),
@@ -154,12 +154,14 @@ public class BackOfficeProcessEngine implements MessageListener {
 				processOrderId = processOrder.getProcessOrderId();
 
 				curStepId = processOrder.getProcessStepId();
+				//_log.info("PROCESS ORDER IS NOT NULL CURRENT STEP===============" + curStepId);
 			}
 
 			ProcessWorkflow processWorkflow = null;
 
 			// Find workflow
 			if (Validator.isNull(processWorkflowId)) {
+				_log.info("NULL============");
 				processWorkflow =
 				    ProcessWorkflowLocalServiceUtil.getProcessWorkflowByEvent(
 				        serviceProcessId, toEngineMsg.getEvent(), curStepId);
@@ -170,6 +172,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 
 			}
 
+			//_log.info("WORK FLOW=========" + processWorkflow.getActionName());
 			// Do Workflow
 
 			if (Validator.isNotNull(processWorkflow)) {
@@ -217,7 +220,6 @@ public class BackOfficeProcessEngine implements MessageListener {
 				    toEngineMsg.getActionNote(),
 				    toEngineMsg.getAssignToUserId(), stepName, actionName, 0,
 				    0, PortletConstants.DOSSIER_STATUS_SYSTEM);
-
 				toBackOffice.setProcessOrderId(processOrderId);
 				toBackOffice.setDossierId(toEngineMsg.getDossierId());
 				toBackOffice.setFileGroupId(toEngineMsg.getFileGroupId());
@@ -320,10 +322,10 @@ public class BackOfficeProcessEngine implements MessageListener {
 				Message sendToBackOffice = new Message();
 
 				sendToBackOffice.put("toBackOffice", toBackOffice);
-
 				MessageBusUtil.sendMessage(
 				    "opencps/backoffice/out/destination", sendToBackOffice);
-
+				//_log.info("SEND TO BACK OFFICE======" + changeStatus);
+				//_log.info("SEND TO BACK OFFICE======" + processWorkflow.getActionCode());
 			}
 			else {
 				// Send message to backoffice/out/destination
@@ -335,11 +337,9 @@ public class BackOfficeProcessEngine implements MessageListener {
 				Message sendToBackOffice = new Message();
 
 				sendToBackOffice.put("toBackOffice", toBackOffice);
-
 				MessageBusUtil.sendMessage(
 				    "opencps/backoffice/out/destination", sendToBackOffice);
 			}
-
 		}
 		catch (Exception e) {
 			_log.error(e);

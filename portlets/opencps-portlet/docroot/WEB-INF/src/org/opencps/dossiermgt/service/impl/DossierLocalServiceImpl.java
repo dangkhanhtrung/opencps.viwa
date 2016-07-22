@@ -923,7 +923,7 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		 * .getDossierStatus(dossierId); dossierStatus = getDossierStatus(
 		 * dossierStatus, userId, govAgencyOrganizationId, syncStatus);
 		 */
-
+		System.out.println("AFTER GET DOSSIER IN UPDATE DOSSIER STATUS=================");
 		if (fileGroupId > 0) {
 			FileGroup fileGroup = fileGroupLocalService
 				.getFileGroup(fileGroupId);
@@ -954,8 +954,10 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 
 		List<DossierFile> dossierFiles = dossierFileLocalService
 			.getDossierFileByD_GF(dossierId, 0);
+		System.out.println("AFTER GET DOSSIER FILES UPDATE DOSSIER STATUS=================");
 		if (dossierFiles != null) {
 			for (DossierFile dossierFile : dossierFiles) {
+				System.out.println("BEFORE UPDATE DOSSIER FILE================" + dossierFile.getDossierFileId());
 				dossierFile
 					.setSyncStatus(syncStatus);
 				dossierFile
@@ -964,9 +966,15 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 					.setUserId(userId);
 				dossierFileLocalService
 					.updateDossierFile(dossierFile);
+				System.out.println("AFTER UPDATE DOSSIER FILE================" + dossierFile.getDossierFileId());
 			}
 		}
-
+		System.out.println("AFTER UPDATE ALL DOSSIER FILE================");
+		System.out.println("BEFORE ADD DOSSIER LOG=================" + userId + "," + dossier
+				.getGroupId() + "," + dossier
+				.getCompanyId() + "," + dossierId + "," + fileGroupId + "," + status + "," + PortletUtil
+				.getActionInfo(status, locale) + "," + PortletUtil
+				.getMessageInfo(status, locale) + "," + now + "," + level);
 		dossierLogLocalService
 			.addDossierLog(userId, dossier
 				.getGroupId(), dossier

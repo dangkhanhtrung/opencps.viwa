@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="org.opencps.notificationmgt"
+	auto-namespace-tables="false">
+	<author>trungdk</author>
+	<namespace>notificationmgt</namespace>
+    <entity name="NotificationConfig" local-service="true" table="opencps_notification_config">
+        <column name="notificationConfigId" primary="true" type="long"></column>
+        <column name="companyId" type="long"></column>
+        <column name="groupId" type="long"></column>
+        <column name="userId" type="long"></column>
+        <column name="createDate" type="Date"></column>
+        <column name="modifiedDate" type="Date"></column>
+        <column name="eventPattern" type="String"></column>
+        <column name="notificationURL" type="String"></column>
+    </entity>
+	
+</service-builder>

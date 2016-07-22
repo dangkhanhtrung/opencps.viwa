@@ -141,6 +141,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						msgToEngine.put("msgToEngine", engineMsg);
 
 						//add data packages to tich hop duongthuy
+						/*
 						DateFormat dateFormat = DateFormatFactoryUtil
 								.getSimpleDateFormat("YYYY-MM-DD HH:mm:ss");
 						
@@ -312,6 +313,7 @@ public class SyncFromFrontOffice implements MessageListener{
 	                                + "\"SignPlace\":\"#SignPlace@"+dossierFileOnline.getTemplateFileNo()+"\","
 	                                + "\"SignDate\":\"#SignDate@"+dossierFileOnline.getTemplateFileNo()+"\"}";							
 	                    */
+						/*
 						}
 						Citizen ownerCitizen = null;
 						
@@ -389,6 +391,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						
 						_log.info("Input POST: " + inputPOST);
 						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/addMessageFunctionData", inputPOST);
+						*/
 //						RESTfulUtils.responseGETAPI(integrateURL+"dossier/new/messagefunction/01/messageid/04ac0077-ac36-47ed-9b71-fcf09d6e8706_46044931800432");
 						// Send message to ...engine/destination
 						MessageBusUtil.sendMessage(
@@ -412,6 +415,8 @@ public class SyncFromFrontOffice implements MessageListener{
 					SendToEngineMsg engineMsg = new SendToEngineMsg();
 
 					_log.info("RESUBMIT DOSSIER============" + userActionMgs.getDossierId());
+					_log.info("BEFORE UPDATE DOSSIER STATUS IN RESUBMIT================");
+					/*
 					DossierLocalServiceUtil.updateDossierStatus(
 					    userActionMgs.getUserId(),
 					    userActionMgs.getDossierId(), govAgencyOrgId,
@@ -419,7 +424,8 @@ public class SyncFromFrontOffice implements MessageListener{
 					    PortletConstants.DOSSIER_FILE_SYNC_STATUS_SYNCSUCCESS,
 					    userActionMgs.getFileGroupId(), logLevel,
 					    userActionMgs.getLocale());
-
+					_log.info("AFTER UPDATE DOSSIER STATUS IN RESUBMIT================");
+					*/
 					engineMsg.setDossierId(userActionMgs.getDossierId());
 					engineMsg.setFileGroupId(userActionMgs.getFileGroupId());
 					engineMsg.setEvent(WebKeys.ACTION_CHANGE_VALUE);
@@ -428,11 +434,11 @@ public class SyncFromFrontOffice implements MessageListener{
 
 					msgToEngine.put("msgToEngine", engineMsg);
 					
-					_log.info("SEND MESSAGE TO ENGINE: " + engineMsg);
+					_log.info("SEND MESSAGE TO ENGINE IN RESUBMIT: " + engineMsg);
 					// Send message to ...engine/destination
 					MessageBusUtil.sendMessage(
 					    "opencps/backoffice/engine/destination", msgToEngine);
-
+					_log.info("AFTER SEND MESSAGE TO BACKEND IN RESUBMIT============");
 				}
 				else if (Validator.equals(WebKeys.ACTION_REPAIR_VALUE, action)) {
 					// Update requestCommand = repair
@@ -485,6 +491,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						    WebKeys.ACTION_CANCEL_VALUE);	
 						
 						//add data packages to tich hop duongthuy
+						/*
 						DateFormat dateFormat = DateFormatFactoryUtil
 								.getSimpleDateFormat("YYYY-MM-DD HH:mm:ss");
 						
@@ -712,6 +719,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						String inputPOST = param.toString();
 						
 						RESTfulUtils.responsePOSTAPI(integrateURL+"dossier/cancelMessageFunctionData", inputPOST);
+						*/
 				}
 			}
 			catch (Exception e) {

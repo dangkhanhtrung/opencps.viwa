@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -388,8 +390,8 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 				jsonDossierFile.put("dossierFileName", df.getDisplayName());
 				jsonDossierFile.put("templateFileNo", df.getTemplateFileNo());
 				jsonDossierFile.put("dossierFileNo", df.getDossierFileNo());
-
 				if (df.getFileEntryId() > 0) {
+					System.out.println("FILE ENTRY==============" + df.getFileEntryId());
 					FileEntry fileEntry;
 					try {
 						fileEntry = DLAppLocalServiceUtil.getFileEntry(df
@@ -410,6 +412,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 
 					} catch (PortalException e) {
 						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				} else {
 					jsonDossierFile.put("dossierFileContent", df.getFormData());
@@ -424,6 +427,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			}
 
 			jsonObject.put("dossierFiles", dfArr);
+			System.out.println("COME HERE IN GET DOSSIER BY OID==========");
 			try {
 				ServiceContext serviceContext = new ServiceContext();
 				serviceContext.setUserId(getUser().getUserId());
@@ -487,6 +491,14 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			String dossierFileNo = dossierfileObj.getString("dossierFileNo");
 			String dossierFileDate = dossierfileObj
 					.getString("dossierFileDate");
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date fileDate = null;
+			try {
+				fileDate = formatter.parse(dossierFileDate);
+			}
+			catch (ParseException pe) {
+				fileDate = new Date();
+			}
 			System.out.println("DOSSIER FILE OID==============="
 					+ dossierFileOid);
 			System.out.println("DOSSIER FILE URL==============="
@@ -500,6 +512,10 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 					DossierPart dossierPart = null;
 					try {
 						dossier = DossierLocalServiceUtil.getByoid(oid);
+						if (dossier == null) {
+							resultObj.put("statusCode", "DossierNotFound");
+							return resultObj;
+						}
 						long dossierId = dossier.getDossierId();
 
 						ServiceContext serviceContext = new ServiceContext();
@@ -507,12 +523,13 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 							dossier = DossierLocalServiceUtil
 									.getDossier(dossierId);
 
-							dossierPart = DossierPartLocalServiceUtil
-									.getDossierPartByPartNo(dossierPartNo);
+							dossierPart = DossierPartLocalServiceUtil.getDossierPartByTFN_PN(templateFileNo, dossierPartNo);
 
 							serviceContext.setUserId(dossier.getUserId());
-
-							DossierFileLocalServiceUtil
+							serviceContext.setScopeGroupId(dossier.getGroupId());
+							serviceContext.setCompanyId(dossier.getCompanyId());
+							
+							dossierFile = DossierFileLocalServiceUtil
 									.addDossierFile(
 											dossier.getUserId(),
 											dossierId,
@@ -529,7 +546,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 											PortletConstants.DOSSIER_FILE_MARK_UNKNOW,
 											1,
 											dossierFileNo,
-											new Date(),
+											fileDate,
 											1,
 											PortletConstants.DOSSIER_FILE_SYNC_STATUS_NOSYNC,
 											serviceContext);
@@ -557,21 +574,31 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 							} catch (PortalException pe) {
 
 							}
-
+						} catch (NoSuchDossierPartException nsd) {
+							resultObj.put("statusCode", "CanNotUpdate");
+							return resultObj;
 						} catch (Exception e) {
-
+							resultObj.put("statusCode", "CanNotUpdate");
+							return resultObj;
 						}
 					} catch (SystemException ee) {
 						// TODO Auto-generated catch block
+						resultObj.put("statusCode", "DossierNotFound");
+						return resultObj;
 
 					}
-				} else if (dossierFileContent.equals("")) {
+				} else if (dossierFileContent.equals("") || dossierFileContent.equals("{}")) {
+					System.out.println("ADD NEW DOSSIER FILE FROM FILE URL=============");
 					try {
 						URL fileURL = new URL(dossierFileURL);
 						InputStream is = fileURL.openStream();
 						long size = is.available();
+						/*
 						ServiceContext serviceContext = ServiceContextThreadLocal
 								.getServiceContext();
+						*/
+						ServiceContext serviceContext = new ServiceContext();
+		
 						Dossier dossier = null;
 						DossierFile dossierFile = null;
 						DossierPart dossierPart = null;
@@ -579,7 +606,15 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 							System.out
 									.println("GET DOSSIER FOLDER=============");
 							dossier = DossierLocalServiceUtil.getByoid(oid);
+							if (dossier == null) {
+								resultObj.put("statusCode", "DossierNotFound");
+								return resultObj;
+							}
 							long dossierId = dossier.getDossierId();
+							serviceContext.setScopeGroupId(dossier.getGroupId());
+							serviceContext.setCompanyId(dossier.getCompanyId());
+							serviceContext.setUserId(dossier.getUserId());
+							
 							DLFolder dossierFolder = DLFolderUtil
 									.getDossierFolder(
 											serviceContext.getScopeGroupId(),
@@ -587,7 +622,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 											dossier.getCounter(),
 											serviceContext);
 							dossierPart = DossierPartLocalServiceUtil
-									.getDossierPartByPartNo(dossierPartNo);
+									.getDossierPartByTFN_PN(templateFileNo, dossierPartNo);
 							System.out
 									.println("ADD DOSSIER FILE FROM URL=============");
 							DossierFileLocalServiceUtil
@@ -608,7 +643,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 											PortletConstants.DOSSIER_FILE_MARK_UNKNOW,
 											1,
 											dossierFileNo,
-											new Date(),
+											fileDate,
 											1,
 											PortletConstants.DOSSIER_FILE_SYNC_STATUS_NOSYNC,
 											dossierFolder.getFolderId(),
@@ -640,10 +675,12 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 							}
 
 						} catch (SystemException e) {
-
+							resultObj.put("statusCode", "CanNotUpdate");
+							return resultObj;
 						} catch (PortalException e) {
 							// TODO Auto-generated catch block
-
+							resultObj.put("statusCode", "CanNotUpdate");
+							return resultObj;
 						}
 
 					} catch (MalformedURLException e) {
@@ -844,10 +881,17 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 						"04", ipAddress, "", params.toString(), "error",
 						serviceContext);
 			} catch (SystemException se) {
+				resultObj.put("statusCode", "CanNotUpdate");
+				return resultObj;
 
 			} catch (PortalException pe) {
+				resultObj.put("statusCode", "CanNotUpdate");
+				return resultObj;
 
 			}
+			
+			resultObj.put("statusCode", "CanNotUpdate");
+			return resultObj;
 		}
 
 		/*
@@ -888,6 +932,20 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
 		Dossier dossier = null;
 		long userId = 0;
+		
+		try {
+			// insert log received
+			
+			
+			// message = success
+		} catch(Exception e) {
+			// message = error
+		}
+		
+		// insert log return
+		
+		//send json message 
+		
 		try {
 			dossier = DossierLocalServiceUtil.getByoid(oid);
 			userId = dossier.getUserId();
@@ -906,7 +964,16 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			ProcessWorkflow processWorkflow = ProcessWorkflowLocalServiceUtil
 					.getByActionCode(actioncode);
 			Message message = new Message();
-			message.put(ProcessOrderDisplayTerms.EVENT, null);
+			System.out.println("AUTO EVENT=============" + processWorkflow.getAutoEvent());
+			System.out.println("AUTO EVENT=============" + processWorkflow.getActionName());
+			System.out.println("AUTO EVENT=============" + processWorkflow.getDeadlinePattern());
+			if (Validator.isNotNull(processWorkflow.getAutoEvent())) {
+				message.put(ProcessOrderDisplayTerms.EVENT, processWorkflow.getAutoEvent());				
+			}
+			else {
+				message.put(ProcessOrderDisplayTerms.PROCESS_WORKFLOW_ID,
+						processWorkflow.getProcessWorkflowId());				
+			}
 			message.put(ProcessOrderDisplayTerms.ACTION_NOTE,
 					"Chuyển trạng thái");
 			message.put(ProcessOrderDisplayTerms.PROCESS_STEP_ID,
@@ -915,10 +982,10 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			message.put(ProcessOrderDisplayTerms.SERVICE_PROCESS_ID,
 					processOrder.getServiceProcessId());
 			message.put(ProcessOrderDisplayTerms.PAYMENTVALUE, 0);
-
+			/*
 			message.put(ProcessOrderDisplayTerms.PROCESS_WORKFLOW_ID,
 					processWorkflow.getProcessWorkflowId());
-
+			*/
 			message.put(ProcessOrderDisplayTerms.ACTION_USER_ID,
 					user.getUserId());
 
@@ -943,12 +1010,21 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			sendToEngineMsg.setFileGroupId(0);
 			sendToEngineMsg.setPaymentValue(GetterUtil.getDouble(0));
 			sendToEngineMsg.setProcessOrderId(processOrder.getProcessOrderId());
+			/*
 			sendToEngineMsg.setProcessWorkflowId(processWorkflow
 					.getProcessWorkflowId());
+			*/
 			sendToEngineMsg.setReceptionNo(Validator.isNotNull(dossier
 					.getReceptionNo()) ? dossier.getReceptionNo()
 					: StringPool.BLANK);
 			sendToEngineMsg.setSignature(0);
+			if (Validator.isNotNull(processWorkflow.getAutoEvent())) {
+				sendToEngineMsg.setEvent(processWorkflow.getAutoEvent());				
+			}
+			else {
+				sendToEngineMsg.setProcessWorkflowId(processWorkflow
+						.getProcessWorkflowId());				
+			}
 			message.put("msgToEngine", sendToEngineMsg);
 			System.out.println("BEFORE SEND============" + message);
 			MessageBusUtil.sendMessage("opencps/backoffice/engine/destination",
@@ -1072,10 +1148,10 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			message.put(ProcessOrderDisplayTerms.SERVICE_PROCESS_ID,
 					processOrder.getServiceProcessId());
 			message.put(ProcessOrderDisplayTerms.PAYMENTVALUE, 0);
-
+			/*
 			message.put(ProcessOrderDisplayTerms.PROCESS_WORKFLOW_ID,
 					processWorkflow.getProcessWorkflowId());
-
+			*/
 			message.put(ProcessOrderDisplayTerms.ACTION_USER_ID,
 					user.getUserId());
 
@@ -1100,8 +1176,10 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			sendToEngineMsg.setFileGroupId(0);
 			sendToEngineMsg.setPaymentValue(GetterUtil.getDouble(0));
 			sendToEngineMsg.setProcessOrderId(processOrder.getProcessOrderId());
+			/*
 			sendToEngineMsg.setProcessWorkflowId(processWorkflow
 					.getProcessWorkflowId());
+			*/
 			sendToEngineMsg.setReceptionNo(Validator.isNotNull(dossier
 					.getReceptionNo()) ? dossier.getReceptionNo()
 					: StringPool.BLANK);
