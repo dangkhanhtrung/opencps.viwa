@@ -1975,7 +1975,7 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 				ServiceContextFactory.getInstance(actionRequest);
 
 			UserActionMsg actionMsg = new UserActionMsg();
-
+			_log.info("dossierStatusr: " + dossierStatus);
 			Message message = new Message();
 
 			switch (dossierStatus) {
@@ -2003,8 +2003,9 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 				break;
 			case PortletConstants.DOSSIER_STATUS_NEW:
-
+				_log.info("start validateSubmitDossier: " + dossierId);
 				validateSubmitDossier(dossierId);
+				_log.info("end validateSubmitDossier: " + dossierId);
 
 				actionMsg.setAction(WebKeys.ACTION_SUBMIT_VALUE);
 

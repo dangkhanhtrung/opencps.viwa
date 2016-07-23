@@ -1070,7 +1070,6 @@ public class ProcessOrderPortlet extends MVCPortlet {
 			if (is != null) {
 				is.close();
 			}
-
 		}
 		catch (Exception e) {
 			_log.error(e);

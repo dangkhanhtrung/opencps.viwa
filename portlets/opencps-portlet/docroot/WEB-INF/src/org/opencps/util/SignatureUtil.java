@@ -32,7 +32,7 @@ import com.liferay.portal.kernel.util.Validator;
  */
 
 public class SignatureUtil {
-
+	
 	/**
 	 * @param filePath
 	 * @param certPath
@@ -95,7 +95,6 @@ public class SignatureUtil {
 
 		return pdfSigner;
 	}
-
 	/**
 	 * @param pdfSigner
 	 * @param llx

@@ -802,7 +802,6 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 	}
 	
 	public Business getBymappingOrganizationId(long mappingOrganizationId) throws SystemException {
-
 		return businessPersistence.fetchBymappingOrganizationId(mappingOrganizationId);
     }
 	

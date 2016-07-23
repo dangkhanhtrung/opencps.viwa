@@ -70,7 +70,6 @@ public class SyncFromFrontOffice implements MessageListener{
 		String action = userActionMgs.getAction();
 
 		long dosserId = userActionMgs.getDossierId();
-
 		boolean trustServiceMode = true;//_checkServiceMode(dosserId);
 
 		if (trustServiceMode) {
@@ -87,13 +86,12 @@ public class SyncFromFrontOffice implements MessageListener{
 					        userActionMgs.getFileGroupId()))) {
 
 						int logLevel = 0;
-
 						long govAgencyOrgId =
 						    BackendUtils.getGovAgencyOrgId(userActionMgs.getDossierId());
 
 						// Change dossier status to SYSTEM
 						// Update govAgencyOrgId of dossier and dossierFile
-						DossierLocalServiceUtil.updateDossierStatus(
+						Dossier dossier = DossierLocalServiceUtil.updateDossierStatus(
 						    userActionMgs.getUserId(),
 						    userActionMgs.getDossierId(),
 						    govAgencyOrgId,
@@ -101,8 +99,12 @@ public class SyncFromFrontOffice implements MessageListener{
 						    PortletConstants.DOSSIER_FILE_SYNC_STATUS_SYNCSUCCESS,
 						    userActionMgs.getFileGroupId(), logLevel,
 						    userActionMgs.getLocale());
-
 						// Create message
+						_log.info("MESSAGE: " + userActionMgs);
+						_log.info("DOSSIER ID: " + userActionMgs.getDossierId());
+						//Dossier dossier = DossierLocalServiceUtil.getDossier(userActionMgs.getDossierId());
+						
+						_log.info("DOSSIER: " + dossier.getDossierId());
 						Message msgToEngine = new Message();
 
 						SendToEngineMsg engineMsg = new SendToEngineMsg();
@@ -116,7 +118,6 @@ public class SyncFromFrontOffice implements MessageListener{
 
 						msgToEngine.put("msgToEngine", engineMsg);
 
-						// Send message to ...engine/destination
 						MessageBusUtil.sendMessage(
 						    "opencps/backoffice/engine/destination",
 						    msgToEngine);
@@ -137,6 +138,7 @@ public class SyncFromFrontOffice implements MessageListener{
 
 					SendToEngineMsg engineMsg = new SendToEngineMsg();
 
+					_log.info("RESUBMIT DOSSIER============" + userActionMgs.getDossierId());
 					DossierLocalServiceUtil.updateDossierStatus(
 					    userActionMgs.getUserId(),
 					    userActionMgs.getDossierId(), govAgencyOrgId,
@@ -152,7 +154,8 @@ public class SyncFromFrontOffice implements MessageListener{
 					engineMsg.setProcessOrderId(userActionMgs.getProcessOrderId());
 
 					msgToEngine.put("msgToEngine", engineMsg);
-
+					
+					_log.info("SEND MESSAGE TO ENGINE: " + engineMsg);
 					// Send message to ...engine/destination
 					MessageBusUtil.sendMessage(
 					    "opencps/backoffice/engine/destination", msgToEngine);
@@ -192,7 +195,23 @@ public class SyncFromFrontOffice implements MessageListener{
 					    WebKeys.ACTION_CLOSE_VALUE,
 					    WebKeys.ACTION_CLOSE_VALUE);
 				}
+				else if (Validator.equals(WebKeys.ACTION_CANCEL_VALUE, action)) {
+					Dossier dossier =
+						    DossierLocalServiceUtil.fetchDossier(userActionMgs.getDossierId());
 
+						DossierLocalServiceUtil.updateDossierStatus(
+						    userActionMgs.getDossierId(),
+						    userActionMgs.getFileGroupId(),
+						    dossier.getDossierStatus(), dossier.getReceptionNo(),
+						    dossier.getEstimateDatetime(),
+						    dossier.getReceiveDatetime(),
+						    dossier.getFinishDatetime(),
+						    WebKeys.ACTOR_ACTION_CITIZEN,
+						    WebKeys.ACTION_CANCEL_VALUE,
+						    WebKeys.ACTION_CANCEL_VALUE,
+						    WebKeys.ACTION_CANCEL_VALUE);	
+						
+				}
 			}
 			catch (Exception e) {
 				_log.error(e);
@@ -241,14 +260,12 @@ public class SyncFromFrontOffice implements MessageListener{
         	_log.error(e);
         	
         }
-    	
     	if (Validator.isNotNull(status)) {
 			if (status.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_NEW) ||
 			    status.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_WAITING)) {
 				isValidatorStatus = true;
 			}
     	}
-    	
     	return isValidatorStatus;
     }
     

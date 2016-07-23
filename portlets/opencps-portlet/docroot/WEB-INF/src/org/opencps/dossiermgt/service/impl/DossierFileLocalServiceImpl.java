@@ -1035,4 +1035,10 @@ public class DossierFileLocalServiceImpl
 			dossierId, templateFileNo, comparator);
 	}
 
+	public DossierFile getByOid(
+			String oid)
+			throws SystemException {
+		return dossierFilePersistence.fetchByOid(oid);
+	}
+	
 }
