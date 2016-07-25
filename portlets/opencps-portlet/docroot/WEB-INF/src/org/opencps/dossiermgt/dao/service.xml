@@ -240,6 +240,7 @@
         <column name="dossierSource" type="int"/>
         <column name="keypayRedirectUrl" type="String"/>
         <column name="delayStatus" type="int"></column>
+        <column name="folderId" type="long"></column>
         <order by="desc">
             <order-column name="modifiedDate" order-by="desc"></order-column>
         </order>
@@ -265,12 +266,14 @@
             <finder-column name="delayStatus" comparator="=" arrayable-operator="AND"></finder-column>
             <finder-column name="dossierStatus" comparator="!=" arrayable-operator="AND"></finder-column>
 		</finder>
-        <finder name="oid" return-type="Dossier" unique="true">
+       
+        <finder name="OID" return-type="Dossier">
             <finder-column name="oid"></finder-column>
         </finder>
         <reference entity="DLFileEntry" package-path="com.liferay.portlet.documentlibrary"/>
         <reference package-path="com.liferay.portlet.documentlibrary" entity="DLFolder" />
         <reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
+        <reference package-path="org.opencps.paymentmgt.dao" entity="PaymentFile" />
     </entity>
     
     <entity name="DossierStatus" local-service="true" table="opencps_dossier_status">

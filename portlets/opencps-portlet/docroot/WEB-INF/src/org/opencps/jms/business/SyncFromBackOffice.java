@@ -20,46 +20,35 @@ package org.opencps.jms.business;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.opencps.backend.message.SendToEngineMsg;
-import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.model.DossierFile;
 import org.opencps.dossiermgt.model.DossierPart;
-import org.opencps.dossiermgt.model.DossierTemplate;
 import org.opencps.dossiermgt.model.FileGroup;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.jms.message.body.DossierFileMsgBody;
-import org.opencps.jms.message.body.DossierMsgBody;
+import org.opencps.jms.message.body.SyncFromBackOfficeMsgBody;
 import org.opencps.jms.util.JMSMessageBodyUtil.AnalyzeDossierFile;
-import org.opencps.util.PortletConstants;
-import org.opencps.util.WebKeys;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
-import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 
 /**
  * @author trungnt
  */
-public class SubmitDossier {
+public class SyncFromBackOffice {
 
 	/**
-	 * @param submitDossierMessage
-	 * @return
+	 * @param syncFromBackOfficeMsgBody
 	 * @throws SystemException
 	 * @throws PortalException
 	 */
-	public Dossier syncDossier(DossierMsgBody dossierMsgBody)
-		throws PortalException, SystemException {
+	public void syncDossierStatus(
+		SyncFromBackOfficeMsgBody syncFromBackOfficeMsgBody)
+		throws SystemException, PortalException {
 
-		Dossier dossier = null;
-
-		Dossier syncDossier = dossierMsgBody.getDossier();
-
-		ServiceContext serviceContext = dossierMsgBody.getServiceContext();
+		ServiceContext serviceContext =
+			syncFromBackOfficeMsgBody.getServiceContext();
 
 		LinkedHashMap<DossierFile, DossierPart> syncDossierFiles = null;
 
@@ -71,11 +60,8 @@ public class SubmitDossier {
 
 		LinkedHashMap<String, byte[]> data = null;
 
-		DossierTemplate syncDossierTemplate =
-			dossierMsgBody.getDossierTemplate();
-
 		List<DossierFileMsgBody> dossierFileMsgBodies =
-			dossierMsgBody.getLstDossierFileMsgBody();
+			syncFromBackOfficeMsgBody.getLstDossierFileMsgBody();
 
 		if (dossierFileMsgBodies != null) {
 			AnalyzeDossierFile analyzeDossierFile =
@@ -89,60 +75,19 @@ public class SubmitDossier {
 			data = analyzeDossierFile.getData();
 		}
 
-		if (syncDossier != null && syncDossierFiles != null &&
-			syncDLFileEntries != null && data != null &&
-			syncDossierTemplate != null && serviceContext != null) {
-			dossier =
-				DossierLocalServiceUtil.syncDossier(
-					syncDossier, syncDossierFiles, syncFileGroups,
-					syncFileGroupDossierParts, syncDLFileEntries, data,
-					syncDossierTemplate, serviceContext);
-
-			sendToBackend(
-				dossier.getDossierId(), dossier.getDossierStatus(),
-				serviceContext);
-		}
-
-		return dossier;
-	}
-
-	protected void sendToBackend(
-		long dossierId, String dossierStatus, ServiceContext serviceContext) {
-
-		Message message = new Message();
-
-		SendToEngineMsg engineMsg = new SendToEngineMsg();
-
-		switch (dossierStatus) {
-
-		case PortletConstants.DOSSIER_STATUS_NEW:
-
-			engineMsg.setAction(WebKeys.ACTION_SUBMIT_VALUE);
-
-			engineMsg.setDossierId(dossierId);
-
-			engineMsg.setFileGroupId(0);
-
-			engineMsg.setCompanyId(serviceContext.getCompanyId());
-
-			engineMsg.setEvent(WebKeys.ACTION_SUBMIT_VALUE);
-
-			engineMsg.setUserId(serviceContext.getUserId());
-
-			engineMsg.setGroupId(serviceContext.getScopeGroupId());
-
-			engineMsg.setUserId(serviceContext.getUserId());
-
-			break;
-
-		default:
-			break;
-		}
-
-		message.put("msgToEngine", engineMsg);
-
-		MessageBusUtil.sendMessage(
-			"opencps/backoffice/engine/destination", message);
-
+		DossierLocalServiceUtil.syncDossierStatus(
+			syncFromBackOfficeMsgBody.getOid(),
+			syncFromBackOfficeMsgBody.getFileGroupId(),
+			syncFromBackOfficeMsgBody.getDossierStatus(),
+			syncFromBackOfficeMsgBody.getReceptionNo(),
+			syncFromBackOfficeMsgBody.getEstimateDatetime(),
+			syncFromBackOfficeMsgBody.getReceiveDatetime(),
+			syncFromBackOfficeMsgBody.getFinishDatetime(),
+			syncFromBackOfficeMsgBody.getActor(),
+			syncFromBackOfficeMsgBody.getRequestCommand(),
+			syncFromBackOfficeMsgBody.getActionInfo(),
+			syncFromBackOfficeMsgBody.getMessageInfo(), syncDossierFiles,
+			syncFileGroups, syncFileGroupDossierParts, syncDLFileEntries, data,
+			syncFromBackOfficeMsgBody.getPaymentFile(), serviceContext);
 	}
 }

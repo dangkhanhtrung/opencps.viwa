@@ -130,7 +130,7 @@ public class DossierServiceImpl extends DossierServiceBaseImpl {
 		System.out.println("DossierServiceImpl.oid()"+oid);
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 		Dossier dossier =
-				dossierLocalService.getByoid(oid);
+				dossierLocalService.getByOID(oid);
 		jsonObject.put("oid", dossier.getOid());
 		jsonObject.put("externalRefNo", dossier.getExternalRefNo());
 		jsonObject.put("dossierStatus", dossier.getDossierStatus());
@@ -251,7 +251,7 @@ public class DossierServiceImpl extends DossierServiceBaseImpl {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
 		try {
 			Dossier dossier =
-					dossierLocalService.getByoid(oid);
+					dossierLocalService.getByOID(oid);
 			Message message = new Message();
 			UserActionMsg actionMsg = new UserActionMsg();
 			
@@ -324,7 +324,7 @@ public class DossierServiceImpl extends DossierServiceBaseImpl {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
 		try {
 			Dossier dossier =
-					dossierLocalService.getByoid(oid);
+					dossierLocalService.getByOID(oid);
 			Message message = new Message();
 			UserActionMsg actionMsg = new UserActionMsg();
 			
@@ -394,7 +394,7 @@ public class DossierServiceImpl extends DossierServiceBaseImpl {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
 		resultObj.put("oid", oid);
 		try {
-			Dossier dossier = DossierLocalServiceUtil.getByoid(oid);
+			Dossier dossier = DossierLocalServiceUtil.getByOID(oid);
 			System.out.println("DOSSIER============" + dossier.getDossierId());
 			ProcessOrder processOrder = ProcessOrderLocalServiceUtil.getProcessOrder(dossier.getDossierId(), 0);
 			User user = UserLocalServiceUtil.getUserByScreenName(dossier.getCompanyId(), userName);
@@ -486,7 +486,7 @@ public class DossierServiceImpl extends DossierServiceBaseImpl {
 		DossierFile dossierFile = null;
 		DossierPart dossierPart = null;
 		try {
-			dossier = DossierLocalServiceUtil.getByoid(oid);
+			dossier = DossierLocalServiceUtil.getByOID(oid);
 			long dossierId = dossier.getDossierId();
 
 			ServiceContext serviceContext = new ServiceContext();

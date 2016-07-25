@@ -226,7 +226,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(
 					DateTimeUtil._VN_DATE_TIME_FORMAT);
-			dossier = dossierLocalService.getByoid(oid);
+			dossier = dossierLocalService.getByOID(oid);
 			jsonObject.put("oid", dossier.getOid());
 			ServiceInfo serviceInfo = null;
 			try {
@@ -370,7 +370,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 					DossierFile dossierFile = null;
 					DossierPart dossierPart = null;
 					try {
-						dossier = DossierLocalServiceUtil.getByoid(oid);
+						dossier = DossierLocalServiceUtil.getByOID(oid);
 						long dossierId = dossier.getDossierId();
 
 						ServiceContext serviceContext = new ServiceContext();
@@ -425,7 +425,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 						try {
 							System.out
 									.println("GET DOSSIER FOLDER=============");
-							dossier = DossierLocalServiceUtil.getByoid(oid);
+							dossier = DossierLocalServiceUtil.getByOID(oid);
 							long dossierId = dossier.getDossierId();
 							DLFolder dossierFolder = DLFolderUtil
 									.getDossierFolder(
@@ -487,7 +487,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 						DossierPart dossierPart = null;
 						Dossier dossier = null;
 						try {
-							dossier = DossierLocalServiceUtil.getByoid(oid);
+							dossier = DossierLocalServiceUtil.getByOID(oid);
 							long dossierId = dossier.getDossierId();
 
 							ServiceContext serviceContext = new ServiceContext();
@@ -550,7 +550,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 						DossierPart dossierPart = null;
 
 						System.out.println("GET DOSSIER FOLDER=============");
-						dossier = DossierLocalServiceUtil.getByoid(oid);
+						dossier = DossierLocalServiceUtil.getByOID(oid);
 						long dossierId = dossier.getDossierId();
 						DLFolder dossierFolder = DLFolderUtil.getDossierFolder(
 								serviceContext.getScopeGroupId(),
@@ -648,7 +648,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
 		Dossier dossier = null;
 		try {
-			dossier = DossierLocalServiceUtil.getByoid(oid);
+			dossier = DossierLocalServiceUtil.getByOID(oid);
 		} catch (SystemException e) {
 			resultObj.put("statusCode", "DossierNotFound");
 			return resultObj;

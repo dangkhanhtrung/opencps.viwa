@@ -17,11 +17,85 @@
 
 package org.opencps.backend.exc;
 
+import org.opencps.jms.context.JMSContext;
+import org.opencps.jms.util.JMSMessageBodyUtil;
+import org.opencps.jms.util.JMSMessageUtil;
+import org.opencps.util.PortletUtil;
+import org.opencps.util.WebKeys;
+
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.messaging.MessageListener;
+import com.liferay.portal.kernel.messaging.MessageListenerException;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.util.PortalUtil;
 
 /**
  * @author khoavd
- *
  */
-public class MsgInBackOffice {
+public class MsgInBackOffice implements MessageListener {
 
+	@Override
+	public void receive(Message message)
+		throws MessageListenerException {
+
+		_doReceive(message);
+	}
+
+	private void _doReceive(Message message) {
+
+		System.out.println("**doRevice msgInBackOffice");
+
+		long[] companyIds = PortalUtil.getCompanyIds();
+
+		long companyId = 0;
+
+		if (companyIds != null && companyIds.length > 0) {
+			for (int i = 0; i < companyIds.length; i++) {
+				if (PortletUtil.checkJMSConfig(companyIds[i])) {
+					companyId = companyIds[i];
+
+					break;
+				}
+			}
+		}
+
+		if (companyId > 0) {
+			JMSContext context =
+				JMSMessageUtil.createConsumer(
+					companyId, StringPool.BLANK, true,
+					WebKeys.JMS_QUEUE_OPENCPS.toLowerCase(), "local");
+			try {
+
+				int count = 1;
+
+				while (count <= 10) {
+
+					javax.jms.Message jsmMessage =
+						context.getMessageConsumer().receive(1000*60);
+					if (jsmMessage != null) {
+						JMSMessageBodyUtil.receiveMessage(context, jsmMessage);
+					}
+
+					count++;
+				}
+			}
+			catch (Exception e) {
+				_log.error(e);
+			}
+			finally {
+				try {
+					context.destroy();
+				}
+				catch (Exception e) {
+					_log.error(e);
+				}
+
+			}
+		}
+
+	}
+
+	private Log _log = LogFactoryUtil.getLog(MsgInBackOffice.class);
 }
