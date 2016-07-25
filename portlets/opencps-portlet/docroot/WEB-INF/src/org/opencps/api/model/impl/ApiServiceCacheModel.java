@@ -38,7 +38,7 @@ public class ApiServiceCacheModel implements CacheModel<ApiService>,
 	Externalizable {
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(23);
+		StringBundler sb = new StringBundler(25);
 
 		sb.append("{apiLogId=");
 		sb.append(apiLogId);
@@ -52,6 +52,8 @@ public class ApiServiceCacheModel implements CacheModel<ApiService>,
 		sb.append(createDate);
 		sb.append(", modifiedDate=");
 		sb.append(modifiedDate);
+		sb.append(", oid=");
+		sb.append(oid);
 		sb.append(", apiCode=");
 		sb.append(apiCode);
 		sb.append(", ipAddress=");
@@ -88,6 +90,13 @@ public class ApiServiceCacheModel implements CacheModel<ApiService>,
 		}
 		else {
 			apiServiceImpl.setModifiedDate(new Date(modifiedDate));
+		}
+
+		if (oid == null) {
+			apiServiceImpl.setOid(StringPool.BLANK);
+		}
+		else {
+			apiServiceImpl.setOid(oid);
 		}
 
 		if (apiCode == null) {
@@ -138,6 +147,7 @@ public class ApiServiceCacheModel implements CacheModel<ApiService>,
 		userId = objectInput.readLong();
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
+		oid = objectInput.readUTF();
 		apiCode = objectInput.readUTF();
 		ipAddress = objectInput.readUTF();
 		httpAgent = objectInput.readUTF();
@@ -154,6 +164,13 @@ public class ApiServiceCacheModel implements CacheModel<ApiService>,
 		objectOutput.writeLong(userId);
 		objectOutput.writeLong(createDate);
 		objectOutput.writeLong(modifiedDate);
+
+		if (oid == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(oid);
+		}
 
 		if (apiCode == null) {
 			objectOutput.writeUTF(StringPool.BLANK);
@@ -197,6 +214,7 @@ public class ApiServiceCacheModel implements CacheModel<ApiService>,
 	public long userId;
 	public long createDate;
 	public long modifiedDate;
+	public String oid;
 	public String apiCode;
 	public String ipAddress;
 	public String httpAgent;

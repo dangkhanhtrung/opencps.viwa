@@ -324,6 +324,7 @@ public class ApiServicePersistenceImpl extends BasePersistenceImpl<ApiService>
 		apiServiceImpl.setUserId(apiService.getUserId());
 		apiServiceImpl.setCreateDate(apiService.getCreateDate());
 		apiServiceImpl.setModifiedDate(apiService.getModifiedDate());
+		apiServiceImpl.setOid(apiService.getOid());
 		apiServiceImpl.setApiCode(apiService.getApiCode());
 		apiServiceImpl.setIpAddress(apiService.getIpAddress());
 		apiServiceImpl.setHttpAgent(apiService.getHttpAgent());

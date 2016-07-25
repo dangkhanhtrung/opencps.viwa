@@ -137,5 +137,38 @@ public class ApiServiceServiceSoap {
 		}
 	}
 
+	public static java.lang.String nextStep(java.lang.String oid,
+		java.lang.String actioncode, java.lang.String actionnote,
+		java.lang.String username) throws RemoteException {
+		try {
+			com.liferay.portal.kernel.json.JSONObject returnValue = ApiServiceServiceUtil.nextStep(oid,
+					actioncode, actionnote, username);
+
+			return returnValue.toString();
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static java.lang.String searchDossierByDS_RD_SN_U(
+		java.lang.String dossierstatus, java.lang.String serviceno,
+		java.lang.String fromdate, java.lang.String todate,
+		java.lang.String username) throws RemoteException {
+		try {
+			com.liferay.portal.kernel.json.JSONObject returnValue = ApiServiceServiceUtil.searchDossierByDS_RD_SN_U(dossierstatus,
+					serviceno, fromdate, todate, username);
+
+			return returnValue.toString();
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(ApiServiceServiceSoap.class);
 }

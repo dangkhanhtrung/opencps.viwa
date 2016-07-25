@@ -165,6 +165,7 @@
 		<column name="isFinishStep" type="boolean"/>
 		<column name="preCondition" type="String"/>
 		<column name="isMultipled" type="boolean"/>
+        <column name="actionCode" type="String"></column>
 		
 		<finder return-type="Collection" name="S_P_ID">
 			<finder-column name="serviceProcessId"/>
@@ -192,6 +193,9 @@
 			<finder-column name="autoEvent"/>
 			<finder-column name="preProcessStepId"/>
 		</finder>
+        <finder name="ActionCode" return-type="ProcessWorkflow">
+            <finder-column name="actionCode"></finder-column>
+        </finder>
 
 	</entity>
 

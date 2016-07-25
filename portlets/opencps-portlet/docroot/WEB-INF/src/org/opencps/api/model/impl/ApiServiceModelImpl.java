@@ -72,13 +72,14 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 			{ "userId", Types.BIGINT },
 			{ "createDate", Types.TIMESTAMP },
 			{ "modifiedDate", Types.TIMESTAMP },
+			{ "oid", Types.VARCHAR },
 			{ "apiCode", Types.VARCHAR },
 			{ "ipAddress", Types.VARCHAR },
 			{ "httpAgent", Types.VARCHAR },
 			{ "params", Types.VARCHAR },
 			{ "status", Types.VARCHAR }
 		};
-	public static final String TABLE_SQL_CREATE = "create table opencps_api_log (apiLogId LONG not null primary key,companyId LONG,groupId LONG,userId LONG,createDate DATE null,modifiedDate DATE null,apiCode VARCHAR(75) null,ipAddress VARCHAR(75) null,httpAgent VARCHAR(75) null,params VARCHAR(75) null,status VARCHAR(75) null)";
+	public static final String TABLE_SQL_CREATE = "create table opencps_api_log (apiLogId LONG not null primary key,companyId LONG,groupId LONG,userId LONG,createDate DATE null,modifiedDate DATE null,oid VARCHAR(75) null,apiCode VARCHAR(75) null,ipAddress VARCHAR(75) null,httpAgent VARCHAR(75) null,params VARCHAR(75) null,status VARCHAR(75) null)";
 	public static final String TABLE_SQL_DROP = "drop table opencps_api_log";
 	public static final String ORDER_BY_JPQL = " ORDER BY apiService.apiLogId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY opencps_api_log.apiLogId ASC";
@@ -112,6 +113,7 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 		model.setUserId(soapModel.getUserId());
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
+		model.setOid(soapModel.getOid());
 		model.setApiCode(soapModel.getApiCode());
 		model.setIpAddress(soapModel.getIpAddress());
 		model.setHttpAgent(soapModel.getHttpAgent());
@@ -187,6 +189,7 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 		attributes.put("userId", getUserId());
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("oid", getOid());
 		attributes.put("apiCode", getApiCode());
 		attributes.put("ipAddress", getIpAddress());
 		attributes.put("httpAgent", getHttpAgent());
@@ -232,6 +235,12 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 
 		if (modifiedDate != null) {
 			setModifiedDate(modifiedDate);
+		}
+
+		String oid = (String)attributes.get("oid");
+
+		if (oid != null) {
+			setOid(oid);
 		}
 
 		String apiCode = (String)attributes.get("apiCode");
@@ -339,6 +348,22 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
 		_modifiedDate = modifiedDate;
+	}
+
+	@JSON
+	@Override
+	public String getOid() {
+		if (_oid == null) {
+			return StringPool.BLANK;
+		}
+		else {
+			return _oid;
+		}
+	}
+
+	@Override
+	public void setOid(String oid) {
+		_oid = oid;
 	}
 
 	@JSON
@@ -454,6 +479,7 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 		apiServiceImpl.setUserId(getUserId());
 		apiServiceImpl.setCreateDate(getCreateDate());
 		apiServiceImpl.setModifiedDate(getModifiedDate());
+		apiServiceImpl.setOid(getOid());
 		apiServiceImpl.setApiCode(getApiCode());
 		apiServiceImpl.setIpAddress(getIpAddress());
 		apiServiceImpl.setHttpAgent(getHttpAgent());
@@ -541,6 +567,14 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 			apiServiceCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
 
+		apiServiceCacheModel.oid = getOid();
+
+		String oid = apiServiceCacheModel.oid;
+
+		if ((oid != null) && (oid.length() == 0)) {
+			apiServiceCacheModel.oid = null;
+		}
+
 		apiServiceCacheModel.apiCode = getApiCode();
 
 		String apiCode = apiServiceCacheModel.apiCode;
@@ -586,7 +620,7 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(23);
+		StringBundler sb = new StringBundler(25);
 
 		sb.append("{apiLogId=");
 		sb.append(getApiLogId());
@@ -600,6 +634,8 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 		sb.append(getCreateDate());
 		sb.append(", modifiedDate=");
 		sb.append(getModifiedDate());
+		sb.append(", oid=");
+		sb.append(getOid());
 		sb.append(", apiCode=");
 		sb.append(getApiCode());
 		sb.append(", ipAddress=");
@@ -617,7 +653,7 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(37);
+		StringBundler sb = new StringBundler(40);
 
 		sb.append("<model><model-name>");
 		sb.append("org.opencps.api.model.ApiService");
@@ -646,6 +682,10 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 		sb.append(
 			"<column><column-name>modifiedDate</column-name><column-value><![CDATA[");
 		sb.append(getModifiedDate());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>oid</column-name><column-value><![CDATA[");
+		sb.append(getOid());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>apiCode</column-name><column-value><![CDATA[");
@@ -684,6 +724,7 @@ public class ApiServiceModelImpl extends BaseModelImpl<ApiService>
 	private String _userUuid;
 	private Date _createDate;
 	private Date _modifiedDate;
+	private String _oid;
 	private String _apiCode;
 	private String _ipAddress;
 	private String _httpAgent;

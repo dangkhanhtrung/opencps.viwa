@@ -1270,7 +1270,7 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 		 * .getDossierStatus(dossierId); dossierStatus = getDossierStatus(
 		 * dossierStatus, userId, govAgencyOrganizationId, syncStatus);
 		 */
-
+		System.out.println("AFTER GET DOSSIER IN UPDATE DOSSIER STATUS=================");
 		if (fileGroupId > 0) {
 			FileGroup fileGroup =
 				fileGroupLocalService.getFileGroup(fileGroupId);
@@ -1293,15 +1293,23 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 
 		List<DossierFile> dossierFiles =
 			dossierFileLocalService.getDossierFileByD_GF(dossierId, 0);
+		System.out.println("AFTER GET DOSSIER FILES UPDATE DOSSIER STATUS=================");
 		if (dossierFiles != null) {
 			for (DossierFile dossierFile : dossierFiles) {
+				System.out.println("BEFORE UPDATE DOSSIER FILE================" + dossierFile.getDossierFileId());
 				dossierFile.setSyncStatus(syncStatus);
 				dossierFile.setModifiedDate(now);
 				dossierFile.setUserId(userId);
 				dossierFileLocalService.updateDossierFile(dossierFile);
+				System.out.println("AFTER UPDATE DOSSIER FILE================" + dossierFile.getDossierFileId());
 			}
 		}
-
+		System.out.println("AFTER UPDATE ALL DOSSIER FILE================");
+		System.out.println("BEFORE ADD DOSSIER LOG=================" + userId + "," + dossier
+				.getGroupId() + "," + dossier
+				.getCompanyId() + "," + dossierId + "," + fileGroupId + "," + status + "," + PortletUtil
+				.getActionInfo(status, locale) + "," + PortletUtil
+				.getMessageInfo(status, locale) + "," + now + "," + level);
 		dossierLogLocalService.addDossierLog(
 			userId, dossier.getGroupId(), dossier.getCompanyId(), dossierId,
 			fileGroupId, status, PortletUtil.getActionInfo(status, locale),
@@ -1521,4 +1529,209 @@ public class DossierLocalServiceImpl extends DossierLocalServiceBaseImpl {
 			.searchDossierByP_S_U(processNo, stepNo, userId, start, end);
 	}
 	
+	/**
+	 * @param processNo
+	 * @param stepName
+	 * @param username
+	 * @return
+	 */
+	public int countDossierByP_SN_U(
+		String processNo,
+		String stepName,
+		String username
+		) {
+		
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			
+		}
+		return dossierFinder.countDossierByP_SN_U(processNo, stepName, userId);
+	}
+
+	/**
+	 * @param processNo
+	 * @param stepName
+	 * @param username
+	 * @return
+	 */
+	public List<Dossier> searchDossierByP_SN_U(
+		String processNo,
+		String stepName,
+		String username,
+		int start, int end) {
+
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			
+		}		
+		return dossierFinder
+			.searchDossierByP_SN_U(processNo, stepName, userId, start, end);
+	}
+
+	/**
+	 * @param dossierStatus
+	 * @param serviceNo
+	 * @param fromDate
+	 * @param toDate
+	 * @param username
+	 * @return
+	 */
+	public int countDossierByDS_RD_SN_U(
+		String dossierStatus,
+		String serviceNo,
+		String fromDate,
+		String toDate,
+		String username
+		) {
+		
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			
+		}
+		if (Validator.isNull(username) || username.length() <= 0) {
+			userId = -1;
+		}
+		
+		return dossierFinder.countDossierByDS_RD_SN_U(userId, dossierStatus, serviceNo, fromDate, toDate);
+	}
+
+	/**
+	 * @param dossierStatus
+	 * @param serviceNo
+	 * @param fromDate
+	 * @param toDate
+	 * @param username
+	 * @return
+	 */
+	public List<Dossier> searchDossierByDS_RD_SN_U(
+			String dossierStatus,
+			String serviceNo,
+			String fromDate,
+			String toDate,
+			String username,
+		int start, int end) {
+
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+			if (user != null) {
+				userId = user.getUserId();
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			
+		}		
+		if (Validator.isNull(username) || username.length() <= 0) {
+			userId = -1;
+		}
+		return dossierFinder
+			.searchDossierByDS_RD_SN_U(dossierStatus, serviceNo, fromDate, toDate, userId, start, end);
+	}
+	
+	/**
+	 * @param processNo
+	 * @param processStepNo
+	 * @param username
+	 * @return
+	 */
+	public int countDossierByP_PS_U(
+		String processNo,
+		String processStepNo,
+		String username
+		) throws NoSuchUserException {
+		
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			if (Validator.isNull(username) || username.length() <= 0) {
+				userId = -1;
+			}
+			else {
+				User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+				if (user != null) {
+					userId = user.getUserId();
+				}
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchUserException();
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchUserException();
+		}
+		return dossierFinder.countDossierByP_PS_U(processNo, processStepNo, userId);
+	}
+
+	/**
+	 * @param processNo
+	 * @param processStepNo
+	 * @param username
+	 * @return
+	 */
+	public List<Dossier> searchDossierByP_PS_U(
+		String processNo,
+		String processStepNo,
+		String username,
+		int start, int end) throws NoSuchUserException {
+
+		long userId = -1;
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+		try {
+			if (Validator.isNull(username) || username.length() <= 0) {
+				userId = -1;
+			}
+			else {
+				User user = UserLocalServiceUtil.getUserByScreenName(serviceContext.getCompanyId(), username);
+				if (user != null) {
+					userId = user.getUserId();
+				}
+			}
+		}
+		catch (PortalException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchUserException();
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchUserException();
+		}		
+		return dossierFinder
+			.searchDossierByP_PS_U(processNo, processStepNo, userId, start, end);
+	}	
 }

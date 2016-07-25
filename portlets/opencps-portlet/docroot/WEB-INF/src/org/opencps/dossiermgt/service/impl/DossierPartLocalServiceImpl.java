@@ -247,4 +247,9 @@ public class DossierPartLocalServiceImpl
 		System.out.println("DossierPartLocalServiceImpl.getByF_FORM_ONLINE()"+dossierPartPersistence.countByF_FORM_ONLINE(dossierTemplateId, parentId, groupId, partType));
 		return dossierPartPersistence.fetchByF_FORM_ONLINE_First(dossierTemplateId, parentId, groupId,partType,null);
 		}
+	public DossierPart getDossierPartByTFN_PN(String templateFileNo, String partNo) 
+			throws NoSuchDossierPartException, SystemException {
+		return dossierPartPersistence.findByTFN_PN(templateFileNo, partNo);
+	}
+
 }

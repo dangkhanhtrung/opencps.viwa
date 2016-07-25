@@ -121,6 +121,10 @@
 			<finder-column name="groupId" />
 			<finder-column name="partType" />
 		</finder>
+        <finder name="TFN_PN" return-type="DossierPart">
+            <finder-column name="templateFileNo"></finder-column>
+            <finder-column name="partNo"></finder-column>
+        </finder>
 	</entity>
 
 	<entity name="ServiceConfig" local-service="true"
