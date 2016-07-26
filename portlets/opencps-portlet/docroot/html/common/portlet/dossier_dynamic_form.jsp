@@ -329,5 +329,4 @@ $(".dialog-iframe-node").contents().delegate('select.alpaca-control', 'change', 
 	  console.log(hiddenInput.val());
 	});
 	
-	
 </script>

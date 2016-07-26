@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.dossiermgt.util.PortletKeys"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software

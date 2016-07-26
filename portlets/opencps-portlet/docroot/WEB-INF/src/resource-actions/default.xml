@@ -398,12 +398,14 @@
 				<action-key>VIEW_EXTERNAL_DOSSIER</action-key>
 				<action-key>ADD_DOSSIER</action-key>
 				<action-key>UPDATE</action-key>
+				<action-key>CANCEL</action-key>
 				<action-key>DELETE</action-key>
 				<action-key>PERMISSIONS</action-key>				
 			</supports>
 			<site-member-defaults>
 				<action-key>VIEW</action-key>
 				<action-key>VIEW_EXTERNAL_DOSSIER</action-key>
+				<action-key>CANCEL</action-key>
 			</site-member-defaults>
 			<guest-defaults>
 				<action-key>VIEW</action-key>

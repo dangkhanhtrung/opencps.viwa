@@ -2955,4 +2955,14 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 			SessionErrors.add(actionRequest, "user-not-have-permission-cancel-dossier");
 		}
 	}
+	
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws IOException
+	 */
+	public void cancelDossier(
+		ActionRequest actionRequest, ActionResponse actionResponse)
+		throws IOException {
+	}
 }

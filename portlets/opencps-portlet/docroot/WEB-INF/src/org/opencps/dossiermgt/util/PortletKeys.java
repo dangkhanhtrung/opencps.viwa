@@ -22,4 +22,7 @@ package org.opencps.dossiermgt.util;
  */
 public class PortletKeys extends com.liferay.portal.util.PortletKeys {
 	 public static final String PORTLET_19 = "19_WAR_opencpsportlet";
+	 
+	 public static final String CANCEL = "CANCEL";
+	 
 }
