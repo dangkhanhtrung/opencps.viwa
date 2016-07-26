@@ -75,13 +75,16 @@ public class SyncFromFrontOffice implements MessageListener{
 
 		long dosserId = userActionMgs.getDossierId();
 		boolean trustServiceMode = _checkServiceMode(dosserId);
-
+		trustServiceMode = true;
+		_log.info("SYNCFROMFRONTOFFICE ACTION " + action + "===================" + "SERVICE MODE=============" + trustServiceMode);
 		if (trustServiceMode) {
 			try {
 				if (Validator.equals(WebKeys.ACTION_SUBMIT_VALUE, action) &&
 				    _checkStatus(
 				        userActionMgs.getDossierId(),
 				        userActionMgs.getFileGroupId())) {
+
+					_log.info("AFTER CHECK DOSSIER STATUS IN SYNC================");
 
 					if (Validator.equals(
 					    PortletConstants.DOSSIER_STATUS_NEW,
@@ -92,7 +95,7 @@ public class SyncFromFrontOffice implements MessageListener{
 						int logLevel = 0;
 						long govAgencyOrgId =
 						    BackendUtils.getGovAgencyOrgId(userActionMgs.getDossierId());
-
+						_log.info("BEFORE UPDATE STATUS TO SYSTEM================");
 						// Change dossier status to SYSTEM
 						// Update govAgencyOrgId of dossier and dossierFile
 						Dossier dossier = DossierLocalServiceUtil.updateDossierStatus(

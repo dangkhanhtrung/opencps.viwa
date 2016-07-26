@@ -162,15 +162,16 @@ public class BackOfficeProcessEngine implements MessageListener {
 				processWorkflow =
 				    ProcessWorkflowLocalServiceUtil.getProcessWorkflowByEvent(
 				        serviceProcessId, toEngineMsg.getEvent(), curStepId);
+				_log.info("IN BACKOFFICE " + serviceProcessId + "," + toEngineMsg.getEvent() + "," + curStepId);
 			}
 			else {
 				processWorkflow =
 				    ProcessWorkflowLocalServiceUtil.fetchProcessWorkflow(processWorkflowId);
-
+				_log.info("IN BACKOFFICE PROCESSWORKFLOW===========" + processWorkflow.getActionName());
 			}
 
 			// Do Workflow
-
+			
 			if (Validator.isNotNull(processWorkflow)) {
 				actionName = processWorkflow.getActionName();
 

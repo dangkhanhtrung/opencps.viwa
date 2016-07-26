@@ -227,6 +227,7 @@ public abstract class ApiServiceLocalServiceBaseImpl
 	 * @throws PortalException if a api service with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
+	@Override
 	public ApiService getApiService(long apiLogId)
 		throws PortalException, SystemException {
 		return apiServicePersistence.findByPrimaryKey(apiLogId);

@@ -115,5 +115,19 @@
 				/>
 		 	</c:if>
  		</c:when>
+ 		
+  		<c:when test="<%=dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_PROCESSING)%>">
+		 		<portlet:actionURL var="cancelDossierURL" name="cancelDossier" >
+					<portlet:param name="<%=DossierDisplayTerms.DOSSIER_ID %>" value="<%=String.valueOf(dossier.getDossierId()) %>"/>
+					<portlet:param name="redirectURL" value="<%=currentURL %>"/>
+				</portlet:actionURL> 
+				<liferay-ui:icon-delete 
+					image="delete"
+					cssClass="search-container-action delete"
+					confirmation="are-you-sure-cancel-entry" 
+					message="cancel"  
+					url="<%=cancelDossierURL.toString() %>" 
+				/>
+ 		</c:when>		
  	</c:choose>
 <%-- </liferay-ui:icon-menu> --%> 
