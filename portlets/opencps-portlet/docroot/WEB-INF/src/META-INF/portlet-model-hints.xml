@@ -694,6 +694,7 @@
 		<field name="userId" type="long" />
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
+		<field name="oid" type="String" />
 		<field name="apiCode" type="String" />
 		<field name="ipAddress" type="String" />
 		<field name="httpAgent" type="String" />

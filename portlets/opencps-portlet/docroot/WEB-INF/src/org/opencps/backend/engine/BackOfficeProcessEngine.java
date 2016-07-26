@@ -165,6 +165,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 				processWorkflow =
 				    ProcessWorkflowLocalServiceUtil.getProcessWorkflowByEvent(
 				        serviceProcessId, toEngineMsg.getEvent(), curStepId);
+				_log.info("NOT HAVE WORKFLOW============" + serviceProcessId + "," + toEngineMsg.getEvent() + "," + curStepId);
 			}
 			else {
 				processWorkflow =
