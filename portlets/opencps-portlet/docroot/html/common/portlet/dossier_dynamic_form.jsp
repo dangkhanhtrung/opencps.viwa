@@ -193,6 +193,14 @@
 					$("#<portlet:namespace />formData" ).val(JSON.stringify(formData));
 					$("#<portlet:namespace />fm" ).submit();
 			    });
+				
+				$(".alpaca-field-table").delegate('select.alpaca-control', 'change', function(){   
+					  var listbox = $('#'+$(this).attr('id') + ' option:selected');
+					  var idText = $(this).attr('name') + "Text";
+					  var hiddenInput = $("input[name='"+idText+"']");
+					  hiddenInput.val(listbox.text());
+					  console.log(hiddenInput.val());
+					});				
 			};
 		
 		}
@@ -285,17 +293,3 @@
 	},['aui-io','liferay-portlet-url', 'aui-loading-mask-deprecated']);
 	
 </aui:script>
-
-<script type="text/javascript">
-
-$(".dialog-iframe-node").contents().delegate('select.alpaca-control', 'change', function(){   
-	  
-	  var listbox = $(".dialog-iframe-node").contents().find('#'+$(this).attr('id') + ' option:selected');
-	  var idText = $(this).attr('name') + "Text";
-	  var hiddenInput = $(".dialog-iframe-node").contents().find("input[name='"+idText+"']");
-	  hiddenInput.val(listbox.text());
-	  console.log(hiddenInput.val());
-	});
-	
-	
-</script>
