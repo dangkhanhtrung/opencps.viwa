@@ -7,23 +7,23 @@ body.opencps-theme {font-family: 'Roboto-Regular'; font-size: 14px; background-c
 
 
 /*---------- Footer ----------*/
-footer {height: 228px; background: url(../images/frame_1/bg_footer.png) center center no-repeat; background-size: cover; padding-top: 25px}
+footer {height: 228px; background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/bg_footer.png) center center no-repeat; background-size: cover; padding-top: 25px}
 footer .footer {display: flex; width: 1170px; margin: auto}
 footer .footer > div {float: left; color: #7d91a0}
 footer .footer > div > p.title {font-size: 15px; font-family: 'Roboto-Bold'; text-transform: uppercase; color: #0074cd; position: relative; padding: 5px 0; margin-bottom: 20px}
 footer .footer > div > p.title:after {content: ""; position: absolute; width: 14px; height: 1px; background-color: #0074cd; left: 0; top: 35px;}
-footer .footer .logo {background: url(../images/frame_1/logo_footer.png) 0 0 no-repeat; width: 215px; background-size: 215px 57px; padding-top: 65px}
+footer .footer .logo {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/logo_footer.png) 0 0 no-repeat; width: 215px; background-size: 215px 57px; padding-top: 65px}
 footer .footer .logo p {margin-bottom: 0; font-size: 13px; color: white; opacity: 0.2}
 footer .footer > div > ul {margin: 0}
 footer .footer > div > ul li {padding: 5px 0}
 footer .footer .danhmuc {margin: 0 75px 0 auto}
 footer .footer .huongdan {margin: 0 80px 0 0}
 footer .footer .lienhehotro {margin: 0 100px 0 0}
-footer .footer .lienhehotro .diachi {padding-left: 25px; background: url(../images/frame_1/icon_diachi.png) 1px 0 no-repeat}
-footer .footer .lienhehotro .mail {padding-left: 25px; background: url(../images/frame_1/icon_email.png) 0 0 no-repeat}
-footer .footer .lienhehotro .phone {padding-left: 25px; background: url(../images/frame_1/icon_phone.png) 0 0 no-repeat}
+footer .footer .lienhehotro .diachi {padding-left: 25px; background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_diachi.png) 1px 0 no-repeat}
+footer .footer .lienhehotro .mail {padding-left: 25px; background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_email.png) 0 0 no-repeat}
+footer .footer .lienhehotro .phone {padding-left: 25px; background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_phone.png) 0 0 no-repeat}
 footer .footer .lienketwebsite {margin-left: 0}
-footer .footer .lienketwebsite .select {width: 230px; height: 36px; overflow: hidden; background: url(../images/frame_1/icon_select_blue.png) no-repeat right; background-position: 205px center}
+footer .footer .lienketwebsite .select {width: 230px; height: 36px; overflow: hidden; background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_select_blue.png) no-repeat right; background-position: 205px center}
 footer .footer .lienketwebsite select {background: transparent none; color: #7d91a0; -webkit-appearance: none; -moz-appearance: none; outline: none; line-height: 20px; padding: 0 10px; width: 230px; height: 36px; border: 1px solid #0074cd; border-radius: 20px}
 
 
@@ -46,7 +46,7 @@ footer .footer .lienketwebsite select {background: transparent none; color: #7d9
 	position: absolute;
 	width: 100%;
 	height: 525px;
-	background: url(../images/frame_1/bg_home.jpg) center center no-repeat;
+	background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/bg_home.jpg) center center no-repeat;
 	margin-top: -25px;
 	background-size: cover;
 }
@@ -191,18 +191,18 @@ footer .footer .lienketwebsite select {background: transparent none; color: #7d9
 	line-height: 60px;
 	display: block;
 }
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:first-child {font-family: 'Roboto-Bold'; font-size: 17px; text-transform: uppercase; background: url(../images/frame_1//icon_huongdansudung.png) 16px 19px no-repeat; color: #0090ff;}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:first-child {font-family: 'Roboto-Bold'; font-size: 17px; text-transform: uppercase; background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1//icon_huongdansudung.png) 16px 19px no-repeat; color: #0090ff;}
 .opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:hover {color: #0090ff}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(2) {background: url(../images/frame_1/icon_dangky.png) 14px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(2):hover {background: url(../images/frame_1/icon_dangky_hover.png) 14px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(3) {background: url(../images/frame_1/icon_dangnhap.png) 11px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(3):hover {background: url(../images/frame_1/icon_dangnhap_hover.png) 11px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(4) {background: url(../images/frame_1/icon_nophosott.png) 9px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(4):hover {background: url(../images/frame_1/icon_nophosott_hover.png) 9px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(5) {background: url(../images/frame_1/icon_tracuukq.png) 10px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(5):hover {background: url(../images/frame_1/icon_tracuukq_hover.png) 10px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(6) {background: url(../images/frame_1/icon_canboxulyhs.png) 10px center no-repeat}
-.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(6):hover {background: url(../images/frame_1/icon_canboxulyhs_hover.png) 10px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(2) {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_dangky.png) 14px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(2):hover {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_dangky_hover.png) 14px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(3) {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_dangnhap.png) 11px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(3):hover {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_dangnhap_hover.png) 11px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(4) {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_nophosott.png) 9px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(4):hover {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_nophosott_hover.png) 9px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(5) {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_tracuukq.png) 10px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(5):hover {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_tracuukq_hover.png) 10px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(6) {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_canboxulyhs.png) 10px center no-repeat}
+.opencps-theme .home_bg #column-2 > div > div:nth-child(1) ul li:nth-child(6):hover {background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_canboxulyhs_hover.png) 10px center no-repeat}
 
 /* VBPQ */
 .opencps-theme .home_bg #column-2 > div > div:nth-child(2) {
@@ -213,7 +213,7 @@ footer .footer .lienketwebsite select {background: transparent none; color: #7d9
 	font-family: 'Roboto-Bold';
 	font-size: 17px;
 	padding-left: 20px;
-	background: url(../images/frame_1/icon_vanbanphapluat.png) 0 center no-repeat;
+	background: url(/opencps-ux-theme/css/../images/schemes/opencps/frame_1/icon_vanbanphapluat.png) 0 center no-repeat;
 	color: #0090ff;
 	margin-bottom: 5px;
 	font-weight: normal;

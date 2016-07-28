@@ -42,7 +42,7 @@
 
 .ocps-history-process-bound-navigator .view-attachment{
 	color: #0090ff !important;
-    background: url(../images/custom/icon_quanlyhoso_blue.png) 0 center no-repeat;
+    background: url(../images/schemes/opencps/custom/icon_quanlyhoso_blue.png) 0 center no-repeat;
     padding-left: 25px;
     display: inline-block;
     float: right;
@@ -51,7 +51,7 @@
 }
 .ocps-history-process-bound-navigator .view-form{
 	color: #0090ff !important;
-    background: url(../images/custom/icon_quanlyhoso_blue.png) 0 center no-repeat;
+    background: url(../images/schemes/opencps/custom/icon_quanlyhoso_blue.png) 0 center no-repeat;
     padding-left: 25px;
     display: inline-block;
     float: right;
@@ -75,10 +75,10 @@
 }
 
 .ocps-history-process-bound-navigator .declaration-online{
-    background: url(../images/custom/icon_dangnhap_hover.png) 0 center no-repeat;
+    background: url(../images/schemes/opencps/custom/icon_dangnhap_hover.png) 0 center no-repeat;
 }
 .ocps-history-process-bound-navigator .upload-dossier-file{
-	background: url(../images/custom/icon_tailen.png) 0 center no-repeat;
+	background: url(../images/schemes/opencps/custom/icon_tailen.png) 0 center no-repeat;
 }
 .ocps-dossier-process {
     margin-left: 30px;
