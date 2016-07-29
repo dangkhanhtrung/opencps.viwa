@@ -15,10 +15,12 @@
 package org.opencps.api.service.impl;
 
 import org.opencps.api.service.base.ApiServiceServiceBaseImpl;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -617,6 +619,13 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 						URL fileURL = new URL(dossierFileURL);
 						InputStream is = fileURL.openStream();
 						long size = is.available();
+						String mimeType = StringPool.BLANK;
+						try {
+							URLConnection.guessContentTypeFromStream(is);
+						}
+						catch (IOException ioe) {
+							
+						}
 						/*
 						ServiceContext serviceContext = ServiceContextThreadLocal
 								.getServiceContext();
@@ -663,7 +672,8 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 											dossier.getUserId(),
 											dossier.getOwnerOrganizationId(),
 											dossierFileName,
-											StringPool.BLANK,
+											//StringPool.BLANK,
+											mimeType,
 											dossierFile != null ? dossierFile
 													.getFileEntryId() : 0,
 											PortletConstants.DOSSIER_FILE_MARK_UNKNOW,
@@ -807,6 +817,14 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 						URL fileURL = new URL(dossierFileURL);
 						InputStream is = fileURL.openStream();
 						long size = is.available();
+						String mimeType = StringPool.BLANK;
+						try {
+							URLConnection.guessContentTypeFromStream(is);
+						}
+						catch (IOException ioe) {
+							
+						}
+
 						/*
 						ServiceContext serviceContext = ServiceContextThreadLocal
 								.getServiceContext();
@@ -844,7 +862,8 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 										dossier.getUserId(),
 										dossier.getOwnerOrganizationId(),
 										dossierFileName,
-										StringPool.BLANK,
+										//StringPool.BLANK,
+										mimeType,
 										dossierFile != null ? dossierFile
 												.getFileEntryId() : 0,
 										PortletConstants.DOSSIER_FILE_MARK_UNKNOW,
