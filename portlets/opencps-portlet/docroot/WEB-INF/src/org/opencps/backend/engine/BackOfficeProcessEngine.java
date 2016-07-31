@@ -102,10 +102,10 @@ public class BackOfficeProcessEngine implements MessageListener {
 			govAgencyOrganizationId = dossier.getGovAgencyOrganizationId();
 			
 			try {
-				//ServiceConfig serviceConfig = ServiceConfigLocalServiceUtil.getServiceConfigByG_S_G(toEngineMsg.getGroupId(), serviceInfoId, govAgencyCode);
-				ServiceInfoProcess serviceInfoProcess = ServiceInfoProcessLocalServiceUtil.getServiceInfo(serviceInfoId);
-				//serviceProcessId = serviceConfig.getServiceProcessId();
-				serviceProcessId = serviceInfoProcess.getServiceProcessId();
+				ServiceConfig serviceConfig = ServiceConfigLocalServiceUtil.getServiceConfigByG_S_G(toEngineMsg.getGroupId(), serviceInfoId, govAgencyCode);
+				//ServiceInfoProcess serviceInfoProcess = ServiceInfoProcessLocalServiceUtil.getServiceInfo(serviceInfoId);
+				serviceProcessId = serviceConfig.getServiceProcessId();
+				//serviceProcessId = serviceInfoProcess.getServiceProcessId();
 			}
 			catch (Exception e) {
 				_log.error(e);
