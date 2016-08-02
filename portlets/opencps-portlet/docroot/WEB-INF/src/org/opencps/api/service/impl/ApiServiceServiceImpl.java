@@ -1481,6 +1481,8 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 					if (dossierFileType == 0 || (df.getDossierFileType() == dossierFileType)) {
 						JSONObject jsonDossierFile = JSONFactoryUtil.createJSONObject();
 						jsonDossierFile.put("dossierFileOid", df.getOid());
+						jsonDossierFile.put("dossierFileURL", "");
+						
 						try {
 							DossierPart dpart = DossierPartLocalServiceUtil
 									.getDossierPart(df.getDossierPartId());
@@ -1521,7 +1523,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 						} 
 						if (Validator.isNotNull(df.getFormData())) {
 							jsonDossierFile.put("dossierFileContent", df.getFormData());
-							jsonDossierFile.put("dossierFileURL", "");						
+							//jsonDossierFile.put("dossierFileURL", "");						
 						}
 						/*
 						else {
